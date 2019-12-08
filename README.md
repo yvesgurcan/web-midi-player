@@ -14,7 +14,7 @@ npm i web-midi-player
 Alternatively, this NPM package is hosted for free by [jsDeliver](https://www.jsdelivr.com/). You can add this library via the jsDeliver CDN:
 
 ```
-<script sec="https://cdn.jsdelivr.net/npm/web-midi-player@latest/"></script>
+<script src="https://cdn.jsdelivr.net/npm/web-midi-player@latest/"></script>
 ```
 
 
