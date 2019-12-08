@@ -14,7 +14,8 @@
         "url": "https://github.com/yvesgurcan/midi-player/issues"
     },
     "scripts": {
-        "start": "webpack --mode production --progress",
+        "start": "webpack-dev-server --mode production --progress",
+        "build": "webpack --mode production --progress",
         "lint": "prettier"
     },
     "devDependencies": {

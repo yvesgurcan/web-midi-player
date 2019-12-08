@@ -1,8 +1,10 @@
 module.exports = () => ({
     output: {
-        filename: 'index.js',
+        filename: '../index.js',
         hashDigestLength: 8,
-        publicPath: ''
+        publicPath: '',
+        library: 'midi-player',
+        libraryTarget: 'commonjs2'
     },
     optimization: {
         minimize: true
