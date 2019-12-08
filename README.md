@@ -1,3 +1,6 @@
+[![Open Source Helpers](https://www.codetriage.com/yvesgurcan/web-midi-player/badges/users.svg)](https://www.codetriage.com/yvesgurcan/web-midi-player)
+
+
 This library enables MIDI playback in the browser.
 
 ## Install
