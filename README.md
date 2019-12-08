@@ -34,9 +34,9 @@ midiPlayer.play('song.midi');
 
 ## Contribute
 
-Something doesn't work? We want to know! Open a new issue.
+Something doesn't work? We want to know! Open a [new issue](https://github.com/yvesgurcan/web-midi-player/issues/new).
 
-Want a new feature? Awesome! Open a pull request.
+Want a new feature? Awesome! Open a [pull request](https://github.com/yvesgurcan/web-midi-player/compare).
 
 ## Develop
 
