@@ -12,6 +12,7 @@
 - [ ] Tests were added, deleted, and/or updated. All tests pass when running `npm run test`.
 - [ ] Build was created with `npm run build`.
 - [ ] Changes are documented.
+- [ ] Version bumped.
 
 ## Issue(s) adressed
 
