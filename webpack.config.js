@@ -1,6 +1,6 @@
 module.exports = () => ({
     output: {
-        filename: '../index.js',
+        filename: 'index.js',
         hashDigestLength: 8,
         publicPath: ''
     },
