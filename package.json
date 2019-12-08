@@ -17,7 +17,6 @@
         "start": "webpack-dev-server --mode production --progress",
         "build": "webpack --mode production --progress",
         "lint": "prettier",
-        "publish": "npm publish"
     },
     "devDependencies": {
         "@babel/core": "^7.3.4",
