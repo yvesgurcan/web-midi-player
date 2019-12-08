@@ -1,6 +1,5 @@
 [![Open Source Helpers](https://www.codetriage.com/yvesgurcan/web-midi-player/badges/users.svg)](https://www.codetriage.com/yvesgurcan/web-midi-player)
 
-
 This event-driven library enables MIDI playback in the browser.
 
 ## Install
@@ -17,15 +16,12 @@ Alternatively, this NPM package is hosted for free by [jsDeliver](https://www.js
 <script src="https://cdn.jsdelivr.net/npm/web-midi-player@latest/"></script>
 ```
 
-
-
-
 ## Usage
 
 ```
 import MidiPlayer from 'web-midi-player';
 
-const midiPlayer = new WebMidiPlayer();
+const midiPlayer = new MidiPlayer();
 
 midiPlayer.play('song.midi');
 ```
@@ -54,7 +50,7 @@ git clone https://github.com/yvesgurcan/web-midi-player
 Install dependencies.
 
 ```
-npm I
+npm i
 ```
 
 Start development server.
@@ -63,6 +59,11 @@ npm start
 ```
 
 ### Before committing your code
+
+Create new build
+```
+npm run build
+```
 
 Run linter.
 ```
