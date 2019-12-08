@@ -1,10 +1,11 @@
 {
     "name": "web-midi-player",
     "name-display": "Web Midi Player",
+    "license": "MIT",
     "version": "1.0.5",
     "repository": {
         "type": "git",
-        "url": "https://github.com/yvesgurcan/midi-player"
+        "url": "https://github.com/yvesgurcan/web-midi-player"
     },
     "author": {
         "name": "Yves Gurcan"
