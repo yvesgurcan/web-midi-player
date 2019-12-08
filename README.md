@@ -43,3 +43,33 @@ Something doesn't work? We want to know! Open a new issue.
 Want a new feature? Awesome! Open a pull request.
 
 ## Develop
+
+### Setup
+
+Clone the repository.
+```
+git clone https://github.com/yvesgurcan/web-midi-player
+```
+
+Install dependencies.
+
+```
+npm I
+```
+
+Start development server.
+```
+npm start
+```
+
+### Before committing your code
+
+Run linter.
+```
+npm run lint
+```
+
+Execute tests.
+```
+npm run test
+```
