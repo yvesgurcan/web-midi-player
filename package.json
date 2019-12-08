@@ -1,7 +1,7 @@
 {
     "name": "web-midi-player",
     "name-display": "Web Midi Player",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "repository": {
         "type": "git",
         "url": "https://github.com/yvesgurcan/midi-player"
@@ -9,9 +9,9 @@
     "author": {
         "name": "Yves Gurcan"
     },
-    "homepage": "https://github.com/yvesgurcan/midi-player",
+    "homepage": "https://github.com/yvesgurcan/web-midi-player",
     "bugs": {
-        "url": "https://github.com/yvesgurcan/midi-player/issues"
+        "url": "https://github.com/yvesgurcan/web-midi-player/issues"
     },
     "scripts": {
         "start": "webpack-dev-server --mode production --progress",
