@@ -8,7 +8,13 @@ This library can be installed via NPM.
 npm i web-midi-player
 ```
 
-Alternatively, you can add the library to your project NPM pa by [jsDeliver](https://www.jsdelivr.com/) at <https://cdn.jsdelivr.net/npm/web-midi-player@latest/>.
+Alternatively, this NPM package is hosted for free by [jsDeliver](https://www.jsdelivr.com/). You can add this library via the jsDeliver CDN:
+
+```
+<script sec="https://cdn.jsdelivr.net/npm/web-midi-player@latest/"></script>
+```
+
+
 
 
 ## Usage
@@ -21,4 +27,10 @@ const midiPlayer = new WebMidiPlayer();
 midiPlayer.play('song.midi');
 ```
 
+## API
 
+## Events
+
+## Contribute
+
+Something does not work?
