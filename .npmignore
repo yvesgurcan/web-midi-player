@@ -1,0 +1,7 @@
+node_modules/
+src/
+example/
+webpack.config.js
+.prettierrc
+.babelrc
+CNAME

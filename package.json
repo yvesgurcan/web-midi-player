@@ -1,7 +1,7 @@
 {
-    "name": "midi-player",
-    "name-display": "Midi Player",
-    "version": "1.0.0",
+    "name": "web-midi-player",
+    "name-display": "Web Midi Player",
+    "version": "1.0.1",
     "repository": {
         "type": "git",
         "url": "https://github.com/yvesgurcan/midi-player"
