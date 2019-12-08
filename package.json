@@ -1,6 +1,12 @@
 {
     "name": "web-midi-player",
     "name-display": "Web Midi Player",
+    "keywords": [
+        "midi",
+        "media player",
+        "web",
+        "libtimidity"
+    ],
     "license": "MIT",
     "version": "1.0.7",
     "repository": {
