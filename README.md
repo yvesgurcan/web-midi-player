@@ -33,4 +33,6 @@ midiPlayer.play('song.midi');
 
 ## Contribute
 
-Something doesn't work? We want to know! Open a new issue!
+Something doesn't work? We want to know! Open a new issue.
+
+Want a new feature? Awesome! Open a pull request! 
