@@ -1,7 +1,7 @@
 [![Open Source Helpers](https://www.codetriage.com/yvesgurcan/web-midi-player/badges/users.svg)](https://www.codetriage.com/yvesgurcan/web-midi-player)
 
 
-This library enables MIDI playback in the browser.
+This event-driven library enables MIDI playback in the browser.
 
 ## Install
 
@@ -39,3 +39,5 @@ midiPlayer.play('song.midi');
 Something doesn't work? We want to know! Open a new issue.
 
 Want a new feature? Awesome! Open a pull request.
+
+## Develop
