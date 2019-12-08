@@ -33,4 +33,4 @@ midiPlayer.play('song.midi');
 
 ## Contribute
 
-Something does not work?
+Something doesn't work? We want to know! Open a new issue!
