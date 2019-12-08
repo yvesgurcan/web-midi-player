@@ -1,11 +1,19 @@
 ## Summary
 
-*Describe what modifications this PR bring to the project.*
+*Describe what modifications this PR brings to the project.*
 
 -
 
+## Checklist
+
+*All checks below must be performed before the PR can be merged.*
+
+- [ ] Code was linted. Running `npm run lint` does not show any error.
+- [ ] Tests were added, deleted, and/or updated. All tests pass when running `npm run test`.
+- [ ] Changes are documented.
+
 ## Issue(s) adressed
 
-*Enter the number of the issue(s) that this PR fixes.*
+*Enter the issue number of the bug(s) that this PR fixes.*
 
 - Closes #
