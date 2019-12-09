@@ -2,7 +2,10 @@ import {
     MIDI_AUDIO_BUFFER_SIZE,
     MIDI_PATCH_URL,
     MIDI_AUDIO_S16LSB,
-    MAX_I16,
+    MAX_I16
+} from './constants';
+
+import {
     MIDI_ERROR,
     MIDI_LOAD_FILE,
     MIDI_LOAD_PATCH,
@@ -11,198 +14,43 @@ import {
     MIDI_RESUME,
     MIDI_STOP,
     MIDI_END
-} from './constants';
+} from './events';
 
 import Module from './LibTimidity';
 
-function browserVersion() {
-    const nAgt = navigator.userAgent;
-    let browserName = navigator.appName;
-    let fullVersion = `${parseFloat(navigator.appVersion)}`;
-    let majorVersion = parseInt(navigator.appVersion, 10);
-    let nameOffset;
-    let verOffset;
-    let ix;
-
-    /* eslint-disable */
-    // In Opera, the true version is after "Opera" or after "Version"
-    if ((verOffset = nAgt.indexOf('Opera')) !== -1) {
-        browserName = 'Opera';
-        fullVersion = nAgt.substring(verOffset + 6);
-        if ((verOffset = nAgt.indexOf('Version')) !== -1) {
-            fullVersion = nAgt.substring(verOffset + 8);
-        }
-    }
-    // In MSIE, the true version is after "MSIE" in userAgent
-    else if ((verOffset = nAgt.indexOf('MSIE')) !== -1) {
-        browserName = 'Microsoft Internet Explorer';
-        fullVersion = nAgt.substring(verOffset + 5);
-    }
-    // Since IE 11, "MSIE" is not part of the user Agent
-    // the true version is after "rv"?
-    else if ((verOffset = nAgt.indexOf('Trident')) !== -1) {
-        browserName = 'Microsoft Internet Explorer';
-        if ((verOffset = nAgt.indexOf('rv:')) !== -1) {
-            fullVersion = nAgt.substring(verOffset + 3);
-        } else {
-            fullVersion = '0.0'; // hm?
-        }
-    }
-    // In Chrome, the true version is after "Chrome"
-    else if ((verOffset = nAgt.indexOf('Chrome')) !== -1) {
-        browserName = 'Chrome';
-        fullVersion = nAgt.substring(verOffset + 7);
-    }
-    // The default Andorid Browser does not have "Chrome" in its userAgent
-    else if ((verOffset = nAgt.indexOf('Android')) !== -1) {
-        browserName = 'Android';
-        fullVersion = nAgt.substring(verOffset + 8);
-    }
-    // In Safari, the true version is after "Safari" or after "Version"
-    else if ((verOffset = nAgt.indexOf('Safari')) !== -1) {
-        browserName = 'Safari';
-        fullVersion = nAgt.substring(verOffset + 7);
-        if ((verOffset = nAgt.indexOf('Version')) != -1) {
-            fullVersion = nAgt.substring(verOffset + 8);
-        }
-    }
-    // In Firefox, the true version is after "Firefox"
-    else if ((verOffset = nAgt.indexOf('Firefox')) !== -1) {
-        browserName = 'Firefox';
-        fullVersion = nAgt.substring(verOffset + 8);
-    }
-    // In most other browsers, "name/version" is at the end of userAgent
-    else if (
-        (nameOffset = nAgt.lastIndexOf(' ') + 1) <
-        (verOffset = nAgt.lastIndexOf('/'))
-    ) {
-        browserName = nAgt.substring(nameOffset, verOffset);
-        fullVersion = nAgt.substring(verOffset + 1);
-        if (browserName.toLowerCase() === browserName.toUpperCase()) {
-            browserName = navigator.appName;
-        }
-    }
-    // trim the fullVersion string at semicolon/space if present
-    if ((ix = fullVersion.indexOf(';')) !== -1) {
-        fullVersion = fullVersion.substring(0, ix);
-    }
-    if ((ix = fullVersion.indexOf(' ')) !== -1) {
-        fullVersion = fullVersion.substring(0, ix);
-    }
-    /* eslint-enable */
-
-    majorVersion = parseInt(`${fullVersion}`, 10);
-    if (Number.isNaN(majorVersion)) {
-        fullVersion = `${parseFloat(navigator.appVersion)}`;
-        majorVersion = parseInt(navigator.appVersion, 10);
-    }
-
-    const bv = {
-        browserName,
-        fullVersion,
-        majorVersion,
-        appName: navigator.appName,
-        userAgent: navigator.userAgent,
-        platform: navigator.platform
-    };
-
-    return bv;
-}
-
 export default class MidiPlayer {
-    constructor({ eventLogger, logging }) {
-        const { platform, majorVersion, browserName } = browserVersion();
-
+    /**
+     * @class MidiPlayer
+     * @param {object} [configuration]
+     * @param {function} [configuration.eventLogger = undefined] The function that receives event payloads.
+     * @param {boolean} [configuration.logging = false] Turns ON or OFF logging to the console.
+     * @return {object} A `MidiPlayer` instance.
+     * @example
+     * import MidiPlayer from 'web-midi-player';
+     *
+     * const eventLogger = (payload) => {
+     *   console.log('Received event:', payload.event)
+     * }
+     *
+     * const midiPlayer = new MidiPlayer({ eventLogger, logging: true });
+     */
+    constructor({ eventLogger = undefined, logging = false }) {
         this.logging = logging;
         this.eventLogger = eventLogger;
 
         try {
-            // iPhones not compatible with AudioContext?
-            if (
-                (platform === 'iPhone' ||
-                    platform === 'iPod' ||
-                    platform === 'iPad') &&
-                majorVersion <= 6
-            ) {
-                this.audioMethod = 'none';
-            } else {
-                // vendor prefix
-                window.AudioContext =
-                    window.AudioContext || window.webkitAudioContext;
-                this.context = new AudioContext();
-                this.audioMethod = 'WebAudioAPI';
-            }
-        } catch (e) {
-            if (browserName === 'Microsoft Internet Explorer') {
-                this.audioMethod = 'bgsound';
-                // Android not compatible with AudioContext?
-            } else if (browserName === 'Android') {
-                this.audioMethod = 'none';
-            } else {
-                this.audioMethod = 'object';
-            }
-        }
-
-        if (this.audioMethod === 'WebAudioAPI') {
-            if (typeof Module === 'undefined') {
-                this.emitUndefinedModuleError();
-                this.play = () => this.emitUndefinedModuleError();
-                this.pause = () => this.emitUndefinedModuleError();
-                this.resume = () => this.emitUndefinedModuleError();
-                this.stop = () => this.emitUndefinedModuleError();
-                return;
-            }
-
-            this.play = this.playWebAudioAPI;
-            this.pause = this.pauseWebAudioAPI;
-            this.resume = this.resumeWebAudioAPI;
-            this.stop = this.stopWebAudioAPI;
+            window.AudioContext =
+                window.AudioContext || window.webkitAudioContext;
+            this.context = new AudioContext();
+            this.audioMethod = 'WebAudioAPI';
             this.audioStatus = `audioMethod: WebAudioAPI, sampleRate (Hz): ${this.context.sampleRate}, audioBufferSize (Byte): ${MIDI_AUDIO_BUFFER_SIZE}`;
-        } else if (this.audioMethod === 'bgsound') {
-            this.play = this.playBGSound;
-            this.stop = this.stopBGSound;
-            this.pause = () => {};
-            this.resume = () => {};
-            this.audioStatus = 'audioMethod: &lt;bgsound&gt;';
-        } else if (this.audioMethod === 'object') {
-            this.play = this.playObject;
-            this.stop = this.stopObject;
-            this.pause = () => {};
-            this.resume = () => {};
-            this.audioStatus = 'audioMethod: &lt;object&gt;';
-        } else {
-            this.emitAudioMethodNotFound();
-            this.play = () => this.emitAudioMethodNotFound();
-            this.pause = () => this.emitAudioMethodNotFound();
-            this.resume = () => this.emitAudioMethodNotFound();
-            this.stop = () => this.emitAudioMethodNotFound();
-            this.audioStatus = 'audioMethod: No method found';
+        } catch (e) {
+            this.emitEvent({
+                event: MIDI_ERROR,
+                message: 'Could not initialize AudioContext.'
+            });
         }
     }
-
-    emitAudioMethodNotFound() {
-        this.emitEvent({
-            event: MIDI_ERROR,
-            message:
-                'No compatible audio method was found. MIDI playback does not work on this device.'
-        });
-    }
-
-    emitUndefinedModuleError() {
-        this.emitEvent({
-            event: MIDI_ERROR,
-            message:
-                "The 'Module' object from the libTimidity.js library could not be found in the global scope."
-        });
-    }
-
-    emitEvent = payload => {
-        if (this.eventLogger) {
-            this.eventLogger(payload);
-        } else if (this.logging) {
-            console.log(payload);
-        }
-    };
 
     getNextWave(event) {
         const time = this.context.currentTime - this.startTime;
@@ -439,18 +287,26 @@ export default class MidiPlayer {
         request.send();
     }
 
-    playWebAudioAPI({ arrayBuffer, url, name }) {
+    /**
+     * Starts playback of MIDI input.
+     *
+     * Please note that you can not use `input.arrayBuffer` and `input.url` concurrently.
+     * @param {object} input
+     * @param {arrayBuffer} [input.arrayBuffer] An array buffer containing MIDI data.
+     * @param {string} [input.url] The URL where the MIDI file is located.
+     * @param {string} [input.name] A human-friendly name for the song.
+     * @return {boolean} Whether playback was successfully initiated or not.
+     * @example
+     * const name1 = 'My MIDI file from URL';
+     * const url = 'media/file.midi';
+     * midiPlayer.play({ url, name: name1 });
+     *
+     * const name2 = 'My MIDI file from ArrayBuffer';
+     * const arrayBuffer = new ArrayBuffer();
+     * midiPlayer.play({ arrayBuffer , name: name2 });
+     */
+    play({ arrayBuffer, url, name }) {
         this.stop();
-        if (
-            navigator.platform === 'iPad' ||
-            navigator.platform === 'iPhone' ||
-            navigator.platform === 'iPod'
-        ) {
-            // Unmute works only after return of the user generated event. So we let the event return and play with delay
-            // from the callback after libtimidity will have been loaded
-            // otherwise the first playWebAudioAPI() call after page load would remain silent on iOS devices
-            this.unmuteiOSHack();
-        }
 
         if (url) {
             this.playWebAudioAPIWithScriptLoaded(url, name);
@@ -465,12 +321,57 @@ export default class MidiPlayer {
                 event: MIDI_ERROR,
                 message: 'Unknown source. Must pass either url or arrayBuffer.'
             });
+            return false;
         }
 
         return true;
     }
 
-    stopWebAudioAPI() {
+    /**
+     * Pauses playback of MIDI input.
+     * @param {undefined}
+     * @return {boolean} Whether playback was successfully paused or not.
+     * @example
+     * midiPlayer.pause();
+     */
+    pause() {
+        this.context.suspend();
+
+        const time = this.context.currentTime - this.startTime;
+        this.emitEvent({
+            event: MIDI_PAUSE,
+            time
+        });
+        return true;
+    }
+
+    /**
+     * Resumes playback of MIDI input.
+     * @param {undefined}
+     * @return {boolean} Whether playback was successfully ressumed or not.
+     * @example
+     * midiPlayer.resume();
+     */
+    resume() {
+        this.context.resume();
+
+        const time = this.context.currentTime - this.startTime;
+        this.emitEvent({
+            event: MIDI_RESUME,
+            time
+        });
+
+        return true;
+    }
+
+    /**
+     * Stops playback of MIDI input.
+     * @param {undefined}
+     * @return {boolean} Whether playback was successfully stopped or not.
+     * @example
+     * midiPlayer.stop();
+     */
+    stop() {
         if (this.source) {
             // terminate playback
             this.source.disconnect();
@@ -499,96 +400,22 @@ export default class MidiPlayer {
         return true;
     }
 
-    pauseWebAudioAPI() {
-        this.context.suspend();
-
-        const time = this.context.currentTime - this.startTime;
-        this.emitEvent({
-            event: MIDI_PAUSE,
-            time
-        });
-        return true;
-    }
-
-    resumeWebAudioAPI() {
-        this.context.resume();
-
-        const time = this.context.currentTime - this.startTime;
-        this.emitEvent({
-            event: MIDI_RESUME,
-            time
-        });
-
-        return true;
-    }
-
-    unmuteiOSHack() {
-        // iOS unmutes web audio when playing a buffer source
-        // the buffer may be initialized to all zeroes (=silence)
-        const sinusBuffer = this.context.createBuffer(1, 44100, 44100);
-        for (let i = 0; i < 48000; i++) {
-            sinusBuffer.getChannelData(0)[i] = 0; // Math.sin(i / 48000 * 2 * Math.PI * freq);
+    /**
+     * Send custom payloads to the event logger.
+     * @function
+     * @param {object} payload
+     * @param {string} [payload.event] The name of the event.
+     * @param {string} [payload.message] A message that described the event.
+     * @example
+     * const event = 'CUSTOM_EVENT';
+     * const message = 'Something happened.';
+     * midiPlayer.emitEvent({ event, message });
+     */
+    emitEvent = payload => {
+        if (this.eventLogger) {
+            this.eventLogger(payload);
+        } else if (this.logging) {
+            console.log(payload);
         }
-        const bufferSource = this.context.createBufferSource(); // creates a sound source
-        bufferSource.buffer = sinusBuffer;
-        bufferSource.connect(this.context.destination); // connect the source to the context's destination (the speakers)
-        bufferSource.start(0); // play the bufferSource now
-    }
-
-    playBGSound(url) {
-        this.stopBGSound();
-
-        let sounddiv = document.getElementById('midiPlayer');
-        if (!sounddiv) {
-            sounddiv = document.createElement('div');
-            sounddiv.setAttribute('id', 'midiPlayer');
-
-            // hack: without the nbsp or some other character the bgsound will not be inserted
-            sounddiv.innerHTML = `&nbsp;<bgsound src="${url}" volume="100"/>`;
-            document.body.appendChild(sounddiv);
-        } else {
-            sounddiv.lastChild.setAttribute('src', url);
-        }
-        this.source = sounddiv;
-        this.message_callback(`Playing ${url} ...`);
-        return true;
-    }
-
-    stopBGSound() {
-        if (this.source) {
-            const sounddiv = this.source;
-            sounddiv.lastChild.setAttribute('src', 'midi/silence.mid');
-            this.source = 0;
-        }
-        this.message_callback(this.audioStatus);
-        return true;
-    }
-
-    playObject(url) {
-        this.stopObject();
-
-        let sounddiv = document.getElementById('midiPlayer');
-        if (!sounddiv) {
-            sounddiv = document.createElement('div');
-            sounddiv.setAttribute('id', 'midiPlayer');
-
-            sounddiv.innerHTML = `<object data="${url}" autostart="true" volume="100" type="audio/mid"></object>`;
-            document.body.appendChild(sounddiv);
-        } else {
-            sounddiv.lastChild.setAttribute('data', url);
-        }
-        this.source = sounddiv;
-        this.message_callback(`Playing ${url} ...`);
-        return true;
-    }
-
-    stopObject() {
-        if (this.source) {
-            const sounddiv = this.source;
-            sounddiv.parentNode.removeChild(sounddiv);
-            this.source = 0;
-        }
-        this.message_callback(this.audioStatus);
-        return true;
-    }
+    };
 }

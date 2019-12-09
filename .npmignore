@@ -5,3 +5,6 @@ webpack.config.js
 .prettierrc
 .babelrc
 CNAME
+documentation.yml
+ISSUE_TEMPLATE
+PULL_REQUEST_TEMPLATE
