@@ -24,7 +24,7 @@ Alternatively, this NPM package is hosted for free by [jsDeliver](https://www.js
 
 ### HTML
 
-[The API is available as a HTML file.](docs/index.html)
+[The API documentation is available as a HTML file.](https://midi.yvesgurcan.com/docs/)
 
 ### Markdown
 
@@ -53,7 +53,7 @@ Alternatively, this NPM package is hosted for free by [jsDeliver](https://www.js
 
 ##### Parameters
 
--   `configuration` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)?** 
+-   `configuration` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)?**
     -   `configuration.eventLogger` **[function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** The function that receives event payloads. (optional, default `undefined`)
     -   `configuration.logging` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** Turns ON or OFF logging to the console. (optional, default `false`)
 
@@ -62,9 +62,9 @@ Alternatively, this NPM package is hosted for free by [jsDeliver](https://www.js
 ```javascript
 import MidiPlayer from 'web-midi-player';
 
-const eventLogger = (payload) => {
-  console.log('Received event:', payload.event)
-}
+const eventLogger = payload => {
+    console.log('Received event:', payload.event);
+};
 
 const midiPlayer = new MidiPlayer({ eventLogger, logging: true });
 ```
@@ -79,7 +79,7 @@ Please note that you can not use `input.arrayBuffer` and `input.url` concurrentl
 
 ###### Parameters
 
--   `input` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
+-   `input` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)**
     -   `input.arrayBuffer` **[arrayBuffer](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer)?** An array buffer containing MIDI data.
     -   `input.url` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** The URL where the MIDI file is located.
     -   `input.name` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** A human-friendly name for the song.
@@ -93,7 +93,7 @@ midiPlayer.play({ url, name: name1 });
 
 const name2 = 'My MIDI file from ArrayBuffer';
 const arrayBuffer = new ArrayBuffer();
-midiPlayer.play({ arrayBuffer , name: name2 });
+midiPlayer.play({ arrayBuffer, name: name2 });
 ```
 
 Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** Whether playback was successfully initiated or not.
@@ -140,7 +140,7 @@ Send custom payloads to the event logger.
 
 ###### Parameters
 
--   `payload` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
+-   `payload` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)**
     -   `payload.event` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** The name of the event.
     -   `payload.message` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** A message that described the event.
 
@@ -155,113 +155,6 @@ midiPlayer.emitEvent({ event, message });
 #### Event
 
 This class has not been implemented yet.
-
-### MidiPlayer
-
-Creates a `MidiPlayer` instance.
-
-#### Parameters
-
--   `$0` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)?**
-    -   `$0.eventLogger` **[function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)?** The function that receives event payloads. (optional, default `undefined`)
-    -   `$0.logging` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?** Turns logging to the console ON or OFF. (optional, default `false`)
-
-#### Examples
-
-```javascript
-import MidiPlayer from 'web-midi-player';
-
-const eventLogger = payload => {
-    console.log('Received event:', payload.event);
-};
-
-const midiPlayer = new MidiPlayer({ eventLogger, logging: true });
-```
-
-Returns **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** A `MidiPlayer` instance.
-
-### MidiPlayer#play
-
-Starts playback of MIDI input.
-
-Please note that you can not use `$0.arrayBuffer` and `$0.url` concurrently.
-
-#### Parameters
-
--   `$0` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)**
-    -   `$0.arrayBuffer` **[arrayBuffer](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer)?** An array buffer containing MIDI data.
-    -   `$0.url` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** The URL where the MIDI file is located.
-    -   `$0.name` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** A human-friendly name for the file.
-
-#### Examples
-
-```javascript
-const name1 = 'My MIDI file from URL';
-const url = 'media/file.midi';
-midiPlayer.play({ url, name: name1 });
-
-const name2 = 'My MIDI file from ArrayBuffer';
-const arrayBuffer = new ArrayBuffer();
-midiPlayer.play({ arrayBuffer, name: name2 });
-```
-
-Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** Whether playback was successfully initiated or not.
-
-### MidiPlayer#pause
-
-Pauses playback of MIDI input.
-
-#### Examples
-
-```javascript
-midiPlayer.pause();
-```
-
-Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** Whether playback was successfully paused or not.
-
-### MidiPlayer#resume
-
-Resumes playback of MIDI input.
-
-#### Examples
-
-```javascript
-midiPlayer.resume();
-```
-
-Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** Whether playback was successfully ressumed or not.
-
-### MidiPlayer#stop
-
-Stops playback of MIDI input.
-
-#### Examples
-
-```javascript
-midiPlayer.stop();
-```
-
-Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** Whether playback was successfully stopped or not.
-
-### MidiPlayer#emitEvent
-
-Send custom events to the event logger.
-
-#### Parameters
-
--   `payload` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)**
-    -   `payload.event` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** The name of the event.
-    -   `payload.message` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** A message that described the event.
-
-#### Examples
-
-```javascript
-const event = 'CUSTOM_EVENT';
-const message = 'Something happened.';
-midiPlayer.emitEvent({ event, message });
-```
-
-## Events
 
 ## How it works
 
