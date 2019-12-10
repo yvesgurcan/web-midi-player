@@ -2,6 +2,8 @@
 
 This event-driven library enables MIDI playback in the browser.
 
+Check out the [example](https://midi.yvesgurcan.com/example/).
+
 ## Install
 
 This library can be installed via NPM.
@@ -12,13 +14,13 @@ Alternatively, this NPM package is hosted for free by [jsDeliver](https://www.js
 
     <script src="https://cdn.jsdelivr.net/npm/web-midi-player@latest/"></script>
 
-## Usage
+## Getting started
 
     import MidiPlayer from 'web-midi-player';
 
     const midiPlayer = new MidiPlayer();
 
-    midiPlayer.play('song.midi');
+    midiPlayer.play('song.mid');
 
 ## API
 
@@ -53,20 +55,21 @@ Alternatively, this NPM package is hosted for free by [jsDeliver](https://www.js
 
 ##### Parameters
 
--   `configuration` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)?**
+-   `configuration` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)?** 
     -   `configuration.eventLogger` **[function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** The function that receives event payloads. (optional, default `undefined`)
     -   `configuration.logging` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** Turns ON or OFF logging to the console. (optional, default `false`)
+    -   `configuration.patchUrl` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** The public path where MIDI instrument patches can be found. (optional, default `/public/midi/pat/`)
 
 ##### Examples
 
 ```javascript
 import MidiPlayer from 'web-midi-player';
 
-const eventLogger = payload => {
-    console.log('Received event:', payload.event);
-};
+const eventLogger = (payload) => {
+  console.log('Received event:', payload.event)
+}
 
-const midiPlayer = new MidiPlayer({ eventLogger, logging: true });
+const midiPlayer = new MidiPlayer({ eventLogger, logging: true, patchUrl: '/patches/' });
 ```
 
 Returns **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** A `MidiPlayer` instance.
@@ -79,7 +82,7 @@ Please note that you can not use `input.arrayBuffer` and `input.url` concurrentl
 
 ###### Parameters
 
--   `input` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)**
+-   `input` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
     -   `input.arrayBuffer` **[arrayBuffer](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer)?** An array buffer containing MIDI data.
     -   `input.url` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** The URL where the MIDI file is located.
     -   `input.name` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** A human-friendly name for the song.
@@ -93,7 +96,7 @@ midiPlayer.play({ url, name: name1 });
 
 const name2 = 'My MIDI file from ArrayBuffer';
 const arrayBuffer = new ArrayBuffer();
-midiPlayer.play({ arrayBuffer, name: name2 });
+midiPlayer.play({ arrayBuffer , name: name2 });
 ```
 
 Returns **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** Whether playback was successfully initiated or not.
@@ -140,7 +143,7 @@ Send custom payloads to the event logger.
 
 ###### Parameters
 
--   `payload` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)**
+-   `payload` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
     -   `payload.event` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** The name of the event.
     -   `payload.message` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** A message that described the event.
 
@@ -156,15 +159,11 @@ midiPlayer.emitEvent({ event, message });
 
 This class has not been implemented yet.
 
-## How it works
-
 ## Contribute
 
 Something doesn't work? We want to know! Open a [new issue](https://github.com/yvesgurcan/web-midi-player/issues/new).
 
 Want a new feature? Awesome! Open a [pull request](https://github.com/yvesgurcan/web-midi-player/compare).
-
-## Develop
 
 ### Setup
 
@@ -182,10 +181,6 @@ Start development server.
 
 ### Before committing your code
 
-Create new build
-
-    npm run build
-
 Run linter.
 
     npm run lint
@@ -193,3 +188,14 @@ Run linter.
 Execute tests.
 
     npm run test
+
+Create new build.
+
+    npm run build
+
+Update documentation.
+
+    npm run docs
+    npm run docs:readme
+
+## 
