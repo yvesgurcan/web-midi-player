@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
-  <title>web-midi-player 1.0.8 | Documentation</title>
+  <title>web-midi-player 1.0.11 | Documentation</title>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' rel='stylesheet'>
   <link href='assets/style.css' rel='stylesheet'>
@@ -14,7 +14,7 @@
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'>web-midi-player</h3>
-          <div class='mb1'><code>1.0.8</code></div>
+          <div class='mb1'><code>1.0.11</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -165,6 +165,17 @@
 
 
               
+                <tr>
+  <td class='break-word'><span class='code bold'>configuration.patchUrl</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
+  
+    (default <code>/public/midi/pat/</code>)
+  </td>
+  <td class='break-word'><span>The public path where MIDI instrument patches can be found.
+</span></td>
+</tr>
+
+
+              
             </tbody>
           </table>
           
@@ -199,7 +210,7 @@
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Received event:'</span>, payload.event)
 }
 
-<span class="hljs-keyword">const</span> midiPlayer = <span class="hljs-keyword">new</span> MidiPlayer({ eventLogger, <span class="hljs-attr">logging</span>: <span class="hljs-literal">true</span> });</pre>
+<span class="hljs-keyword">const</span> midiPlayer = <span class="hljs-keyword">new</span> MidiPlayer({ eventLogger, <span class="hljs-attr">logging</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">patchUrl</span>: <span class="hljs-string">'/patches/'</span> });</pre>
     
   
 

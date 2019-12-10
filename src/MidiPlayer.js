@@ -1,6 +1,6 @@
 import {
     MIDI_AUDIO_BUFFER_SIZE,
-    MIDI_PATCH_URL,
+    MIDI_DEFAULT_PATCH_URL,
     MIDI_AUDIO_S16LSB,
     MAX_I16
 } from './constants';
@@ -24,6 +24,7 @@ export default class MidiPlayer {
      * @param {object} [configuration]
      * @param {function} [configuration.eventLogger = undefined] The function that receives event payloads.
      * @param {boolean} [configuration.logging = false] Turns ON or OFF logging to the console.
+     * @param {string} [configuration.patchUrl = /public/midi/pat/] The public path where MIDI instrument patches can be found.
      * @return {object} A `MidiPlayer` instance.
      * @example
      * import MidiPlayer from 'web-midi-player';
@@ -32,11 +33,16 @@ export default class MidiPlayer {
      *   console.log('Received event:', payload.event)
      * }
      *
-     * const midiPlayer = new MidiPlayer({ eventLogger, logging: true });
+     * const midiPlayer = new MidiPlayer({ eventLogger, logging: true, patchUrl: '/patches/' });
      */
-    constructor({ eventLogger = undefined, logging = false }) {
+    constructor({
+        eventLogger = undefined,
+        logging = false,
+        patchUrl = MIDI_DEFAULT_PATCH_URL
+    } = {}) {
         this.logging = logging;
         this.eventLogger = eventLogger;
+        this.patchUrl = patchUrl;
 
         try {
             window.AudioContext =
@@ -239,7 +245,7 @@ export default class MidiPlayer {
                     [this.song, i]
                 );
 
-                this.loadMissingPatch(MIDI_PATCH_URL, missingPatch);
+                this.loadMissingPatch(this.patchUrl, missingPatch);
             }
         } else {
             Module.ccall('mid_song_start', 'void', ['number'], [this.song]);
