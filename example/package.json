@@ -2,7 +2,8 @@
     "name": "web-midi-player-example",
     "description": "Web Midi Player example.",
     "scripts": {
-        "start": "webpack-dev-server"
+        "start": "webpack-dev-server",
+        "lint": "prettier"
     },
     "devDependencies": {
         "@babel/core": "^7.5.5",
@@ -13,6 +14,7 @@
         "babel-plugin-styled-components": "^1.10.6",
         "clean-webpack-plugin": "^3.0.0",
         "html-webpack-plugin": "^3.2.0",
+        "prettier": "^1.16.4",
         "react": "^16.8.6",
         "react-dom": "^16.8.6",
         "styled-components": "^4.3.2",

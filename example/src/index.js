@@ -3,8 +3,11 @@ import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 import MidiPlayer from 'web-midi-player';
 
+const GITHUB_REPO = 'https://github.com/yvesgurcan/web-midi-player';
+
 const MIDI_PLAY = 'MIDI_PLAY';
 const MIDI_PAUSE = 'MIDI_PAUSE';
+const MIDI_END = 'MIDI_END';
 
 const SONGS = [
     { url: '/midi/d_runnin.mid', name: 'Running from evil - Bobby Prince' },
@@ -15,7 +18,16 @@ const SONGS = [
     {
         url: '/midi/veggies.mid',
         name: "You've got to eat your vegetables - Bobby Prince"
+    },
+    {
+        url: '/midi/this-file-does-not-exist.mid',
+        name: 'Broken URL to MIDI file.'
     }
+    // this breaks the player
+    /*{
+        url: '/midi/this-file-is-not-a-midi.wav',
+        name: 'Not a MIDI file.'
+    }*/
 ];
 
 const getPlayPauseButton = (songState, songIndex, player) => {
@@ -53,11 +65,22 @@ const Example = () => {
 
     useEffect(() => {
         if (!midiPlayer) {
-            const eventLogger = payload => {
-                console.log(payload);
-                setCurrentSongState(payload.message || payload.event);
-                setCurrentSongTime(payload.time || 0);
+            const eventLogger = ({ message, event, time }) => {
+                console.log(event, message || '', time);
+                setCurrentSongState(event);
+                setCurrentSongTime(time || 0);
+
+                if (event === MIDI_END) {
+                    let nextIndex = currentSongIndex + 1;
+                    if (nextIndex > SONGS.length - 1) {
+                        nextIndex = 0;
+                    }
+                    const { url, name } = SONGS[nextIndex];
+                    midiPlayer.play({ url, name });
+                    setCurrentSongIndex(nextIndex);
+                }
             };
+
             midiPlayer = new MidiPlayer({ eventLogger, patchUrl: '/patches/' });
             setCurrentSongState('MIDI player initialized.');
         }
@@ -66,6 +89,15 @@ const Example = () => {
     return (
         <View>
             <Player>
+                <Heading>web-midi-player</Heading>
+                <GitHubLink
+                    href={GITHUB_REPO}
+                    target="_blank"
+                    noopener
+                    noreferrer
+                >
+                    {GITHUB_REPO}
+                </GitHubLink>
                 <Playlist>
                     {SONGS.map(({ url, name }, index) => (
                         <Song
@@ -146,6 +178,18 @@ const Player = styled.div`
     border-radius: 10px;
     min-height: 75px;
     min-width: 400px;
+`;
+
+const Heading = styled.h1`
+    text-align: center;
+    margin: 0;
+`;
+
+const GitHubLink = styled.a`
+    display: block;
+    color: white;
+    margin: 10px;
+    text-align: center;
 `;
 
 const Playlist = styled.div`
