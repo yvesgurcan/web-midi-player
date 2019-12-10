@@ -8,7 +8,7 @@
         "libtimidity"
     ],
     "license": "MIT",
-    "version": "1.0.11",
+    "version": "1.0.12",
     "repository": {
         "type": "git",
         "url": "https://github.com/yvesgurcan/web-midi-player"
@@ -16,7 +16,7 @@
     "author": {
         "name": "Yves Gurcan"
     },
-    "homepage": "https://github.com/yvesgurcan/web-midi-player",
+    "homepage": "https://midi.yvesgurcan.com",
     "bugs": {
         "url": "https://github.com/yvesgurcan/web-midi-player/issues"
     },
