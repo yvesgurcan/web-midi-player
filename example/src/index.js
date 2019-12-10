@@ -11,6 +11,8 @@ const MIDI_PLAY = 'MIDI_PLAY';
 const MIDI_PAUSE = 'MIDI_PAUSE';
 const MIDI_END = 'MIDI_END';
 
+const PATCH_URL = 'patches/';
+
 const SONGS = [
     { url: 'midi/d_runnin.mid', name: 'Running from evil - Bobby Prince' },
     {
@@ -83,7 +85,7 @@ const Example = () => {
                 }
             };
 
-            midiPlayer = new MidiPlayer({ eventLogger, patchUrl: '/patches/' });
+            midiPlayer = new MidiPlayer({ eventLogger, patchUrl: PATCH_URL });
             setCurrentSongState('MIDI player initialized.');
         }
     });
