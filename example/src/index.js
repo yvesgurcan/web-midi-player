@@ -10,22 +10,22 @@ const MIDI_PAUSE = 'MIDI_PAUSE';
 const MIDI_END = 'MIDI_END';
 
 const SONGS = [
-    { url: '/midi/d_runnin.mid', name: 'Running from evil - Bobby Prince' },
+    { url: 'midi/d_runnin.mid', name: 'Running from evil - Bobby Prince' },
     {
-        url: '/midi/fatcmdr.mid',
+        url: 'midi/fatcmdr.mid',
         name: 'Going after the fat commander - Bobby Prince'
     },
     {
-        url: '/midi/veggies.mid',
+        url: 'midi/veggies.mid',
         name: "You've got to eat your vegetables - Bobby Prince"
     },
     {
-        url: '/midi/this-file-does-not-exist.mid',
+        url: 'midi/this-file-does-not-exist.mid',
         name: 'Broken URL to MIDI file.'
     }
     // this breaks the player
     /*{
-        url: '/midi/this-file-is-not-a-midi.wav',
+        url: 'midi/this-file-is-not-a-midi.wav',
         name: 'Not a MIDI file.'
     }*/
 ];
