@@ -3,7 +3,7 @@
     "description": "Web Midi Player example.",
     "scripts": {
         "start": "webpack-dev-server",
-        "lint": "prettier"
+        "lint": "prettier --write **/*.js"
     },
     "devDependencies": {
         "@babel/core": "^7.5.5",

@@ -23,7 +23,7 @@
     "scripts": {
         "start": "webpack-dev-server --mode production --progress",
         "build": "webpack --mode production --progress",
-        "lint": "prettier",
+        "lint": "prettier --write **/*.js",
         "docs": "documentation build src/** -f html -o docs --config documentation.yml",
         "docs:watch": "documentation serve --watch src/** --config documentation.yml",
         "docs:readme": "documentation readme src/** --section=Markdown --config documentation.yml"
