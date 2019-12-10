@@ -1,6 +1,7 @@
 node_modules/
 src/
 example/
+docs/
 webpack.config.js
 .prettierrc
 .babelrc
