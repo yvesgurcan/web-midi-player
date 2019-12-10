@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 import MidiPlayer from 'web-midi-player';
 
-const midiPlayer = new MidiPlayer({ patchUrl: '/patches/' });
+const MIDI_PLAY = 'MIDI_PLAY';
+const MIDI_PAUSE = 'MIDI_PAUSE';
 
-const songs = [
+const SONGS = [
     { url: '/midi/d_runnin.mid', name: 'Running from evil - Bobby Prince' },
     {
         url: '/midi/fatcmdr.mid',
@@ -17,54 +18,168 @@ const songs = [
     }
 ];
 
-const Example = () => {
-    const [currentSongIndex, setCurrentSongIndex] = useState(0);
-    return (
-        <Player>
-            <CurrentSong>{songs[currentSongIndex].name}</CurrentSong>
-            <Control>
-                <div
+const getPlayPauseButton = (songState, songIndex, player) => {
+    switch (songState) {
+        default: {
+            const { url, name } = SONGS[songIndex];
+            return (
+                <Button
                     onClick={() =>
-                        midiPlayer.play({ url: songs[currentSongIndex].url })
+                        player.play({
+                            url,
+                            name
+                        })
                     }
                 >
-                    play
-                </div>
-                <div onClick={() => midiPlayer.pause()}>pause</div>
-                <div onClick={() => midiPlayer.resume()}>resume</div>
-                <div onClick={() => midiPlayer.stop()}>stop</div>
-                <div
-                    onClick={() => {
-                        const prevIndex = Math.max(0, currentSongIndex - 1);
-                        midiPlayer.play({ url: songs[prevIndex].url });
-                        setCurrentSongIndex(prevIndex);
-                    }}
-                >
-                    previous
-                </div>
-                <div
-                    onClick={() => {
-                        const nextIndex = Math.min(
-                            songs.length - 1,
-                            currentSongIndex + 1
-                        );
-                        midiPlayer.play({ url: songs[nextIndex].url });
-                        setCurrentSongIndex(nextIndex);
-                    }}
-                >
-                    next
-                </div>
-            </Control>
-        </Player>
+                    ▶️
+                </Button>
+            );
+        }
+        case MIDI_PLAY: {
+            return <Button onClick={() => player.pause()}>⏸️</Button>;
+        }
+        case MIDI_PAUSE: {
+            return <Button onClick={() => player.resume()}>▶️</Button>;
+        }
+    }
+};
+
+let midiPlayer = null;
+
+const Example = () => {
+    const [currentSongIndex, setCurrentSongIndex] = useState(0);
+    const [currentSongState, setCurrentSongState] = useState(null);
+    const [currentSongTime, setCurrentSongTime] = useState(0);
+
+    useEffect(() => {
+        if (!midiPlayer) {
+            const eventLogger = payload => {
+                console.log(payload);
+                setCurrentSongState(payload.message || payload.event);
+                setCurrentSongTime(payload.time || 0);
+            };
+            midiPlayer = new MidiPlayer({ eventLogger, patchUrl: '/patches/' });
+            setCurrentSongState('MIDI player initialized.');
+        }
+    });
+
+    return (
+        <View>
+            <Player>
+                <Playlist>
+                    {SONGS.map(({ url, name }, index) => (
+                        <Song
+                            key={url}
+                            first={index === 0}
+                            selected={currentSongIndex === index}
+                            onClick={() => {
+                                midiPlayer.play({ url, name });
+                                setCurrentSongIndex(index);
+                            }}
+                        >
+                            {name}
+                        </Song>
+                    ))}
+                </Playlist>
+                <Control>
+                    {getPlayPauseButton(
+                        currentSongState,
+                        currentSongIndex,
+                        midiPlayer
+                    )}
+                    <Button
+                        title="Stop track"
+                        onClick={() => midiPlayer.stop()}
+                    >
+                        ⏹️
+                    </Button>
+                    <Button
+                        title="Previous track"
+                        onClick={() => {
+                            let prevIndex = currentSongIndex - 1;
+                            if (prevIndex < 0) {
+                                prevIndex = SONGS.length - 1;
+                            }
+                            const { url, name } = SONGS[prevIndex];
+                            midiPlayer.play({ url, name });
+                            setCurrentSongIndex(prevIndex);
+                        }}
+                    >
+                        ⏮
+                    </Button>
+                    <Button
+                        title="Next track"
+                        onClick={() => {
+                            let nextIndex = currentSongIndex + 1;
+                            if (nextIndex > SONGS.length - 1) {
+                                nextIndex = 0;
+                            }
+                            const { url, name } = SONGS[nextIndex];
+                            midiPlayer.play({ url, name });
+                            setCurrentSongIndex(nextIndex);
+                        }}
+                    >
+                        ⏭
+                    </Button>
+                </Control>
+                <PlaybackState>{currentSongState}</PlaybackState>
+                <PlaybackTime>
+                    {Math.floor(currentSongTime)} seconds
+                </PlaybackTime>
+            </Player>
+        </View>
     );
 };
 
-const Player = styled.div``;
+const View = styled.div`
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: black;
+`;
 
-const CurrentSong = styled.div``;
+const Player = styled.div`
+    background: rgb(125, 125, 125);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    min-height: 75px;
+    min-width: 400px;
+`;
+
+const Playlist = styled.div`
+    margin-bottom: 10px;
+`;
+
+const Song = styled.div(
+    props => `
+    border-bottom: 1px solid white;
+    border-left: 1px solid white;
+    border-right: 1px solid white;
+    padding: 5px;
+    cursor: pointer;
+    ${props.first && 'border-top: 1px solid white'};
+    ${props.selected && 'font-weight: bold'};
+`
+);
 
 const Control = styled.div`
     display: flex;
+    justify-content: center;
+`;
+
+const Button = styled.div`
+    cursor: pointer;
+    margin: 5px;
+`;
+
+const PlaybackState = styled.div`
+    text-align: center;
+`;
+
+const PlaybackTime = styled.div`
+    text-align: center;
 `;
 
 ReactDOM.render(<Example />, document.getElementById('app'));
