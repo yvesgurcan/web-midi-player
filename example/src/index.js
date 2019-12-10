@@ -4,28 +4,30 @@ import styled from 'styled-components';
 import MidiPlayer from 'web-midi-player';
 
 const GITHUB_REPO = 'https://github.com/yvesgurcan/web-midi-player';
+const DOCS = 'https://midi.yvesgurcan.com/docs';
+const README = 'https://midi.yvesgurcan.com/';
 
 const MIDI_PLAY = 'MIDI_PLAY';
 const MIDI_PAUSE = 'MIDI_PAUSE';
 const MIDI_END = 'MIDI_END';
 
 const SONGS = [
-    { url: '/midi/d_runnin.mid', name: 'Running from evil - Bobby Prince' },
+    { url: 'midi/d_runnin.mid', name: 'Running from evil - Bobby Prince' },
     {
-        url: '/midi/fatcmdr.mid',
+        url: 'midi/fatcmdr.mid',
         name: 'Going after the fat commander - Bobby Prince'
     },
     {
-        url: '/midi/veggies.mid',
+        url: 'midi/veggies.mid',
         name: "You've got to eat your vegetables - Bobby Prince"
     },
     {
-        url: '/midi/this-file-does-not-exist.mid',
+        url: 'midi/this-file-does-not-exist.mid',
         name: 'Broken URL to MIDI file.'
     }
     // this breaks the player
     /*{
-        url: '/midi/this-file-is-not-a-midi.wav',
+        url: 'midi/this-file-is-not-a-midi.wav',
         name: 'Not a MIDI file.'
     }*/
 ];
@@ -90,14 +92,23 @@ const Example = () => {
         <View>
             <Player>
                 <Heading>web-midi-player</Heading>
-                <GitHubLink
-                    href={GITHUB_REPO}
-                    target="_blank"
-                    noopener
-                    noreferrer
-                >
-                    {GITHUB_REPO}
-                </GitHubLink>
+                <Help>
+                    <Link
+                        href={GITHUB_REPO}
+                        target="_blank"
+                        noopener
+                        noreferrer
+                    >
+                        Repository
+                    </Link>
+
+                    <Link href={DOCS} target="_blank" noopener noreferrer>
+                        Documentation
+                    </Link>
+                    <Link href={README} target="_blank" noopener noreferrer>
+                        Readme
+                    </Link>
+                </Help>
                 <Playlist>
                     {SONGS.map(({ url, name }, index) => (
                         <Song
@@ -185,7 +196,12 @@ const Heading = styled.h1`
     margin: 0;
 `;
 
-const GitHubLink = styled.a`
+const Help = styled.div`
+    display: flex;
+    justify-content: space-around;
+`;
+
+const Link = styled.a`
     display: block;
     color: white;
     margin: 10px;
