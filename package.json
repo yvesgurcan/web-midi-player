@@ -3,9 +3,13 @@
     "name-display": "Web Midi Player",
     "keywords": [
         "midi",
+        "midi player",
         "media player",
         "web",
-        "libtimidity"
+        "libtimidity",
+        "open-eugene",
+        "open source",
+        "audio"
     ],
     "license": "MIT",
     "version": "1.0.12",
