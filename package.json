@@ -5,6 +5,7 @@
         "midi",
         "media player",
         "web",
+        "web-assembly",
         "libtimidity"
     ],
     "license": "MIT",
