@@ -1,6 +1,6 @@
 [![Open Source Helpers](https://www.codetriage.com/yvesgurcan/web-midi-player/badges/users.svg)](https://www.codetriage.com/yvesgurcan/web-midi-player)
 
-This event-driven library enables MIDI playback in the browser.
+Event-driven JavaScript library to enable MIDI playback in the browser.
 
 Check out the [example](https://midi.yvesgurcan.com/example/).
 
