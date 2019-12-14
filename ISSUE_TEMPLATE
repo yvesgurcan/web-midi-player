@@ -1,9 +1,5 @@
 ---
 name: Issue template
-title: "[DATE]: [FEATURE NAME]"
-labels: 
-assignees: yvesgurcan
-projects: library-improvements
 ---
 
 ## Environment
