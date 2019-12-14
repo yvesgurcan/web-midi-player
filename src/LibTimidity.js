@@ -309,13 +309,15 @@ class LibTiMidity {
          * @param {string} status The message to display.
          */
 
-        Module.exit = function exit(status) {
+        function exit(status) {
             ABORT = true;
             STACKTOP = initialStackTop;
             // exit the runtime
             exitRuntime();
             throw new ExitStatus(status);
         }
+        
+        Module.exit = exit;
 
         /**
          * Throws an error that aborts the execution of the script.
@@ -325,10 +327,12 @@ class LibTiMidity {
          * @param {string} text The message to display.
          */
 
-        Module.abort = function abort(text) {
+        function abort(text) {
             ABORT = true;
             throw new Error(text).stack;
         }
+        
+        Module.abort = abort;
 
         /**
          * Aborts the execution of the script if assertion fails.
@@ -344,6 +348,8 @@ class LibTiMidity {
                 abort(text);
             }
         }
+        
+        Module.assert = assert;
 
         /**
          * A wrapper to call functions.

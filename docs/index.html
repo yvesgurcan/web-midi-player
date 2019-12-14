@@ -77,51 +77,47 @@
               
                 
                 <li><a
-                  href='#constructor'
-                  class="">
-                  constructor
-                  
+                  href='#libtimidity'
+                  class=" toggle-sibling">
+                  LibTiMidity
+                  <span class='icon'>▸</span>
                 </a>
                 
-                </li>
-              
-                
-                <li><a
-                  href='#exit'
-                  class="">
-                  exit
+                <div class='toggle-target display-none'>
                   
-                </a>
-                
-                </li>
-              
-                
-                <li><a
-                  href='#abort'
-                  class="">
-                  abort
                   
-                </a>
-                
-                </li>
-              
-                
-                <li><a
-                  href='#call'
-                  class="">
-                  call
+                    <ul class='list-reset py1-ul pl1'>
+                      <li class='h5'><span>Instance members</span></li>
+                      
+                      <li><a
+                        href='#libtimidityexit'
+                        class='regular pre-open'>
+                        #exit
+                      </a></li>
+                      
+                      <li><a
+                        href='#libtimidityabort'
+                        class='regular pre-open'>
+                        #abort
+                      </a></li>
+                      
+                      <li><a
+                        href='#libtimidityassert'
+                        class='regular pre-open'>
+                        #assert
+                      </a></li>
+                      
+                      <li><a
+                        href='#libtimiditycall'
+                        class='regular pre-open'>
+                        #call
+                      </a></li>
+                      
+                    </ul>
                   
-                </a>
-                
-                </li>
-              
-                
-                <li><a
-                  href='#assert'
-                  class="">
-                  assert
                   
-                </a>
+                  
+                </div>
                 
                 </li>
               
@@ -720,17 +716,16 @@ midiPlayer.emitEvent({ event, message });</pre>
   
   <div class='clearfix'>
     
-    <h3 class='fl m0' id='constructor'>
-      constructor
+    <h3 class='fl m0' id='libtimidity'>
+      LibTiMidity
     </h3>
     
     
   </div>
   
 
-  <p>Library to allow the handling of MIDI files.</p>
-
-    <div class='pre p1 fill-light mt0'>constructor(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></div>
+  
+    <div class='pre p1 fill-light mt0'>new LibTiMidity()</div>
   
   
 
@@ -746,14 +741,6 @@ midiPlayer.emitEvent({ event, message });</pre>
   
 
   
-    
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></code>:
-        The module of an instance of LibTiMidity.
-
-      
-    
-  
 
   
 
@@ -762,26 +749,19 @@ midiPlayer.emitEvent({ event, message });</pre>
   
 
   
-
+    <div class='py1 quiet mt1 prose-big'>Instance Members</div>
+    <div class="clearfix">
   
+    <div class='border-bottom' id='libtimidityexit'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>exit(status)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
-</section>
-
-          
-        
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='exit'>
-      exit
-    </h3>
-    
-    
-  </div>
   
 
   <p>Exits the script.</p>
@@ -830,20 +810,19 @@ midiPlayer.emitEvent({ event, message });</pre>
   
 </section>
 
-          
-        
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
-
+      </div>
+    </div>
   
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='abort'>
-      abort
-    </h3>
-    
-    
-  </div>
+    <div class='border-bottom' id='libtimidityabort'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>abort(text)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
   
 
   <p>Throws an error that aborts the execution of the script.</p>
@@ -892,20 +871,89 @@ midiPlayer.emitEvent({ event, message });</pre>
   
 </section>
 
-          
-        
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='libtimidityassert'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>assert(condition, text)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
 
   
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='call'>
-      call
-    </h3>
-    
-    
-  </div>
+
+  <p>Aborts the execution of the script if assertion fails.</p>
+
+    <div class='pre p1 fill-light mt0'>assert(condition: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>, text: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>condition</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>)</code>
+	    The assertion to test.
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>text</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    The message to display if the assertion fails.
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='libtimiditycall'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>call(ident, returnType, argTypes, args)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
   
 
   <p>A wrapper to call functions.</p>
@@ -989,69 +1037,10 @@ midiPlayer.emitEvent({ event, message });</pre>
   
 </section>
 
-          
-        
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='assert'>
-      assert
-    </h3>
-    
-    
-  </div>
-  
-
-  <p>Aborts the execution of the script if assertion fails.</p>
-
-    <div class='pre p1 fill-light mt0'>assert(condition: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>, text: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>condition</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>)</code>
-	    The assertion to test.
-
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>text</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    The message to display if the assertion fails.
-
-          </div>
-          
-        </div>
-      
+      </div>
     </div>
   
-
-  
-
-  
-
-  
-
-  
-
-  
+</div>
 
   
 
