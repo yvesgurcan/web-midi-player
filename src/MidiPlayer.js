@@ -41,18 +41,13 @@ export default class MidiPlayer {
         logging = false,
         patchUrl = MIDI_DEFAULT_PATCH_URL
     } = {}) {
-        this.logging = logging;
-        this.eventLogger = eventLogger;
-        this.patchUrl = patchUrl;
-
         this.eventHandler = new EventHandler({ eventLogger, logging });
 
         try {
-            window.AudioContext =
-                window.AudioContext || window.webkitAudioContext;
+            this.logging = logging;
+            this.eventLogger = eventLogger;
+            this.patchUrl = patchUrl;
             this.context = new AudioContext();
-            this.audioMethod = 'WebAudioAPI';
-            this.audioStatus = `audioMethod: WebAudioAPI, sampleRate (Hz): ${this.context.sampleRate}, audioBufferSize (Byte): ${MIDI_AUDIO_BUFFER_SIZE}`;
             this.eventHandler.emitInit();
         } catch (error) {
             this.emitEvent({
@@ -437,7 +432,7 @@ export default class MidiPlayer {
     emitEvent = payload => {
         if (this.eventLogger) {
             this.eventLogger(payload);
-        } else if (this.logging) {
+        } else if (this.logging && process.env.NODE_ENV !== 'test') {
             if (payload.event === MIDI_ERROR) {
                 console.error(payload);
             } else {
