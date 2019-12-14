@@ -2702,7 +2702,7 @@ assert(tempDoublePtr % 8 == 0);
         var mode = FS.getMode(canRead, canWrite);
         return FS.create(path, mode);
       },createDataFile:function (parent, name, data, canRead, canWrite, canOwn) {
-          console.log('writing', { parent, name, data, canRead, canWrite, canOwn })
+          // console.log('writing', { parent, name, data, canRead, canWrite, canOwn })
         var path = name ? PATH.join(typeof parent === 'string' ? parent : FS.getPath(parent), name) : parent;
         var mode = FS.getMode(canRead, canWrite);
         var node = FS.create(path, mode);
@@ -2894,7 +2894,7 @@ assert(tempDoublePtr % 8 == 0);
           return onerror(e);
         }
         openRequest.onupgradeneeded = function() {
-          console.log('creating db');
+          // console.log('creating db');
           var db = openRequest.result;
           db.createObjectStore(FS.DB_STORE_NAME);
         };
@@ -4368,12 +4368,12 @@ assert(tempDoublePtr % 8 == 0);
           Browser.hasBlobConstructor = true;
         } catch(e) {
           Browser.hasBlobConstructor = false;
-          console.log("warning: no blob constructor, cannot create blobs with mimetypes");
+          console.warn("No blob constructor, cannot create blobs with mimetypes");
         }
-        Browser.BlobBuilder = typeof MozBlobBuilder != "undefined" ? MozBlobBuilder : (typeof WebKitBlobBuilder != "undefined" ? WebKitBlobBuilder : (!Browser.hasBlobConstructor ? console.log("warning: no BlobBuilder") : null));
+        Browser.BlobBuilder = typeof MozBlobBuilder != "undefined" ? MozBlobBuilder : (typeof WebKitBlobBuilder != "undefined" ? WebKitBlobBuilder : (!Browser.hasBlobConstructor ? console.warn("No BlobBuilder") : null));
         Browser.URLObject = typeof window != "undefined" ? (window.URL ? window.URL : window.webkitURL) : undefined;
         if (!Module.noImageDecoding && typeof Browser.URLObject === 'undefined') {
-          console.log("warning: Browser does not support creating object URLs. Built-in browser image decoding will not be available.");
+          console.warn("Browser does not support creating object URLs. Built-in browser image decoding will not be available.");
           Module.noImageDecoding = true;
         }
         // Support for plugins that can process preloaded files. You can add more of these to
@@ -4419,7 +4419,7 @@ assert(tempDoublePtr % 8 == 0);
             if (onload) onload(byteArray);
           };
           img.onerror = function(event) {
-            console.log('Image ' + url + ' could not be decoded');
+            console.error('Image ' + url + ' could not be decoded');
             if (onerror) onerror();
           };
           img.src = url;
@@ -4454,7 +4454,7 @@ assert(tempDoublePtr % 8 == 0);
             audio.addEventListener('canplaythrough', function() { finish(audio) }, false); // use addEventListener due to chromium bug 124926
             audio.onerror = function(event) {
               if (done) return;
-              console.log('warning: browser could not fully decode audio ' + name + ', trying slower base64 approach');
+              console.warn('Browser could not fully decode audio ' + name + ', trying slower base64 approach');
               function encode64(data) {
                 var BASE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
                 var PAD = '=';
