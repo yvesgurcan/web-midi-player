@@ -6,10 +6,12 @@
         "midi player",
         "media player",
         "web",
+        "web-assembly",
         "libtimidity",
         "open-eugene",
         "open source",
-        "audio"
+        "audio",
+        "libtimidity"
     ],
     "license": "MIT",
     "version": "1.0.13",
