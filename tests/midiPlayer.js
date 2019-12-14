@@ -24,7 +24,7 @@ describe('MidiPlayer', function() {
             expect(midiPlayer.logging).toBe(false);
         });
 
-        test('Player should instantiate with logging turned ON', function() {
+        test('Player should instantiate with console logging turned ON', function() {
             midiPlayer = new MidiPlayer({ logging: true });
             expect(midiPlayer).toBeInstanceOf(MidiPlayer);
             expect(midiPlayer.eventLogger).toBeUndefined();
