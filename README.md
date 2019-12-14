@@ -2,7 +2,9 @@
 
 Event-driven JavaScript library to enable MIDI playback in the browser.
 
-Check out the [example](https://midi.yvesgurcan.com/example/).
+-   Check out the [example](https://midi.yvesgurcan.com/example/).
+-   See the [NPM package](https://npmjs.com/package/web-midi-player).
+-   Read the [API documentation](https://midi.yvesgurcan.com/docs/).
 
 ## Install
 
@@ -21,8 +23,6 @@ Alternatively, this NPM package is hosted for free by [jsDeliver](https://www.js
     const midiPlayer = new MidiPlayer();
 
     midiPlayer.play('song.mid');
-
-[API documentation](https://midi.yvesgurcan.com/docs/)
 
 ## Contribute
 
