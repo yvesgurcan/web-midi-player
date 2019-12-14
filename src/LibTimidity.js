@@ -1,9 +1,9 @@
 // https://github.com/kripken/emscripten/wiki/
 
+/** @class */
 class LibTiMidity {
     /**
      * Library to allow the handling of MIDI files.
-     * @class LibTiMidity
      * @param {undefined}
      * @return {object} The module of an instance of LibTiMidity.
      */
@@ -303,11 +303,13 @@ class LibTiMidity {
 
         /**
          * Exits the script.
+         * @function exit
          * @memberof LibTiMidity
+         * @instance
          * @param {string} status The message to display.
          */
 
-        function exit(status) {
+        Module.exit = function exit(status) {
             ABORT = true;
             STACKTOP = initialStackTop;
             // exit the runtime
@@ -315,22 +317,24 @@ class LibTiMidity {
             throw new ExitStatus(status);
         }
 
-        Module.exit = exit;
-
         /**
          * Throws an error that aborts the execution of the script.
+         * @function abort
          * @memberof LibTiMidity
+         * @instance
          * @param {string} text The message to display.
          */
 
-        function abort(text) {
+        Module.abort = function abort(text) {
             ABORT = true;
             throw new Error(text).stack;
         }
 
         /**
          * Aborts the execution of the script if assertion fails.
+         * @function assert
          * @memberof LibTiMidity
+         * @instance
          * @param {boolean} condition The assertion to test.
          * @param {string} text The message to display if the assertion fails.
          */
@@ -341,11 +345,11 @@ class LibTiMidity {
             }
         }
 
-        Module.abort = abort;
-
         /**
          * A wrapper to call functions.
+         * @function call
          * @memberof LibTiMidity
+         * @instance
          * @param {string} ident The name of the function to call.
          * @param {string} returnType The return type of the function, one of the JS types 'number', 'string' or 'array' (use 'number' for any C pointer, and 'array' for JavaScript arrays and typed arrays; note that arrays are 8-bit).
          * @param {array} argTypes An array of the types of arguments for the function (if there are no arguments, this can be ommitted). Types are as in returnType, except that 'array' is not possible (there is no way for us to know the length of the array)

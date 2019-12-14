@@ -17,6 +17,7 @@ import {
 } from './events';
 
 import LibTiMidity from './LibTiMidity';
+import EventHandler from './EventHandler';
 
 export default class MidiPlayer {
     /**
@@ -44,12 +45,15 @@ export default class MidiPlayer {
         this.eventLogger = eventLogger;
         this.patchUrl = patchUrl;
 
+        this.eventHandler = new EventHandler({ eventLogger, logging });
+
         try {
             window.AudioContext =
                 window.AudioContext || window.webkitAudioContext;
             this.context = new AudioContext();
             this.audioMethod = 'WebAudioAPI';
             this.audioStatus = `audioMethod: WebAudioAPI, sampleRate (Hz): ${this.context.sampleRate}, audioBufferSize (Byte): ${MIDI_AUDIO_BUFFER_SIZE}`;
+            this.eventHandler.emitInit();
         } catch (error) {
             this.emitEvent({
                 event: MIDI_ERROR,
@@ -199,7 +203,6 @@ export default class MidiPlayer {
 
     loadSong = arrayBuffer => {
         this.midiFileArray = new Int8Array(arrayBuffer);
-        console.log(LibTiMidity);
         this.midiFileBuffer = LibTiMidity._malloc(this.midiFileArray.length);
         LibTiMidity.writeArrayToMemory(this.midiFileArray, this.midiFileBuffer);
 
@@ -258,8 +261,6 @@ export default class MidiPlayer {
                     ['number', 'number'],
                     [this.song, i]
                 );
-
-                console.log(this.song, i, missingPatch);
 
                 this.loadMissingPatch(this.patchUrl, missingPatch);
             }

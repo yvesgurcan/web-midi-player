@@ -1,3 +1,5 @@
+export const MIDI_INIT = 'MIDI_INIT';
+
 export const MIDI_ERROR = 'MIDI_ERROR';
 
 export const MIDI_STATUS = 'MIDI_STATUS';
