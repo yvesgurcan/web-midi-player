@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 import MidiPlayer from 'web-midi-player';
 
+const NPM_PACKAGE = 'https://npmjs.com/package/web-midi-player';
 const GITHUB_REPO = 'https://github.com/yvesgurcan/web-midi-player';
 const DOCS = 'https://midi.yvesgurcan.com/docs';
 const README = 'https://midi.yvesgurcan.com/';
@@ -100,6 +101,14 @@ const Example = () => {
             <Player>
                 <Heading>web-midi-player</Heading>
                 <Help>
+                    <Link
+                        href={NPM_PACKAGE}
+                        target="_blank"
+                        noopener
+                        noreferrer
+                    >
+                        Package
+                    </Link>
                     <Link
                         href={GITHUB_REPO}
                         target="_blank"
