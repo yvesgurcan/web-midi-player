@@ -16,7 +16,7 @@ import {
     MIDI_END
 } from './events';
 
-import Module from './LibTimidity';
+import LibTiMidity from './LibTiMidity';
 
 export default class MidiPlayer {
     /**
@@ -50,7 +50,7 @@ export default class MidiPlayer {
             this.context = new AudioContext();
             this.audioMethod = 'WebAudioAPI';
             this.audioStatus = `audioMethod: WebAudioAPI, sampleRate (Hz): ${this.context.sampleRate}, audioBufferSize (Byte): ${MIDI_AUDIO_BUFFER_SIZE}`;
-        } catch (e) {
+        } catch (error) {
             this.emitEvent({
                 event: MIDI_ERROR,
                 message: 'Could not initialize AudioContext.'
@@ -66,8 +66,9 @@ export default class MidiPlayer {
             time
         });
 
-        // collect new wave data from libtimidity into waveBuffer
-        const readWaveBytes = Module.ccall(
+        // collect new wave data from LibTiMidity into waveBuffer
+
+        const readWaveBytes = LibTiMidity.call(
             'mid_song_read_wave',
             'number',
             ['number', 'number', 'number', 'number'],
@@ -87,7 +88,8 @@ export default class MidiPlayer {
             if (i < readWaveBytes) {
                 // convert PCM data from C sint16 to JavaScript number (range -1.0 .. +1.0)
                 event.outputBuffer.getChannelData(0)[i] =
-                    Module.getValue(this.waveBuffer + 2 * i, 'i16') / MAX_I16;
+                    LibTiMidity.getValue(this.waveBuffer + 2 * i, 'i16') /
+                    MAX_I16;
             } else {
                 // fill end of buffer with zeroes, may happen at the end of a piece
                 event.outputBuffer.getChannelData(0)[i] = 0;
@@ -103,7 +105,7 @@ export default class MidiPlayer {
             0,
             1
         );
-        this.waveBuffer = Module._malloc(MIDI_AUDIO_BUFFER_SIZE * 2);
+        this.waveBuffer = LibTiMidity._malloc(MIDI_AUDIO_BUFFER_SIZE * 2);
 
         var gainNode = this.context.createGain();
         gainNode.gain.value = 1;
@@ -140,7 +142,7 @@ export default class MidiPlayer {
             }
 
             this.missingPatchCount = this.missingPatchCount - 1;
-            Module.FS.createDataFile(
+            LibTiMidity.FS.createDataFile(
                 'pat/',
                 filename,
                 new Int8Array(request.response),
@@ -149,14 +151,14 @@ export default class MidiPlayer {
             );
 
             if (this.missingPatchCount === 0) {
-                this.stream = Module.ccall(
+                this.stream = LibTiMidity.call(
                     'mid_istream_open_mem',
                     'number',
                     ['number', 'number', 'number'],
                     [this.midiFileBuffer, this.midiFileArray.length, false]
                 );
 
-                const options = Module.ccall(
+                const options = LibTiMidity.call(
                     'mid_create_options',
                     'number',
                     ['number', 'number', 'number', 'number'],
@@ -168,21 +170,26 @@ export default class MidiPlayer {
                     ]
                 );
 
-                this.song = Module.ccall(
+                this.song = LibTiMidity.call(
                     'mid_song_load',
                     'number',
                     ['number', 'number'],
                     [this.stream, options]
                 );
 
-                Module.ccall(
+                LibTiMidity.call(
                     'mid_istream_close',
                     'number',
                     ['number'],
                     [this.stream]
                 );
 
-                Module.ccall('mid_song_start', 'void', ['number'], [this.song]);
+                LibTiMidity.call(
+                    'mid_song_start',
+                    'void',
+                    ['number'],
+                    [this.song]
+                );
 
                 this.initWebAudioPlayback();
             }
@@ -192,19 +199,20 @@ export default class MidiPlayer {
 
     loadSong = arrayBuffer => {
         this.midiFileArray = new Int8Array(arrayBuffer);
-        this.midiFileBuffer = Module._malloc(this.midiFileArray.length);
-        Module.writeArrayToMemory(this.midiFileArray, this.midiFileBuffer);
+        console.log(LibTiMidity);
+        this.midiFileBuffer = LibTiMidity._malloc(this.midiFileArray.length);
+        LibTiMidity.writeArrayToMemory(this.midiFileArray, this.midiFileBuffer);
 
-        Module.ccall('mid_init', 'number', [], []);
+        LibTiMidity.call('mid_init', 'number', [], []);
 
-        this.stream = Module.ccall(
+        this.stream = LibTiMidity.call(
             'mid_istream_open_mem',
             'number',
             ['number', 'number', 'number'],
             [this.midiFileBuffer, this.midiFileArray.length, false]
         );
 
-        const options = Module.ccall(
+        const options = LibTiMidity.call(
             'mid_create_options',
             'number',
             ['number', 'number', 'number', 'number'],
@@ -216,15 +224,21 @@ export default class MidiPlayer {
             ]
         );
 
-        this.song = Module.ccall(
+        this.song = LibTiMidity.call(
             'mid_song_load',
             'number',
             ['number', 'number'],
             [this.stream, options]
         );
-        Module.ccall('mid_istream_close', 'number', ['number'], [this.stream]);
 
-        this.missingPatchCount = Module.ccall(
+        LibTiMidity.call(
+            'mid_istream_close',
+            'number',
+            ['number'],
+            [this.stream]
+        );
+
+        this.missingPatchCount = LibTiMidity.call(
             'mid_song_get_num_missing_instruments',
             'number',
             ['number'],
@@ -238,17 +252,19 @@ export default class MidiPlayer {
             });
 
             for (let i = 0; i < this.missingPatchCount; i++) {
-                const missingPatch = Module.ccall(
+                const missingPatch = LibTiMidity.call(
                     'mid_song_get_missing_instrument',
                     'string',
                     ['number', 'number'],
                     [this.song, i]
                 );
 
+                console.log(this.song, i, missingPatch);
+
                 this.loadMissingPatch(this.patchUrl, missingPatch);
             }
         } else {
-            Module.ccall('mid_song_start', 'void', ['number'], [this.song]);
+            LibTiMidity.call('mid_song_start', 'void', ['number'], [this.song]);
 
             this.initWebAudioPlayback();
         }
@@ -388,12 +404,12 @@ export default class MidiPlayer {
             this.source = 0;
 
             // free libtimitdiy ressources
-            Module._free(this.waveBuffer);
-            Module._free(this.midiFileBuffer);
+            LibTiMidity._free(this.waveBuffer);
+            LibTiMidity._free(this.midiFileBuffer);
 
-            Module.ccall('mid_song_free', 'void', ['number'], [this.song]);
+            LibTiMidity.call('mid_song_free', 'void', ['number'], [this.song]);
 
-            Module.ccall('mid_exit', 'void', [], []);
+            LibTiMidity.call('mid_exit', 'void', [], []);
 
             this.song = 0;
         }
@@ -421,7 +437,11 @@ export default class MidiPlayer {
         if (this.eventLogger) {
             this.eventLogger(payload);
         } else if (this.logging) {
-            console.log(payload);
+            if (payload.event === MIDI_ERROR) {
+                console.error(payload);
+            } else {
+                console.log(payload);
+            }
         }
     };
 }

@@ -3,13 +3,18 @@
     "name-display": "Web Midi Player",
     "keywords": [
         "midi",
+        "midi player",
         "media player",
         "web",
         "web-assembly",
+        "libtimidity",
+        "open-eugene",
+        "open source",
+        "audio",
         "libtimidity"
     ],
     "license": "MIT",
-    "version": "1.0.12",
+    "version": "1.0.13",
     "repository": {
         "type": "git",
         "url": "https://github.com/yvesgurcan/web-midi-player"

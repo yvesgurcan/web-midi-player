@@ -10,6 +10,7 @@ const README = 'https://midi.yvesgurcan.com/';
 const MIDI_PLAY = 'MIDI_PLAY';
 const MIDI_PAUSE = 'MIDI_PAUSE';
 const MIDI_END = 'MIDI_END';
+const MIDI_ERROR = 'MIDI_ERROR';
 
 const PATCH_URL = 'patches/';
 
@@ -70,7 +71,11 @@ const Example = () => {
     useEffect(() => {
         if (!midiPlayer) {
             const eventLogger = ({ message, event, time }) => {
-                console.log(event, message || '', time);
+                console[event === MIDI_ERROR ? 'error' : 'log'](
+                    event,
+                    message || '',
+                    time
+                );
                 setCurrentSongState(event);
                 setCurrentSongTime(time || 0);
 

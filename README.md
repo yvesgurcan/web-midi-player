@@ -61,3 +61,7 @@ Create new build.
 Update documentation.
 
     npm run docs
+
+## Misc
+
+This libraries relies on code generated thanks to [Emscripten](https://github.com/emscripten-core/emscripten).
