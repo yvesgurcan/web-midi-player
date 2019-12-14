@@ -29,8 +29,8 @@
         "start": "webpack-dev-server --mode production --progress",
         "build": "webpack --mode production --progress",
         "lint": "prettier --write **/*.js",
-        "docs": "documentation build src/** -f html -o docs --config documentation.yml",
-        "docs:watch": "documentation serve --watch src/** --config documentation.yml"
+        "docs": "documentation build src/MidiPlayer.js -f html -o docs --config documentation.yml",
+        "docs:watch": "documentation serve --watch src/MidiPlayer.js --config documentation.yml"
     },
     "devDependencies": {
         "@babel/core": "^7.3.4",
