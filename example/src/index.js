@@ -92,7 +92,6 @@ const Example = () => {
             };
 
             midiPlayer = new MidiPlayer({ eventLogger, patchUrl: PATCH_URL });
-            setCurrentSongState('MIDI player initialized.');
         }
     });
 
