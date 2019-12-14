@@ -10,11 +10,10 @@
         "libtimidity",
         "open-eugene",
         "open source",
-        "audio",
-        "libtimidity"
+        "audio"
     ],
     "license": "MIT",
-    "version": "1.0.13",
+    "version": "1.0.14",
     "repository": {
         "type": "git",
         "url": "https://github.com/yvesgurcan/web-midi-player"
