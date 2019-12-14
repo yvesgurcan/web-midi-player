@@ -1,3 +1,4 @@
 toc:
     - MidiPlayer
-    - Event
+    - EventHandler
+    - LibTiMidity
