@@ -441,7 +441,9 @@ function getValue(ptr, type, noSafe) {
     }
   return null;
 }
+
 Module['getValue'] = getValue;
+
 var ALLOC_NORMAL = 0; // Tries to use _malloc()
 var ALLOC_STACK = 1; // Lives for the duration of the current function call
 var ALLOC_STATIC = 2; // Cannot be freed
@@ -573,9 +575,11 @@ function UTF16ToString(ptr) {
     str += String.fromCharCode(codeUnit);
   }
 }
+
 Module['UTF16ToString'] = UTF16ToString;
 // Copies the given Javascript String object 'str' to the emscripten HEAP at address 'outPtr', 
 // null-terminated and encoded in UTF16LE form. The copy will require at most (str.length*2+1)*2 bytes of space in the HEAP.
+
 function stringToUTF16(str, outPtr) {
   for(var i = 0; i < str.length; ++i) {
     // charCodeAt returns a UTF-16 encoded code unit, so it can be directly written to the HEAP.
@@ -585,6 +589,7 @@ function stringToUTF16(str, outPtr) {
   // Null-terminate the pointer to the HEAP.
   HEAP16[(((outPtr)+(str.length*2))>>1)]=0
 }
+
 Module['stringToUTF16'] = stringToUTF16;
 // Given a pointer 'ptr' to a null-terminated UTF32LE-encoded string in the emscripten HEAP, returns
 // a copy of that string as a Javascript String object.
@@ -606,9 +611,11 @@ function UTF32ToString(ptr) {
   }
 }
 Module['UTF32ToString'] = UTF32ToString;
+
 // Copies the given Javascript String object 'str' to the emscripten HEAP at address 'outPtr', 
 // null-terminated and encoded in UTF32LE form. The copy will require at most (str.length+1)*4 bytes of space in the HEAP,
 // but can use less, since str.length does not return the number of characters in the string, but the number of UTF-16 code units in the string.
+
 function stringToUTF32(str, outPtr) {
   var iChar = 0;
   for(var iCodeUnit = 0; iCodeUnit < str.length; ++iCodeUnit) {
@@ -624,12 +631,16 @@ function stringToUTF32(str, outPtr) {
   // Null-terminate the pointer to the HEAP.
   HEAP32[(((outPtr)+(iChar*4))>>2)]=0
 }
+
 Module['stringToUTF32'] = stringToUTF32;
+
 // Memory management
 var PAGE_SIZE = 4096;
+
 function alignMemoryPage(x) {
   return (x+4095)&-4096;
 }
+
 var HEAP;
 var HEAP8, HEAPU8, HEAP16, HEAPU16, HEAP32, HEAPU32, HEAPF32, HEAPF64;
 var STATIC_BASE = 0, STATICTOP = 0, staticSealed = false; // static area
@@ -691,6 +702,7 @@ var __ATMAIN__    = []; // functions called when main() is to be run
 var __ATEXIT__    = []; // functions called during shutdown
 var __ATPOSTRUN__ = []; // functions called after the runtime has exited
 var runtimeInitialized = false;
+
 function preRun() {
   // compatibility - merge in anything from Module['preRun'] at this time
   if (Module['preRun']) {
@@ -701,17 +713,21 @@ function preRun() {
   }
   callRuntimeCallbacks(__ATPRERUN__);
 }
+
 function ensureInitRuntime() {
   if (runtimeInitialized) return;
   runtimeInitialized = true;
   callRuntimeCallbacks(__ATINIT__);
 }
+
 function preMain() {
   callRuntimeCallbacks(__ATMAIN__);
 }
+
 function exitRuntime() {
   callRuntimeCallbacks(__ATEXIT__);
 }
+
 function postRun() {
   // compatibility - merge in anything from Module['postRun'] at this time
   if (Module['postRun']) {
@@ -722,25 +738,31 @@ function postRun() {
   }
   callRuntimeCallbacks(__ATPOSTRUN__);
 }
+
 function addOnPreRun(cb) {
   __ATPRERUN__.unshift(cb);
 }
+
 Module['addOnPreRun'] = Module.addOnPreRun = addOnPreRun;
 function addOnInit(cb) {
   __ATINIT__.unshift(cb);
 }
+
 Module['addOnInit'] = Module.addOnInit = addOnInit;
 function addOnPreMain(cb) {
   __ATMAIN__.unshift(cb);
 }
+
 Module['addOnPreMain'] = Module.addOnPreMain = addOnPreMain;
 function addOnExit(cb) {
   __ATEXIT__.unshift(cb);
 }
+
 Module['addOnExit'] = Module.addOnExit = addOnExit;
 function addOnPostRun(cb) {
   __ATPOSTRUN__.unshift(cb);
 }
+
 Module['addOnPostRun'] = Module.addOnPostRun = addOnPostRun;
 // Tools
 // This processes a JS string into a C-line array of numbers, 0-terminated.
@@ -755,6 +777,7 @@ function intArrayFromString(stringy, dontAddNull, length /* optional */) {
   }
   return ret;
 }
+
 Module['intArrayFromString'] = intArrayFromString;
 function intArrayToString(array) {
   var ret = [];
@@ -768,6 +791,7 @@ function intArrayToString(array) {
   return ret.join('');
 }
 Module['intArrayToString'] = intArrayToString;
+
 // Write a Javascript array to somewhere in the heap
 function writeStringToMemory(string, buffer, dontAddNull) {
   var array = intArrayFromString(string, dontAddNull);
@@ -778,20 +802,26 @@ function writeStringToMemory(string, buffer, dontAddNull) {
     i = i + 1;
   }
 }
+
 Module['writeStringToMemory'] = writeStringToMemory;
+
 function writeArrayToMemory(array, buffer) {
   for (var i = 0; i < array.length; i++) {
     HEAP8[(((buffer)+(i))|0)]=array[i];
   }
 }
+
 Module['writeArrayToMemory'] = writeArrayToMemory;
+
 function writeAsciiToMemory(str, buffer, dontAddNull) {
   for (var i = 0; i < str.length; i++) {
     HEAP8[(((buffer)+(i))|0)]=str.charCodeAt(i)
   }
   if (!dontAddNull) HEAP8[(((buffer)+(str.length))|0)]=0
 }
+
 Module['writeAsciiToMemory'] = writeAsciiToMemory;
+
 function unSign(value, bits, ignore, sig) {
   if (value >= 0) {
     return value;
@@ -799,6 +829,7 @@ function unSign(value, bits, ignore, sig) {
   return bits <= 32 ? 2*Math.abs(1 << (bits-1)) + value // Need some trickery, since if bits == 32, we are right at the limit of the bits JS uses in bitshifts
                     : Math.pow(2, bits)         + value;
 }
+
 function reSign(value, bits, ignore, sig) {
   if (value <= 0) {
     return value;
@@ -2711,7 +2742,7 @@ assert(tempDoublePtr % 8 == 0);
         var path = PATH.join(typeof parent === 'string' ? parent : FS.getPath(parent), name);
         var mode = FS.getMode(canRead, canWrite);
         return FS.create(path, mode);
-      },createDataFile:function (parent, name, data, canRead, canWrite, canOwn) {
+      }, createDataFile: function (parent, name, data, canRead, canWrite, canOwn) {
           // console.log('writing', { parent, name, data, canRead, canWrite, canOwn })
         var path = name ? PATH.join(typeof parent === 'string' ? parent : FS.getPath(parent), name) : parent;
         var mode = FS.getMode(canRead, canWrite);
@@ -2730,7 +2761,7 @@ assert(tempDoublePtr % 8 == 0);
           FS.chmod(path, mode);
         }
         return node;
-      },createDevice:function (parent, name, input, output) {
+      }, createDevice:function (parent, name, input, output) {
         var path = PATH.join(typeof parent === 'string' ? parent : FS.getPath(parent), name);
         var mode = FS.getMode(!!input, !!output);
         if (!FS.createDevice.major) FS.createDevice.major = 64;
