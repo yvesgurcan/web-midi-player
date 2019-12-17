@@ -79,6 +79,7 @@ export default class MidiPlayer {
      * @param {arrayBuffer} [input.arrayBuffer] An array buffer containing MIDI data.
      * @param {string} [input.url] The URL where the MIDI file is located.
      * @param {string} [input.name] A human-friendly name for the song.
+     * @param {string} [input.audioContext] An instance of the Web Audio API AudioContext interface.
      * @return {boolean} Whether playback was successfully initiated or not.
      * @example
      * const name1 = 'My MIDI file from URL';
@@ -89,7 +90,7 @@ export default class MidiPlayer {
      * const arrayBuffer = new ArrayBuffer();
      * midiPlayer.play({ arrayBuffer , name: name2 });
      */
-    play({ arrayBuffer, url, name }) {
+    play({ arrayBuffer, url, name, audioContext } = {}) {
         this.stop();
 
         if (url) {
@@ -99,7 +100,7 @@ export default class MidiPlayer {
                 event: MIDI_LOAD_FILE,
                 message: `Loading '${name}'...`
             });
-            this.loadSong(arrayBuffer);
+            this.loadSong({ arrayBuffer, audioContext });
         } else {
             this.emitEvent({
                 event: MIDI_ERROR,
@@ -111,10 +112,14 @@ export default class MidiPlayer {
         return true;
     }
 
+    formatMidiName(name) {
+        return name ? ` '${name}'` : '';
+    }
+
     async fetchRemoteUrl(url, name) {
         this.emitEvent({
             event: MIDI_LOAD_FILE,
-            message: `Loading '${name}'...`
+            message: `Loading${this.formatMidiName(name)}...`
         });
 
         try {
@@ -122,23 +127,25 @@ export default class MidiPlayer {
             if (response.status !== 200) {
                 this.emitEvent({
                     event: MIDI_ERROR,
-                    message: `Could not retrieve MIDI '${name}' (status code: ${request.status}).`
+                    message: `Could not retrieve MIDI${this.formatMidiName(
+                        name
+                    )} (status code: ${request.status}).`
                 });
 
                 return;
             }
 
-            const buffer = await response.arrayBuffer();
-            this.loadSong(buffer);
+            const arrayBuffer = await response.arrayBuffer();
+            this.loadSong({ arrayBuffer, audioContext });
         } catch (error) {
             this.emitEvent({
                 event: MIDI_ERROR,
-                message: `Could not retrieve MIDI '${name}'.`
+                message: `Could not retrieve MIDI${this.formatMidiName(name)}.`
             });
         }
     }
 
-    loadSong = arrayBuffer => {
+    loadSong = ({ arrayBuffer, audioContext }) => {
         this.midiFileArray = new Int8Array(arrayBuffer);
         this.midiFileBuffer = LibTiMidity._malloc(this.midiFileArray.length);
 
@@ -200,14 +207,18 @@ export default class MidiPlayer {
                     [this.song, i]
                 );
 
-                this.loadMissingPatch(this.patchUrl, missingPatch);
+                this.loadMissingPatch({
+                    path: this.patchUrl,
+                    filename: missingPatch,
+                    audioContext
+                });
             }
         } else {
-            this.initPlayback();
+            this.initPlayback({ audioContext });
         }
     };
 
-    loadMissingPatch(path, filename) {
+    loadMissingPatch({ path, filename, audioContext }) {
         // TODO: use fetch instead
         const request = new XMLHttpRequest();
         request.open('GET', `${path}${filename}`, true);
@@ -273,16 +284,16 @@ export default class MidiPlayer {
                     [this.stream]
                 );
 
-                this.initPlayback();
+                this.initPlayback({ audioContext });
             }
         };
         request.send();
     }
 
-    initPlayback = () => {
+    initPlayback = ({ audioContext }) => {
         LibTiMidity.call('mid_song_start', 'void', ['number'], [this.song]);
 
-        this.context = new AudioContext();
+        this.context = audioContext || new AudioContext();
         this.connectSource();
         this.waveBuffer = LibTiMidity._malloc(MIDI_AUDIO_BUFFER_SIZE * 2);
 
@@ -443,7 +454,7 @@ export default class MidiPlayer {
     emitEvent = payload => {
         if (this.eventLogger) {
             this.eventLogger(payload);
-        } else if (this.logging && process.env.NODE_ENV !== 'test') {
+        } else if (this.logging) {
             if (payload.event === MIDI_ERROR) {
                 console.error(payload);
             } else {
