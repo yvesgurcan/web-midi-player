@@ -2,7 +2,6 @@
 name: Bug report
 about: Open an issue to help us improve the library.
 title: 'Bug: '
-projects: 'Library improvements'
 ---
 
 ## Environment
