@@ -27,6 +27,18 @@ export default class MidiPlayer {
      * @param {boolean} [configuration.logging = false] Turns ON or OFF logging to the console.
      * @param {string} [configuration.patchUrl = /public/midi/pat/] The public path where MIDI instrument patches can be found.
      * @param {object} [configuration.audioContext] An instance of the Web Audio API AudioContext interface.
+     * @property {object} context The AudioContext instance.
+     * @property {function} eventLogger The function that is called to emit events.
+     * @property {boolean} logging Whether console logging is ON or OFF.
+     * @property {arrayBuffer} midiFileArray A typed array that represents the content of the MIDI.
+     * @property {*} midiFileBuffer The buffer with the MIDI data.
+     * @property {number} missingPatchCount The number of MIDI instrument patches that need to be loaded before playing the MIDI.
+     * @property {string} patchUrl The URL used to load MIDI instrument patches.
+     * @property {object} source The source that plays the audio signal.
+     * @property {number} startTime The time when MIDI playback started.
+     * @property {number} stream The MIDI stream.
+     * @property {*} waveBuffer The buffer with the MIDI data converted to WAV.
+     *
      * @return {object} A `MidiPlayer` instance.
      * @example
      * import MidiPlayer from 'web-midi-player';
@@ -46,8 +58,8 @@ export default class MidiPlayer {
         this.eventHandler = new EventHandler({ eventLogger, logging });
 
         try {
-            this.logging = logging;
             this.eventLogger = eventLogger;
+            this.logging = logging;
             this.patchUrl = patchUrl;
             this.context = audioContext || new AudioContext();
             this.eventHandler.emitInit();
