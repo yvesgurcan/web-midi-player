@@ -2,7 +2,6 @@
 name: Feature request
 about: Suggest an idea for this project.
 title: 'Feature: '
-projects: 'Library improvements'
 ---
 
 ## Problem
