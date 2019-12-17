@@ -3,35 +3,23 @@ name: Bug report
 about: Create a report to help us improve the library.
 title: 'Bug: '
 labels: 'Library improvements'
-
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+## Environment
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+- Version of `web-midi-player`: 1.X.X
+- Browser: 
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+## Bug
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+*Describe the issue as specifically as possible.*
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+## Expected behavior
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+*What did you expect to happen?*
 
-**Additional context**
-Add any other context about the problem here.
+## Example
+
+*Please provide the smallest code sample possible to reproduce the bug.*
+*We recommend using CodePen, JSbin, or CodeSandbox to provide a live example of the issue.*
+
