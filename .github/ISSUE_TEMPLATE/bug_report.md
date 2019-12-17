@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Create a report to help us improve the library.
+about: Open an issue to help us improve the library.
 title: 'Bug: '
 labels: 'Library improvements'
 ---
