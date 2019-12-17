@@ -1,5 +1,5 @@
 ---
 name: Other
-projects: 'Library improvements'
+about: Start with a blank document.
 ---
 
