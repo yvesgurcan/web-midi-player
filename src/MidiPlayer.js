@@ -79,7 +79,7 @@ export default class MidiPlayer {
      * @param {arrayBuffer} [input.arrayBuffer] An array buffer containing MIDI data.
      * @param {string} [input.url] The URL where the MIDI file is located.
      * @param {string} [input.name] A human-friendly name for the song.
-     * @param {string} [input.audioContext] An instance of the Web Audio API AudioContext interface.
+     * @param {object} [input.audioContext] An instance of the Web Audio API AudioContext interface.
      * @return {boolean} Whether playback was successfully initiated or not.
      * @example
      * const name1 = 'My MIDI file from URL';
