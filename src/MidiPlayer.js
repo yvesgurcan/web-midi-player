@@ -94,7 +94,7 @@ export default class MidiPlayer {
         this.stop();
 
         if (url) {
-            this.fetchRemoteUrl(url, name);
+            this.fetchRemoteUrl({ url, name, audioContext });
         } else if (arrayBuffer) {
             this.emitEvent({
                 event: MIDI_LOAD_FILE,
@@ -116,7 +116,7 @@ export default class MidiPlayer {
         return name ? ` '${name}'` : '';
     }
 
-    async fetchRemoteUrl(url, name) {
+    async fetchRemoteUrl({ url, name, audioContext }) {
         this.emitEvent({
             event: MIDI_LOAD_FILE,
             message: `Loading${this.formatMidiName(name)}...`
