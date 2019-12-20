@@ -95,7 +95,7 @@ describe('MidiPlayer', function() {
             expect(midiPlayer.patchUrl).toBe(MIDI_DEFAULT_PATCH_URL);
         });
 
-        test('Player should instantiate and send init event (event logger)', function() {
+        test('Player should instantiate and send init event (custom event logger)', function() {
             midiPlayer = new MidiPlayer({ eventLogger, audioContext });
             expect(midiPlayer).toBeInstanceOf(MidiPlayer);
 
@@ -145,7 +145,7 @@ describe('MidiPlayer', function() {
             );
         });
 
-        test('Player should send an error event if no array buffer or URL was provided (event logger)', function() {
+        test('Player should send an error event if no array buffer or URL was provided (custom event logger)', function() {
             midiPlayer = new MidiPlayer({ eventLogger, audioContext });
 
             midiPlayer.play({ audioContext });
@@ -175,7 +175,7 @@ describe('MidiPlayer', function() {
             expect(console.error).not.toHaveBeenCalled();
         });
 
-        test('Player should fetch URL and send play-related events (event logger)', function() {
+        test('Player should fetch URL and send play-related events (custom event logger)', function() {
             midiPlayer = new MidiPlayer({ eventLogger, audioContext });
 
             midiPlayer.play({ url: midiUrl, name: midiName, audioContext });
