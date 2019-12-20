@@ -1,5 +1,8 @@
 // https://github.com/kripken/emscripten/wiki/
 
+const INT_TYPES = { i1: 0, i8: 0, i16: 0, i32: 0, i64: 0 };
+const FLOAT_TYPES = { float: 0, double: 0 };
+
 /** @class */
 class LibTiMidity {
     /**
@@ -8,37 +11,7 @@ class LibTiMidity {
      * @return {object} The module of an instance of LibTiMidity.
      */
     constructor() {
-        var Module = {};
-        this.Module = Module;
-
-        Module.arguments = arguments;
-
-        if (!Module['arguments']) {
-            Module['arguments'] = [];
-        }
-
-        Module.read = function(url) {
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', url, false);
-            xhr.send(null);
-            return xhr.responseText;
-        };
-
-        Module.print = function(message) {
-            console.log(message);
-        };
-
-        Module.printErr = function(error) {
-            console.warn(error);
-        };
-
-        Module.preRun = [];
-        Module.postRun = [];
-
-        const INT_TYPES = { i1: 0, i8: 0, i16: 0, i32: 0, i64: 0 };
-        const FLOAT_TYPES = { float: 0, double: 0 };
-
-        var Runtime = {
+        const Runtime = {
             stackSave: function() {
                 return STACKTOP;
             },
@@ -360,10 +333,34 @@ class LibTiMidity {
             GLOBAL_BASE: 8,
             QUANTUM_SIZE: 4
         };
+        
+        var Module = {};
+        this.Module = Module;
 
-        //========================================
-        // Runtime essentials
-        //========================================
+        Module.arguments = arguments;
+
+        if (!Module['arguments']) {
+            Module['arguments'] = [];
+        }
+
+        Module.read = function(url) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, false);
+            xhr.send(null);
+            return xhr.responseText;
+        };
+
+        Module.print = function(message) {
+            console.log(message);
+        };
+
+        Module.printErr = function(error) {
+            console.warn(error);
+        };
+
+        Module.preRun = [];
+        Module.postRun = [];
+
         var ABORT = false; // whether we are quitting the application. no code should run after this. set in exit() and abort()
         var tempI64;
 
@@ -480,13 +477,23 @@ class LibTiMidity {
             return ret;
         };
 
-        // Sets a value in memory in a dynamic way at runtime. Uses the
-        // type data. This is the same as makeSetValue, except that
-        // makeSetValue is done at compile-time and generates the needed
-        // code then, whereas this function picks the right code at run-time.
-        // Note that setValue and getValue only do *aligned* writes and reads!
-        // Note that ccall uses JS types as for defining types, while setValue and
-        // getValue need LLVM types ('i8', 'i32') - this is a lower-level operation
+        /**
+         * Exits the script.
+         * @function exit
+         * @memberof LibTiMidity
+         * @instance
+         * @param {string} status The message to display.
+         */
+
+        /**
+         * Dynamically sets a value in memory at runtime. Only does *aligned* writes. This is a lower-level operation.
+         * @function setValue
+         * @memberof LibTiMidity
+         * @instance
+         * @param ptr Pointer.
+         * @param value
+         * @param {string} type LLVM type ('i8', , 'i16', 'i32', 'i64', 'float', 'double')
+         */
         function setValue(ptr, value, type) {
             type = type || 'i8';
             if (type.charAt(type.length - 1) === '*') type = 'i32'; // pointers are 32-bit
@@ -536,8 +543,15 @@ class LibTiMidity {
         }
         Module.setValue = setValue;
 
-        // Parallel to setValue.
-        function getValue(ptr, type, noSafe) {
+        /**
+         * Dynamically gets a value in memory at runtime. Only does *aligned* reads. This is a lower-level operation.
+         * @function getValue
+         * @memberof LibTiMidity
+         * @instance
+         * @param ptr Pointer.
+         * @param {string} type LLVM type ('i8', , 'i16', 'i32', 'i64', 'float', 'double')
+         */
+        function getValue(ptr, type) {
             type = type || 'i8';
             if (type.charAt(type.length - 1) === '*') type = 'i32'; // pointers are 32-bit
             switch (type) {
@@ -556,7 +570,7 @@ class LibTiMidity {
                 case 'double':
                     return HEAPF64[ptr >> 3];
                 default:
-                    abort('invalid type for setValue: ' + type);
+                    abort('invalid type for getValue: ' + type);
             }
             return null;
         }
@@ -573,19 +587,16 @@ class LibTiMidity {
         Module['ALLOC_STATIC'] = ALLOC_STATIC;
         Module['ALLOC_DYNAMIC'] = ALLOC_DYNAMIC;
         Module['ALLOC_NONE'] = ALLOC_NONE;
-        // allocate(): This is for internal use. You can use it yourself as well, but the interface
-        //             is a little tricky (see docs right below). The reason is that it is optimized
-        //             for multiple syntaxes to save space in generated code. So you should
-        //             normally not use allocate(), and instead allocate memory using _malloc(),
-        //             initialize it with setValue(), and so forth.
-        // @slab: An array of data, or a number. If a number, then the size of the block to allocate,
-        //        in *bytes* (note that this is sometimes confusing: the next parameter does not
-        //        affect this!)
-        // @types: Either an array of types, one for each byte (or 0 if no type at that position),
-        //         or a single type which is used for the entire block. This only matters if there
-        //         is initial data - if @slab is a number, then this does not matter at all and is
-        //         ignored.
-        // @allocator: How to allocate memory, see ALLOC_*
+
+        /**
+         * This is for internal use. Optimized for multiple syntaxes to save space in generated code. You should allocate memory using _malloc(), initialize it with setValue(), and so forth.
+         * @function allocate
+         * @memberof LibTiMidity
+         * @instance
+         * @param slab An array of data or a number. If a number, then the size of the block to allocate in *bytes* (note that this is sometimes confusing: the next parameter does not affect this).
+         * @param types Either an array of types, one for each byte (or 0 if no type at that position), or a single type which is used for the entire block. This only matters if there is initial data. If slab is a number, then this does not matter at all and is ignored.
+         * @param allocator How to allocate memory, see ALLOC_*
+         */ 
         function allocate(slab, types, allocator, ptr) {
             var zeroinit, size;
             if (typeof slab === 'number') {
@@ -656,8 +667,17 @@ class LibTiMidity {
             }
             return ret;
         }
+
         Module['allocate'] = allocate;
-        function Pointer_stringify(ptr, /* optional */ length) {
+
+        /**
+         * @function Pointer_stringify
+         * @memberof LibTiMidity
+         * @instance
+         * @param ptr Pointer.
+         * @param {*} [length]
+         */ 
+        function Pointer_stringify(ptr, length) {
             // TODO: use TextDecoder
             // Find the length, and check for UTF while doing so
             var hasUtf = false;
@@ -693,9 +713,15 @@ class LibTiMidity {
             }
             return ret;
         }
+
         Module['Pointer_stringify'] = Pointer_stringify;
-        // Given a pointer 'ptr' to a null-terminated UTF16LE-encoded string in the emscripten HEAP, returns
-        // a copy of that string as a Javascript String object.
+
+        /**
+         * @function UTF16ToString
+         * @memberof LibTiMidity
+         * @instance
+         * @param ptr Pointer to a null-terminated UTF16LE-encoded string in the emscripten HEAP.
+         */ 
         function UTF16ToString(ptr) {
             var i = 0;
             var str = '';
@@ -709,9 +735,15 @@ class LibTiMidity {
         }
 
         Module['UTF16ToString'] = UTF16ToString;
-        // Copies the given Javascript String object 'str' to the emscripten HEAP at address 'outPtr',
-        // null-terminated and encoded in UTF16LE form. The copy will require at most (str.length*2+1)*2 bytes of space in the HEAP.
 
+        /**
+         * Copies a JavaScript string to the emscripten HEAP. The copy is null-terminated and encoded in UTF16LE form. The copy will require at most (str.length*2+1)*2 bytes of space in the HEAP.
+         * @function stringToUTF16
+         * @memberof LibTiMidity
+         * @instance
+         * @param {string} str JavaScript string. 
+         * @param outPtr HEAP address (pointer).
+         */ 
         function stringToUTF16(str, outPtr) {
             for (var i = 0; i < str.length; ++i) {
                 // charCodeAt returns a UTF-16 encoded code unit, so it can be directly written to the HEAP.
@@ -723,8 +755,14 @@ class LibTiMidity {
         }
 
         Module['stringToUTF16'] = stringToUTF16;
-        // Given a pointer 'ptr' to a null-terminated UTF32LE-encoded string in the emscripten HEAP, returns
-        // a copy of that string as a Javascript String object.
+
+        /**
+         * @function UTF32ToString
+         * @memberof LibTiMidity
+         * @instance
+         * @param ptr Pointer to a null-terminated UTF32LE-encoded string in the emscripten HEAP.
+         * @return 
+         */ 
         function UTF32ToString(ptr) {
             var i = 0;
             var str = '';
@@ -744,12 +782,17 @@ class LibTiMidity {
                 }
             }
         }
+
         Module['UTF32ToString'] = UTF32ToString;
 
-        // Copies the given Javascript String object 'str' to the emscripten HEAP at address 'outPtr',
-        // null-terminated and encoded in UTF32LE form. The copy will require at most (str.length+1)*4 bytes of space in the HEAP,
-        // but can use less, since str.length does not return the number of characters in the string, but the number of UTF-16 code units in the string.
-
+        /**
+         * Copies a JavaScript string to the emscripten HEAP. The copy is null-terminated and encoded in UTF32LE form. The copy will require at most (str.length+1)*4 bytes of space in the HEAP.
+         * @function stringToUTF32
+         * @memberof LibTiMidity
+         * @instance
+         * @param {string} str JavaScript string. 
+         * @param outPtr HEAP address (pointer).
+         */ 
         function stringToUTF32(str, outPtr) {
             var iChar = 0;
             for (var iCodeUnit = 0; iCodeUnit < str.length; ++iCodeUnit) {
@@ -780,13 +823,13 @@ class LibTiMidity {
         var HEAP;
         var HEAP8, HEAPU8, HEAP16, HEAPU16, HEAP32, HEAPU32, HEAPF32, HEAPF64;
         var STATIC_BASE = 0,
-            STATICTOP = 0,
-            staticSealed = false; // static area
+            STATICTOP = 0;
         var STACK_BASE = 0,
             STACKTOP = 0,
             STACK_MAX = 0; // stack area
         var DYNAMIC_BASE = 0,
             DYNAMICTOP = 0; // dynamic area handled by sbrk
+        
         function enlargeMemory() {
             abort(
                 'Cannot enlarge memory arrays in asm.js. Either (1) compile with -s TOTAL_MEMORY=X with X higher than the current value ' +
@@ -794,9 +837,11 @@ class LibTiMidity {
                     ', or (2) set Module.TOTAL_MEMORY before the program runs.'
             );
         }
-        var TOTAL_STACK = Module['TOTAL_STACK'] || 5242880;
+
+        Module['TOTAL_STACK'] || 5242880;
         var TOTAL_MEMORY = Module['TOTAL_MEMORY'] || 67108864;
-        var FAST_MEMORY = Module['FAST_MEMORY'] || 2097152;
+        Module['FAST_MEMORY'] || 2097152;
+
         // Initialize the runtime's memory
         // check for full engine support (use string 'subarray' to avoid closure compiler confusion)
         assert(
@@ -806,6 +851,7 @@ class LibTiMidity {
                 !!new Int32Array(1)['set'],
             'Cannot fallback to non-typed array case: Code is too specialized'
         );
+
         var buffer = new ArrayBuffer(TOTAL_MEMORY);
         HEAP8 = new Int8Array(buffer);
         HEAP16 = new Int16Array(buffer);
@@ -817,10 +863,12 @@ class LibTiMidity {
         HEAPF64 = new Float64Array(buffer);
         // Endianness check (note: assumes compiler arch was little-endian)
         HEAP32[0] = 255;
+
         assert(
             HEAPU8[0] === 255 && HEAPU8[3] === 0,
             'Typed arrays 2 must be run on a little-endian system'
         );
+
         Module['HEAP'] = HEAP;
         Module['HEAP8'] = HEAP8;
         Module['HEAP16'] = HEAP16;
@@ -830,6 +878,14 @@ class LibTiMidity {
         Module['HEAPU32'] = HEAPU32;
         Module['HEAPF32'] = HEAPF32;
         Module['HEAPF64'] = HEAPF64;
+
+        /**
+         * @function callRuntimeCallbacks
+         * @memberof LibTiMidity
+         * @instance
+         * @param callbacks
+         */ 
+        
         function callRuntimeCallbacks(callbacks) {
             while (callbacks.length > 0) {
                 var callback = callbacks.shift();
@@ -849,6 +905,7 @@ class LibTiMidity {
                 }
             }
         }
+
         var __ATPRERUN__ = []; // functions called before the runtime is initialized
         var __ATINIT__ = []; // functions called during startup
         var __ATMAIN__ = []; // functions called when main() is to be run
@@ -894,31 +951,66 @@ class LibTiMidity {
             callRuntimeCallbacks(__ATPOSTRUN__);
         }
 
+        /**
+         * @function addOnPreRun
+         * @memberof LibTiMidity
+         * @instance
+         * @param cb Callback.
+         */ 
         function addOnPreRun(cb) {
             __ATPRERUN__.unshift(cb);
         }
 
         Module['addOnPreRun'] = Module.addOnPreRun = addOnPreRun;
+
+        /**
+         * @function addOnInit
+         * @memberof LibTiMidity
+         * @instance
+         * @param cb Callback.
+         */ 
         function addOnInit(cb) {
             __ATINIT__.unshift(cb);
         }
 
-        Module['addOnInit'] = Module.addOnInit = addOnInit;
+        Module['addOnInit'] = addOnInit;
+        
+        /**
+         * @function addOnPreMain
+         * @memberof LibTiMidity
+         * @instance
+         * @param cb Callback.
+         */ 
         function addOnPreMain(cb) {
             __ATMAIN__.unshift(cb);
         }
 
-        Module['addOnPreMain'] = Module.addOnPreMain = addOnPreMain;
+        Module['addOnPreMain'] = addOnPreMain;
+
+        /**
+         * @function addOnExit
+         * @memberof LibTiMidity
+         * @instance
+         * @param cb Callback.
+         */ 
         function addOnExit(cb) {
             __ATEXIT__.unshift(cb);
         }
 
-        Module['addOnExit'] = Module.addOnExit = addOnExit;
+        Module['addOnExit'] = addOnExit;
+
+        /**
+         * @function addOnPostRun
+         * @memberof LibTiMidity
+         * @instance
+         * @param cb Callback.
+         */ 
         function addOnPostRun(cb) {
             __ATPOSTRUN__.unshift(cb);
         }
 
-        Module['addOnPostRun'] = Module.addOnPostRun = addOnPostRun;
+        Module['addOnPostRun'] = addOnPostRun;
+
         // Tools
         // This processes a JS string into a C-line array of numbers, 0-terminated.
         // For LLVM-originating strings, see parser.js:parseLLVMString function
@@ -938,6 +1030,7 @@ class LibTiMidity {
         }
 
         Module['intArrayFromString'] = intArrayFromString;
+
         function intArrayToString(array) {
             var ret = [];
             for (var i = 0; i < array.length; i++) {
@@ -949,6 +1042,7 @@ class LibTiMidity {
             }
             return ret.join('');
         }
+
         Module['intArrayToString'] = intArrayToString;
 
         // Write a Javascript array to somewhere in the heap
@@ -990,7 +1084,7 @@ class LibTiMidity {
                 : Math.pow(2, bits) + value;
         }
 
-        function reSign(value, bits, ignore, sig) {
+        function reSign(value, bits) {
             if (value <= 0) {
                 return value;
             }
@@ -1006,6 +1100,7 @@ class LibTiMidity {
             }
             return value;
         }
+
         if (!Math['imul'])
             Math['imul'] = function(a, b) {
                 var ah = a >>> 16;
@@ -1014,13 +1109,16 @@ class LibTiMidity {
                 var bl = b & 0xffff;
                 return (al * bl + ((ah * bl + al * bh) << 16)) | 0;
             };
+
         Math.imul = Math['imul'];
+
         var Math_abs = Math.abs;
         var Math_sin = Math.sin;
         var Math_ceil = Math.ceil;
         var Math_floor = Math.floor;
         var Math_pow = Math.pow;
         var Math_min = Math.min;
+        
         // A counter of dependencies for calling run(). If we need to
         // do asynchronous work before running, increment this and
         // decrement it. Incrementing must happen in a place like
@@ -6411,7 +6509,6 @@ class LibTiMidity {
             Browser.getUserMedia();
         };
         STACK_BASE = STACKTOP = Runtime.alignMemory(STATICTOP);
-        staticSealed = true; // seal the static portion of memory
         STACK_MAX = STACK_BASE + 5242880;
         DYNAMIC_BASE = DYNAMICTOP = Runtime.alignMemory(STACK_MAX);
         assert(DYNAMIC_BASE < TOTAL_MEMORY); // Stack must fit in TOTAL_MEMORY; allocations from here on may enlarge TOTAL_MEMORY
