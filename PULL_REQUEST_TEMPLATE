@@ -8,7 +8,7 @@
 
 *All checks below must be performed before the PR can be merged.*
 
-- [ ] Version bumped.
+- [ ] Version was bumped in `package.json`.
 - [ ] Code was linted with `npm run lint`.
 - [ ] Tests were added, deleted, and/or updated. All tests pass when running `npm run test`.
 - [ ] Build was created with `npm run build`.
