@@ -203,7 +203,6 @@ const Player = styled.div`
     padding: 20px;
     border-radius: 10px;
     min-height: 75px;
-    min-width: 400px;
 `;
 
 const Heading = styled.h1`
@@ -213,6 +212,7 @@ const Heading = styled.h1`
 
 const Help = styled.div`
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-around;
 `;
 
