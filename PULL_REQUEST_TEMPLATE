@@ -8,13 +8,13 @@
 
 *All checks below must be performed before the PR can be merged.*
 
-- [ ] Code was linted. Running `npm run lint` does not show any error.
+- [ ] Version bumped.
+- [ ] Code was linted with `npm run lint`.
 - [ ] Tests were added, deleted, and/or updated. All tests pass when running `npm run test`.
 - [ ] Build was created with `npm run build`.
-- [ ] Example was updated.
-- [ ] Changes are documented.
-- [ ] Version bumped.
-- [ ] Assigned code review to a reviewer.
+- [ ] Example was updated and re-compiled with `cd example; npm run build`.
+- [ ] Changes are documented and documentation was updated with `npm run docs`.
+- [ ] Code review assigned to a reviewer.
 
 ## Issue(s) adressed
 
