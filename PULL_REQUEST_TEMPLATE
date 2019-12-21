@@ -11,7 +11,7 @@
 - [ ] Code was linted. Running `npm run lint` does not show any error.
 - [ ] Tests were added, deleted, and/or updated. All tests pass when running `npm run test`.
 - [ ] Build was created with `npm run build`.
-- [ ] Example was updated if applicable.
+- [ ] Example was updated.
 - [ ] Changes are documented.
 - [ ] Version bumped.
 - [ ] Assigned code review to a reviewer.
