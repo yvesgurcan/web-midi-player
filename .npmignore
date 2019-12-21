@@ -1,8 +1,10 @@
 node_modules/
 src/
+tests/
 example/
 docs/
 webpack.config.js
+jest.config.js
 .prettierrc
 .babelrc
 CNAME
