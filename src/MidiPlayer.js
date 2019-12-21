@@ -130,7 +130,7 @@ export default class MidiPlayer {
                     event: MIDI_ERROR,
                     message: `Could not retrieve MIDI${this.formatMidiName(
                         name
-                    )} (status code: ${request.status}).`
+                    )} (status code: ${response.status}).`
                 });
 
                 return;
@@ -219,26 +219,19 @@ export default class MidiPlayer {
         }
     };
 
-    loadMissingPatch({ path, filename, audioContext }) {
-        // TODO: use fetch instead
-        const request = new XMLHttpRequest();
-        request.open('GET', `${path}${filename}`, true);
-        request.responseType = 'arraybuffer';
-
-        request.onerror = () =>
-            this.emitEvent({
-                event: MIDI_ERROR,
-                message: `Cannot retrieve MIDI patch '${filename}'.`
-            });
-
-        request.onload = () => {
-            if (request.status !== 200) {
+    async loadMissingPatch({ path, filename, audioContext }) {
+        try {
+            const response = await fetch(`${path}${filename}`);
+            if (response.status !== 200) {
                 this.emitEvent({
                     event: MIDI_ERROR,
-                    message: `Cannot retrieve MIDI patch '${filename}' (status code: ${request.status}).`
+                    message: `Could not retrieve instrument patch '${path}${filename}' (status code: ${request.status}).`
                 });
+
                 return;
             }
+
+            const arrayBuffer = await response.arrayBuffer();
 
             this.missingPatchCount = this.missingPatchCount - 1;
 
@@ -246,7 +239,7 @@ export default class MidiPlayer {
             LibTiMidity.FS.createDataFile(
                 'pat/',
                 filename,
-                new Int8Array(request.response),
+                new Int8Array(arrayBuffer),
                 true,
                 true
             );
@@ -287,8 +280,12 @@ export default class MidiPlayer {
 
                 this.initPlayback({ audioContext });
             }
-        };
-        request.send();
+        } catch (error) {
+            this.emitEvent({
+                event: MIDI_ERROR,
+                message: `Could not retrieve instrument patch '${path}${filename}'.`
+            });
+        }
     }
 
     initPlayback = ({ audioContext }) => {
