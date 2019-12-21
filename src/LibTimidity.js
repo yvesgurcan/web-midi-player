@@ -333,7 +333,7 @@ class LibTiMidity {
             GLOBAL_BASE: 8,
             QUANTUM_SIZE: 4
         };
-        
+
         var Module = {};
         this.Module = Module;
 
@@ -596,7 +596,8 @@ class LibTiMidity {
          * @param slab An array of data or a number. If a number, then the size of the block to allocate in *bytes* (note that this is sometimes confusing: the next parameter does not affect this).
          * @param types Either an array of types, one for each byte (or 0 if no type at that position), or a single type which is used for the entire block. This only matters if there is initial data. If slab is a number, then this does not matter at all and is ignored.
          * @param allocator How to allocate memory, see ALLOC_*
-         */ 
+         */
+
         function allocate(slab, types, allocator, ptr) {
             var zeroinit, size;
             if (typeof slab === 'number') {
@@ -676,7 +677,8 @@ class LibTiMidity {
          * @instance
          * @param ptr Pointer.
          * @param {*} [length]
-         */ 
+         */
+
         function Pointer_stringify(ptr, length) {
             // TODO: use TextDecoder
             // Find the length, and check for UTF while doing so
@@ -721,7 +723,8 @@ class LibTiMidity {
          * @memberof LibTiMidity
          * @instance
          * @param ptr Pointer to a null-terminated UTF16LE-encoded string in the emscripten HEAP.
-         */ 
+         */
+
         function UTF16ToString(ptr) {
             var i = 0;
             var str = '';
@@ -741,9 +744,10 @@ class LibTiMidity {
          * @function stringToUTF16
          * @memberof LibTiMidity
          * @instance
-         * @param {string} str JavaScript string. 
+         * @param {string} str JavaScript string.
          * @param outPtr HEAP address (pointer).
-         */ 
+         */
+
         function stringToUTF16(str, outPtr) {
             for (var i = 0; i < str.length; ++i) {
                 // charCodeAt returns a UTF-16 encoded code unit, so it can be directly written to the HEAP.
@@ -761,8 +765,9 @@ class LibTiMidity {
          * @memberof LibTiMidity
          * @instance
          * @param ptr Pointer to a null-terminated UTF32LE-encoded string in the emscripten HEAP.
-         * @return 
-         */ 
+         * @return
+         */
+
         function UTF32ToString(ptr) {
             var i = 0;
             var str = '';
@@ -790,9 +795,10 @@ class LibTiMidity {
          * @function stringToUTF32
          * @memberof LibTiMidity
          * @instance
-         * @param {string} str JavaScript string. 
+         * @param {string} str JavaScript string.
          * @param outPtr HEAP address (pointer).
-         */ 
+         */
+
         function stringToUTF32(str, outPtr) {
             var iChar = 0;
             for (var iCodeUnit = 0; iCodeUnit < str.length; ++iCodeUnit) {
@@ -829,7 +835,7 @@ class LibTiMidity {
             STACK_MAX = 0; // stack area
         var DYNAMIC_BASE = 0,
             DYNAMICTOP = 0; // dynamic area handled by sbrk
-        
+
         function enlargeMemory() {
             abort(
                 'Cannot enlarge memory arrays in asm.js. Either (1) compile with -s TOTAL_MEMORY=X with X higher than the current value ' +
@@ -884,8 +890,8 @@ class LibTiMidity {
          * @memberof LibTiMidity
          * @instance
          * @param callbacks
-         */ 
-        
+         */
+
         function callRuntimeCallbacks(callbacks) {
             while (callbacks.length > 0) {
                 var callback = callbacks.shift();
@@ -956,7 +962,8 @@ class LibTiMidity {
          * @memberof LibTiMidity
          * @instance
          * @param cb Callback.
-         */ 
+         */
+
         function addOnPreRun(cb) {
             __ATPRERUN__.unshift(cb);
         }
@@ -968,19 +975,21 @@ class LibTiMidity {
          * @memberof LibTiMidity
          * @instance
          * @param cb Callback.
-         */ 
+         */
+
         function addOnInit(cb) {
             __ATINIT__.unshift(cb);
         }
 
         Module['addOnInit'] = addOnInit;
-        
+
         /**
          * @function addOnPreMain
          * @memberof LibTiMidity
          * @instance
          * @param cb Callback.
-         */ 
+         */
+
         function addOnPreMain(cb) {
             __ATMAIN__.unshift(cb);
         }
@@ -992,7 +1001,8 @@ class LibTiMidity {
          * @memberof LibTiMidity
          * @instance
          * @param cb Callback.
-         */ 
+         */
+
         function addOnExit(cb) {
             __ATEXIT__.unshift(cb);
         }
@@ -1004,7 +1014,8 @@ class LibTiMidity {
          * @memberof LibTiMidity
          * @instance
          * @param cb Callback.
-         */ 
+         */
+
         function addOnPostRun(cb) {
             __ATPOSTRUN__.unshift(cb);
         }
@@ -1118,7 +1129,7 @@ class LibTiMidity {
         var Math_floor = Math.floor;
         var Math_pow = Math.pow;
         var Math_min = Math.min;
-        
+
         // A counter of dependencies for calling run(). If we need to
         // do asynchronous work before running, increment this and
         // decrement it. Incrementing must happen in a place like
