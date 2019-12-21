@@ -62,6 +62,7 @@ export default class MidiPlayer {
             this.logging = logging;
             this.patchUrl = patchUrl;
             this.context = audioContext || new AudioContext();
+            this.startTime = 0;
             this.eventHandler.emitInit();
         } catch (error) {
             this.emitEvent({
@@ -375,14 +376,22 @@ export default class MidiPlayer {
      * midiPlayer.pause();
      */
     pause() {
-        this.context.suspend();
+        try {
+            this.context.suspend();
+            const time = this.context.currentTime - this.startTime;
+            this.emitEvent({
+                event: MIDI_PAUSE,
+                time
+            });
+            return true;
+        } catch (error) {
+            this.emitEvent({
+                event: MIDI_ERROR,
+                message: 'Could not pause playback.'
+            });
 
-        const time = this.context.currentTime - this.startTime;
-        this.emitEvent({
-            event: MIDI_PAUSE,
-            time
-        });
-        return true;
+            return false;
+        }
     }
 
     /**
@@ -393,15 +402,23 @@ export default class MidiPlayer {
      * midiPlayer.resume();
      */
     resume() {
-        this.context.resume();
+        try {
+            this.context.resume();
+            const time = this.context.currentTime - this.startTime;
+            this.emitEvent({
+                event: MIDI_RESUME,
+                time
+            });
 
-        const time = this.context.currentTime - this.startTime;
-        this.emitEvent({
-            event: MIDI_RESUME,
-            time
-        });
+            return true;
+        } catch (error) {
+            this.emitEvent({
+                event: MIDI_ERROR,
+                message: 'Could not resume playback.'
+            });
 
-        return true;
+            return false;
+        }
     }
 
     /**
@@ -412,26 +429,42 @@ export default class MidiPlayer {
      * midiPlayer.stop();
      */
     stop() {
-        if (this.source) {
-            this.disconnectSource();
+        try {
+            if (this.source) {
+                this.disconnectSource();
 
-            // free libtimitdiy ressources
-            LibTiMidity._free(this.waveBuffer);
-            LibTiMidity._free(this.midiFileBuffer);
+                // free libtimitdiy ressources
+                LibTiMidity._free(this.waveBuffer);
+                LibTiMidity._free(this.midiFileBuffer);
 
-            LibTiMidity.call('mid_song_free', 'void', ['number'], [this.song]);
+                LibTiMidity.call(
+                    'mid_song_free',
+                    'void',
+                    ['number'],
+                    [this.song]
+                );
 
-            LibTiMidity.call('mid_exit', 'void', [], []);
+                LibTiMidity.call('mid_exit', 'void', [], []);
 
-            this.song = 0;
+                this.song = 0;
+            }
+
+            this.startTime = 0;
+
+            this.emitEvent({
+                event: MIDI_STOP,
+                time: 0
+            });
+
+            return true;
+        } catch (error) {
+            this.emitEvent({
+                event: MIDI_ERROR,
+                message: 'Could not stop playback.'
+            });
+
+            return false;
         }
-
-        this.emitEvent({
-            event: MIDI_STOP,
-            time: 0
-        });
-
-        return true;
     }
 
     // terminate playback

@@ -5,7 +5,9 @@ import {
     MIDI_INIT,
     MIDI_ERROR,
     MIDI_STOP,
-    MIDI_LOAD_FILE
+    MIDI_LOAD_FILE,
+    MIDI_PAUSE,
+    MIDI_RESUME
 } from '../src/events';
 
 let midiPlayer = null;
@@ -31,15 +33,15 @@ function expectedEvent(eventName) {
  * disableLogging();
  */
 function disableLogging() {
-    eventLogger = jest.fn();
     console.log = jest.fn();
     console.error = jest.fn();
+    eventLogger = jest.fn();
 }
 
 function enableLogging() {
-    eventLogger = payload => console.log(payload);
     console.log = consoleLog;
     console.error = consoleError;
+    eventLogger = payload => consoleLog(payload);
 }
 
 disableLogging();
@@ -194,6 +196,96 @@ describe('MidiPlayer', function() {
 
             expect(eventLogger).not.toHaveBeenCalledWith(
                 expectedEvent(MIDI_ERROR)
+            );
+        });
+    });
+
+    describe('Pause', () => {
+        beforeAll(function() {
+            audioContext = new AudioContext();
+        });
+
+        beforeEach(function() {
+            midiPlayer = null;
+        });
+
+        test('Player should send a pause event (console logging)', function() {
+            midiPlayer = new MidiPlayer({ logging: true, audioContext });
+
+            midiPlayer.pause();
+
+            expect(console.log).toHaveBeenLastCalledWith(
+                expectedEvent(MIDI_PAUSE)
+            );
+        });
+
+        test('Player should send a pause event (custom event logger)', function() {
+            midiPlayer = new MidiPlayer({ eventLogger, audioContext });
+
+            midiPlayer.pause();
+
+            expect(eventLogger).toHaveBeenLastCalledWith(
+                expectedEvent(MIDI_PAUSE)
+            );
+        });
+    });
+
+    describe('Resume', () => {
+        beforeAll(function() {
+            audioContext = new AudioContext();
+        });
+
+        beforeEach(function() {
+            midiPlayer = null;
+        });
+
+        test('Player should send a resume event (console logging)', function() {
+            midiPlayer = new MidiPlayer({ logging: true, audioContext });
+
+            midiPlayer.resume();
+
+            expect(console.log).toHaveBeenLastCalledWith(
+                expectedEvent(MIDI_RESUME)
+            );
+        });
+
+        test('Player should send a resume event (custom event logger)', function() {
+            midiPlayer = new MidiPlayer({ eventLogger, audioContext });
+
+            midiPlayer.resume();
+
+            expect(eventLogger).toHaveBeenLastCalledWith(
+                expectedEvent(MIDI_RESUME)
+            );
+        });
+    });
+
+    describe('Stop', () => {
+        beforeAll(function() {
+            audioContext = new AudioContext();
+        });
+
+        beforeEach(function() {
+            midiPlayer = null;
+        });
+
+        test('Player should send a stop event (console logging)', function() {
+            midiPlayer = new MidiPlayer({ logging: true, audioContext });
+
+            midiPlayer.stop();
+
+            expect(console.log).toHaveBeenLastCalledWith(
+                expectedEvent(MIDI_STOP)
+            );
+        });
+
+        test('Player should send a stop event (custom event logger)', function() {
+            midiPlayer = new MidiPlayer({ eventLogger, audioContext });
+
+            midiPlayer.stop();
+
+            expect(eventLogger).toHaveBeenLastCalledWith(
+                expectedEvent(MIDI_STOP)
             );
         });
     });
