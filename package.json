@@ -1,5 +1,5 @@
 {
-    "name": "@yvesgurcan/web-midi-player",
+    "name": "web-midi-player",
     "name-display": "Web Midi Player",
     "description": "🎹 Event-driven JavaScript library to enable MIDI playback in the browser.",
     "version": "1.0.23",
@@ -35,6 +35,7 @@
     "scripts": {
         "start": "webpack-dev-server --mode production --progress",
         "build": "webpack --mode production --progress",
+        "build:quiet": "webpack --mode production",
         "lint": "prettier --write **/*.js",
         "test": "jest",
         "test:init": "jest --init",
