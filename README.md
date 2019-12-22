@@ -24,7 +24,7 @@ Alternatively, this NPM package is hosted for free by [jsDeliver](https://www.js
 
     const midiPlayer = new MidiPlayer();
 
-    midiPlayer.play('song.mid');
+    midiPlayer.play({ url: 'song.mid' });
 
 ## Contribute
 
