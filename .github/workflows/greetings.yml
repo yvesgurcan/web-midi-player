@@ -3,7 +3,7 @@ name: Greeting new contributors
 on: [pull_request, issues]
 
 jobs:
-  greeting:
+  greet:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/first-interaction@v1
