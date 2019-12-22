@@ -7,5 +7,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: ppapapetrou76/virtual-assistant@0.3
-	      env:
-		    GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      env:
+      GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
