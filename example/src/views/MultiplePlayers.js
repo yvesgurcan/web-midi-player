@@ -6,16 +6,27 @@ import Player from '../components/Player';
 const MultiplePlayers = () => {
     return (
         <Wrapper>
-            <PlayerHeading>Player #1</PlayerHeading>
-            <Player />
-            <PlayerHeading>Player #2</PlayerHeading>
-            <Player />
+            <FlexWrapper>
+                <div>
+                    <PlayerHeading>Player #1</PlayerHeading>
+                    <Player />
+                </div>
+                <div>
+                    <PlayerHeading>Player #2</PlayerHeading>
+                    <Player />
+                </div>
+            </FlexWrapper>
         </Wrapper>
     );
 };
 
+const FlexWrapper = styled.div`
+    display: flex;
+`;
+
 const PlayerHeading = styled.h2`
     text-align: center;
+    margin: 0;
 `;
 
 export default MultiplePlayers;
