@@ -1,8 +1,9 @@
 name: Publish to NPM
 
 on:
-    release:
-        types: [push]
+    push:
+        branches:
+            - master
 
 jobs:
     build:
@@ -27,5 +28,6 @@ jobs:
                   node-version: 12
                   registry-url: https://registry.npmjs.org/
             - run: npm publish
-              env:
-                  NPM_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
+
+env:
+    NPM_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
