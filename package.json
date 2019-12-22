@@ -63,6 +63,9 @@
         "webpack-cli": "^3.2.3",
         "webpack-dev-server": "^3.2.1"
     },
+    "publishConfig": {
+        "registry": "https://npm.pkg.github.com/"
+    },
     "jest": {
         "globals": {
             "NODE_ENV": "test"
