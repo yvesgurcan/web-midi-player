@@ -13,7 +13,7 @@
         "audio"
     ],
     "license": "MIT",
-    "version": "1.0.17",
+    "version": "1.0.18",
     "repository": {
         "type": "git",
         "url": "https://github.com/yvesgurcan/web-midi-player"
@@ -51,6 +51,7 @@
         "net": "^1.0.2",
         "prettier": "^1.16.4",
         "tls": "0.0.1",
+        "uuid": "^3.3.3",
         "webpack": "^4.29.6",
         "webpack-cli": "^3.2.3",
         "webpack-dev-server": "^3.2.1"
