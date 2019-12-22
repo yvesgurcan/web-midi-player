@@ -8,6 +8,9 @@ module.exports = {
         path: path.resolve(__dirname, './')
     },
     plugins: [
+        new CleanWebpackPlugin({
+            cleanOnceBeforeBuildPatterns: ['main.*.js']
+        }),
         new HtmlWebpackPlugin({
             filename: 'index.html',
             template: './src/index.html'
