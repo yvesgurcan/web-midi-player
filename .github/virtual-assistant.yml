@@ -1,0 +1,8 @@
+assigner:
+  issues:
+    project:
+      url: https://github.com/yvesgurcan/web-midi-player/projects/1
+      column: To do
+    actions:
+      - opened
+      - milestoned
