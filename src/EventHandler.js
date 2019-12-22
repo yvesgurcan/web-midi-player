@@ -4,11 +4,17 @@ export default class EventHandler {
     /**
      * @class EventHandler
      * @param {object} [configuration]
+     * @param {string} [configuration.playerId = undefined] The ID of the Midi Player that sends events.
      * @param {function} [configuration.eventLogger = undefined] The function that receives event payloads.
      * @param {boolean} [configuration.logging = false] Turns ON or OFF logging to the console.
      * @return {object} An `EventHandler` instance.
      */
-    constructor({ eventLogger = undefined, logging = false }) {
+    constructor({
+        eventLogger = undefined,
+        logging = false,
+        playerId = undefined
+    }) {
+        this.playerId = playerId;
         this.logging = logging;
         this.eventLogger = eventLogger;
     }
@@ -33,13 +39,18 @@ export default class EventHandler {
      * @param {string} [payload.message] A message that described the event.
      */
     emitEvent = payload => {
+        const payloadWithId = {
+            ...payload,
+            playerId: this.playerId
+        };
+
         if (this.eventLogger) {
-            this.eventLogger(payload);
+            this.eventLogger(payloadWithId);
         } else if (this.logging) {
-            if (payload.event === MIDI_ERROR) {
-                console.error(payload);
+            if (payloadWithId.event === MIDI_ERROR) {
+                console.error(payloadWithId);
             } else {
-                console.log(payload);
+                console.log(payloadWithId);
             }
         }
     };

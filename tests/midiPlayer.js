@@ -68,6 +68,7 @@ describe('MidiPlayer', function() {
         test('Player should instantiate', () => {
             midiPlayer = new MidiPlayer({ audioContext });
             expect(midiPlayer).toBeInstanceOf(MidiPlayer);
+            expect(midiPlayer.playerId).not.toBeUndefined();
 
             // logging is completely turned OFF by default
             expect(midiPlayer.eventLogger).toBeUndefined();
@@ -84,6 +85,7 @@ describe('MidiPlayer', function() {
         test('Player should instantiate and send init event (console logging)', function() {
             midiPlayer = new MidiPlayer({ logging: true, audioContext });
             expect(midiPlayer).toBeInstanceOf(MidiPlayer);
+            expect(midiPlayer.playerId).not.toBeUndefined();
 
             // console logging only
             expect(midiPlayer.eventLogger).toBeUndefined();
@@ -100,6 +102,7 @@ describe('MidiPlayer', function() {
         test('Player should instantiate and send init event (custom event logger)', function() {
             midiPlayer = new MidiPlayer({ eventLogger, audioContext });
             expect(midiPlayer).toBeInstanceOf(MidiPlayer);
+            expect(midiPlayer.playerId).not.toBeUndefined();
 
             // eventLogger only
             expect(midiPlayer.eventLogger).toBe(eventLogger);
@@ -119,6 +122,7 @@ describe('MidiPlayer', function() {
                 audioContext
             });
             expect(midiPlayer).toBeInstanceOf(MidiPlayer);
+            expect(midiPlayer.playerId).not.toBeUndefined();
             expect(midiPlayer.patchUrl).toBe(customPatchUrl);
         });
     });
