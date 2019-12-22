@@ -59,6 +59,7 @@ const Player = () => {
     const [currentSongState, setCurrentSongState] = useState(null);
     const [currentSongTime, setCurrentSongTime] = useState(0);
 
+    // mount
     useEffect(() => {
         if (!midiPlayer) {
             const eventLogger = payload => {
@@ -79,10 +80,19 @@ const Player = () => {
 
             setMidiPlayer(new MidiPlayer({ eventLogger }));
         }
-    });
+    }, []);
+
+    // unmount
+    useEffect(() => {
+        if (midiPlayer) {
+            return () => {
+                midiPlayer.stop();
+            };
+        }
+    }, [midiPlayer]);
 
     return (
-        <Fragment>
+        <Container>
             <Playlist>
                 {SONGS.map(({ url, name }, index) => (
                     <Song
@@ -138,9 +148,13 @@ const Player = () => {
             </Control>
             <PlaybackState>{currentSongState}</PlaybackState>
             <PlaybackTime>{Math.floor(currentSongTime)} seconds</PlaybackTime>
-        </Fragment>
+        </Container>
     );
 };
+
+const Container = styled.div`
+    padding: 5px;
+`;
 
 const Playlist = styled.div`
     margin-bottom: 10px;
