@@ -1,6 +1,13 @@
 {
     "name": "web-midi-player",
     "name-display": "Web Midi Player",
+    "description": "🎹 Event-driven JavaScript library to enable MIDI playback in the browser.",
+    "version": "1.0.19",
+    "author": {
+        "name": "Yves Gurcan",
+        "url": "http://yvesgurcan.com/"
+    },
+    "license": "MIT",
     "keywords": [
         "midi",
         "midi player",
@@ -12,14 +19,14 @@
         "open source",
         "audio"
     ],
-    "license": "MIT",
-    "version": "1.0.18",
     "repository": {
         "type": "git",
         "url": "https://github.com/yvesgurcan/web-midi-player"
     },
-    "author": {
-        "name": "Yves Gurcan"
+    "directories": {
+        "doc": "./doc",
+        "example": "./example",
+        "test": "./test"
     },
     "homepage": "https://midi.yvesgurcan.com",
     "bugs": {
@@ -31,7 +38,7 @@
         "lint": "prettier --write **/*.js",
         "test": "jest",
         "test:init": "jest --init",
-        "docs": "documentation build src/MidiPlayer.js -f html -o docs --config documentation.yml",
+        "docs": "documentation build src/MidiPlayer.js -f html -o doc --config documentation.yml",
         "docs:watch": "documentation serve --watch src/MidiPlayer.js --config documentation.yml"
     },
     "devDependencies": {
