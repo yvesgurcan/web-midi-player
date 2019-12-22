@@ -3,6 +3,7 @@
     "description": "Web Midi Player example.",
     "scripts": {
         "start": "webpack-dev-server",
+        "build": "webpack --mode production --progress",
         "lint": "prettier --write **/*.js"
     },
     "devDependencies": {
