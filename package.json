@@ -1,5 +1,5 @@
 {
-    "name": "web-midi-player",
+    "name": "@yvesgurcan/web-midi-player",
     "name-display": "Web Midi Player",
     "description": "🎹 Event-driven JavaScript library to enable MIDI playback in the browser.",
     "version": "1.0.20",
