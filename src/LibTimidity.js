@@ -1,3 +1,12 @@
+import {
+    LIBTIMIDITY_PATCH_DIRECTORY,
+    LIBTIMIDITY_PATCH_DRUM_DIRECTORY,
+    LIBTIMIDITY_CONFIG_FILE,
+    LIBTIMIDITY_CONFIG_DATA,
+    LIBTIMIDITY_ERROR_CODES as ERRNO_CODES,
+    LIBTIMIDITY_ERROR_MESSAGES as ERRNO_MESSAGES
+} from './constants';
+
 // https://github.com/kripken/emscripten/wiki/
 
 const INT_TYPES = { i1: 0, i8: 0, i16: 0, i32: 0, i64: 0 };
@@ -476,14 +485,6 @@ class LibTiMidity {
             if (stack) Runtime.stackRestore(stack);
             return ret;
         };
-
-        /**
-         * Exits the script.
-         * @function exit
-         * @memberof LibTiMidity
-         * @instance
-         * @param {string} status The message to display.
-         */
 
         /**
          * Dynamically sets a value in memory at runtime. Only does *aligned* writes. This is a lower-level operation.
@@ -1203,257 +1204,15 @@ class LibTiMidity {
             8
         );
         assert(tempDoublePtr % 8 == 0);
-        var ERRNO_CODES = {
-            EPERM: 1,
-            ENOENT: 2,
-            ESRCH: 3,
-            EINTR: 4,
-            EIO: 5,
-            ENXIO: 6,
-            E2BIG: 7,
-            ENOEXEC: 8,
-            EBADF: 9,
-            ECHILD: 10,
-            EAGAIN: 11,
-            EWOULDBLOCK: 11,
-            ENOMEM: 12,
-            EACCES: 13,
-            EFAULT: 14,
-            ENOTBLK: 15,
-            EBUSY: 16,
-            EEXIST: 17,
-            EXDEV: 18,
-            ENODEV: 19,
-            ENOTDIR: 20,
-            EISDIR: 21,
-            EINVAL: 22,
-            ENFILE: 23,
-            EMFILE: 24,
-            ENOTTY: 25,
-            ETXTBSY: 26,
-            EFBIG: 27,
-            ENOSPC: 28,
-            ESPIPE: 29,
-            EROFS: 30,
-            EMLINK: 31,
-            EPIPE: 32,
-            EDOM: 33,
-            ERANGE: 34,
-            ENOMSG: 42,
-            EIDRM: 43,
-            ECHRNG: 44,
-            EL2NSYNC: 45,
-            EL3HLT: 46,
-            EL3RST: 47,
-            ELNRNG: 48,
-            EUNATCH: 49,
-            ENOCSI: 50,
-            EL2HLT: 51,
-            EDEADLK: 35,
-            ENOLCK: 37,
-            EBADE: 52,
-            EBADR: 53,
-            EXFULL: 54,
-            ENOANO: 55,
-            EBADRQC: 56,
-            EBADSLT: 57,
-            EDEADLOCK: 35,
-            EBFONT: 59,
-            ENOSTR: 60,
-            ENODATA: 61,
-            ETIME: 62,
-            ENOSR: 63,
-            ENONET: 64,
-            ENOPKG: 65,
-            EREMOTE: 66,
-            ENOLINK: 67,
-            EADV: 68,
-            ESRMNT: 69,
-            ECOMM: 70,
-            EPROTO: 71,
-            EMULTIHOP: 72,
-            EDOTDOT: 73,
-            EBADMSG: 74,
-            ENOTUNIQ: 76,
-            EBADFD: 77,
-            EREMCHG: 78,
-            ELIBACC: 79,
-            ELIBBAD: 80,
-            ELIBSCN: 81,
-            ELIBMAX: 82,
-            ELIBEXEC: 83,
-            ENOSYS: 38,
-            ENOTEMPTY: 39,
-            ENAMETOOLONG: 36,
-            ELOOP: 40,
-            EOPNOTSUPP: 95,
-            EPFNOSUPPORT: 96,
-            ECONNRESET: 104,
-            ENOBUFS: 105,
-            EAFNOSUPPORT: 97,
-            EPROTOTYPE: 91,
-            ENOTSOCK: 88,
-            ENOPROTOOPT: 92,
-            ESHUTDOWN: 108,
-            ECONNREFUSED: 111,
-            EADDRINUSE: 98,
-            ECONNABORTED: 103,
-            ENETUNREACH: 101,
-            ENETDOWN: 100,
-            ETIMEDOUT: 110,
-            EHOSTDOWN: 112,
-            EHOSTUNREACH: 113,
-            EINPROGRESS: 115,
-            EALREADY: 114,
-            EDESTADDRREQ: 89,
-            EMSGSIZE: 90,
-            EPROTONOSUPPORT: 93,
-            ESOCKTNOSUPPORT: 94,
-            EADDRNOTAVAIL: 99,
-            ENETRESET: 102,
-            EISCONN: 106,
-            ENOTCONN: 107,
-            ETOOMANYREFS: 109,
-            EUSERS: 87,
-            EDQUOT: 122,
-            ESTALE: 116,
-            ENOTSUP: 95,
-            ENOMEDIUM: 123,
-            EILSEQ: 84,
-            EOVERFLOW: 75,
-            ECANCELED: 125,
-            ENOTRECOVERABLE: 131,
-            EOWNERDEAD: 130,
-            ESTRPIPE: 86
-        };
-        var ERRNO_MESSAGES = {
-            0: 'Success',
-            1: 'Not super-user',
-            2: 'No such file or directory',
-            3: 'No such process',
-            4: 'Interrupted system call',
-            5: 'I/O error',
-            6: 'No such device or address',
-            7: 'Arg list too long',
-            8: 'Exec format error',
-            9: 'Bad file number',
-            10: 'No children',
-            11: 'No more processes',
-            12: 'Not enough core',
-            13: 'Permission denied',
-            14: 'Bad address',
-            15: 'Block device required',
-            16: 'Mount device busy',
-            17: 'File exists',
-            18: 'Cross-device link',
-            19: 'No such device',
-            20: 'Not a directory',
-            21: 'Is a directory',
-            22: 'Invalid argument',
-            23: 'Too many open files in system',
-            24: 'Too many open files',
-            25: 'Not a typewriter',
-            26: 'Text file busy',
-            27: 'File too large',
-            28: 'No space left on device',
-            29: 'Illegal seek',
-            30: 'Read only file system',
-            31: 'Too many links',
-            32: 'Broken pipe',
-            33: 'Math arg out of domain of func',
-            34: 'Math result not representable',
-            35: 'File locking deadlock error',
-            36: 'File or path name too long',
-            37: 'No record locks available',
-            38: 'Function not implemented',
-            39: 'Directory not empty',
-            40: 'Too many symbolic links',
-            42: 'No message of desired type',
-            43: 'Identifier removed',
-            44: 'Channel number out of range',
-            45: 'Level 2 not synchronized',
-            46: 'Level 3 halted',
-            47: 'Level 3 reset',
-            48: 'Link number out of range',
-            49: 'Protocol driver not attached',
-            50: 'No CSI structure available',
-            51: 'Level 2 halted',
-            52: 'Invalid exchange',
-            53: 'Invalid request descriptor',
-            54: 'Exchange full',
-            55: 'No anode',
-            56: 'Invalid request code',
-            57: 'Invalid slot',
-            59: 'Bad font file fmt',
-            60: 'Device not a stream',
-            61: 'No data (for no delay io)',
-            62: 'Timer expired',
-            63: 'Out of streams resources',
-            64: 'Machine is not on the network',
-            65: 'Package not installed',
-            66: 'The object is remote',
-            67: 'The link has been severed',
-            68: 'Advertise error',
-            69: 'Srmount error',
-            70: 'Communication error on send',
-            71: 'Protocol error',
-            72: 'Multihop attempted',
-            73: 'Cross mount point (not really error)',
-            74: 'Trying to read unreadable message',
-            75: 'Value too large for defined data type',
-            76: 'Given log. name not unique',
-            77: 'f.d. invalid for this operation',
-            78: 'Remote address changed',
-            79: 'Can   access a needed shared lib',
-            80: 'Accessing a corrupted shared lib',
-            81: '.lib section in a.out corrupted',
-            82: 'Attempting to link in too many libs',
-            83: 'Attempting to exec a shared library',
-            84: 'Illegal byte sequence',
-            86: 'Streams pipe error',
-            87: 'Too many users',
-            88: 'Socket operation on non-socket',
-            89: 'Destination address required',
-            90: 'Message too long',
-            91: 'Protocol wrong type for socket',
-            92: 'Protocol not available',
-            93: 'Unknown protocol',
-            94: 'Socket type not supported',
-            95: 'Not supported',
-            96: 'Protocol family not supported',
-            97: 'Address family not supported by protocol family',
-            98: 'Address already in use',
-            99: 'Address not available',
-            100: 'Network interface is not configured',
-            101: 'Network is unreachable',
-            102: 'Connection reset by network',
-            103: 'Connection aborted',
-            104: 'Connection reset by peer',
-            105: 'No buffer space available',
-            106: 'Socket is already connected',
-            107: 'Socket is not connected',
-            108: "Can't send after socket shutdown",
-            109: 'Too many references',
-            110: 'Connection timed out',
-            111: 'Connection refused',
-            112: 'Host is down',
-            113: 'Host is unreachable',
-            114: 'Socket already connected',
-            115: 'Connection already in progress',
-            116: 'Stale file handle',
-            122: 'Quota exceeded',
-            123: 'No medium (in tape drive)',
-            125: 'Operation canceled',
-            130: 'Previous owner died',
-            131: 'State not recoverable'
-        };
+
         var ___errno_state = 0;
         function ___setErrNo(value) {
             // For convenient setting and returning of errno.
             HEAP32[___errno_state >> 2] = value;
             return value;
         }
-        var PATH = {
+
+        const PATH = {
             splitPath: function(filename) {
                 var splitPathRe = /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
                 return splitPathRe.exec(filename).slice(1);
@@ -2056,7 +1815,7 @@ class LibTiMidity {
             },
             DB_VERSION: 20,
             DB_STORE_NAME: 'FILE_DATA',
-            mount: function(mount) {
+            mount: function() {
                 return MEMFS.mount.apply(null, arguments);
             },
             syncfs: function(mount, populate, callback) {
@@ -2276,7 +2035,7 @@ class LibTiMidity {
             }
         };
         var NODEFS = {
-            mount: function(mount) {},
+            mount: function() {},
             createNode: function(parent, name, mode, dev) {
                 if (!FS.isDir(mode) && !FS.isFile(mode) && !FS.isLink(mode)) {
                     throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
@@ -2534,15 +2293,18 @@ class LibTiMidity {
             currentPath: '/',
             initialized: false,
             ignorePermissions: true,
-            ErrnoError: function ErrnoError(errno) {
-                this.errno = errno;
-                for (var key in ERRNO_CODES) {
-                    if (ERRNO_CODES[key] === errno) {
-                        this.code = key;
+            // error instance
+            ErrnoError: function ErrnoError(errorNumber, details) {
+                this.errorNumber = errorNumber;
+                for (const key in ERRNO_CODES) {
+                    if (ERRNO_CODES[key] === errorNumber) {
+                        // remove the prefix 'E'
+                        this.code = key.substring(1);
                         break;
                     }
                 }
-                this.message = ERRNO_MESSAGES[errno];
+                this.message = ERRNO_MESSAGES[errorNumber];
+                this.details = details || '';
             },
             handleFSError: function(e) {
                 if (!(e instanceof FS.ErrnoError))
@@ -2644,7 +2406,7 @@ class LibTiMidity {
             lookupNode: function(parent, name) {
                 var err = FS.mayLookup(parent);
                 if (err) {
-                    throw new FS.ErrnoError(err);
+                    throw new FS.ErrnoError(err, name);
                 }
                 var hash = FS.hashName(parent.id, name);
                 for (
@@ -2797,7 +2559,7 @@ class LibTiMidity {
             },
             mayCreate: function(dir, name) {
                 try {
-                    var node = FS.lookupNode(dir, name);
+                    FS.lookupNode(dir, name);
                     return ERRNO_CODES.EEXIST;
                 } catch (e) {}
                 return FS.nodePermissions(dir, 'wx');
@@ -2981,30 +2743,36 @@ class LibTiMidity {
             lookup: function(parent, name) {
                 return parent.node_ops.lookup(parent, name);
             },
-            mknod: function(path, mode, dev) {
-                var lookup = FS.lookupPath(path, { parent: true });
-                var parent = lookup.node;
-                var name = PATH.basename(path);
-                var err = FS.mayCreate(parent, name);
-                if (err) {
-                    throw new FS.ErrnoError(err);
+            mknod: function(path, mode, dev, throwError = true) {
+                const lookup = FS.lookupPath(path, { parent: true });
+                const parent = lookup.node;
+                const name = PATH.basename(path);
+                const error = FS.mayCreate(parent, name);
+                if (error) {
+                    if (throwError) {
+                        throw new FS.ErrnoError(error, path);
+                    }
+                    return;
                 }
                 if (!parent.node_ops.mknod) {
-                    throw new FS.ErrnoError(ERRNO_CODES.EPERM);
+                    if (throwError) {
+                        throw new FS.ErrnoError(ERRNO_CODES.EPERM, path);
+                    }
+                    return;
                 }
                 return parent.node_ops.mknod(parent, name, mode, dev);
             },
-            create: function(path, mode) {
+            create: function(path, mode, throwError = true) {
                 mode = mode !== undefined ? mode : 0o666;
                 mode &= 4095;
                 mode |= 32768;
-                return FS.mknod(path, mode, 0);
+                return FS.mknod(path, mode, 0, throwError);
             },
-            mkdir: function(path, mode) {
+            mkdir: function(path, mode, throwError = true) {
                 mode = mode !== undefined ? mode : 0o777;
                 mode &= 511 | 512;
                 mode |= 16384;
-                return FS.mknod(path, mode, 0);
+                return FS.mknod(path, mode, 0, throwError);
             },
             mkdev: function(path, mode, dev) {
                 if (typeof dev === 'undefined') {
@@ -3714,41 +3482,76 @@ class LibTiMidity {
                 var mode = FS.getMode(canRead, canWrite);
                 return FS.mkdir(path, mode);
             },
-            createPath: function(parent, path, canRead, canWrite) {
-                parent =
-                    typeof parent === 'string' ? parent : FS.getPath(parent);
-                var parts = path.split('/').reverse();
+
+            /**
+             * Creates a directory.
+             * @function createPath
+             * @memberof LibTiMidity
+             * @instance
+             * @param {string} parent The parent folder.
+             * @param {string} path The path to create.
+             * @param {boolean} [throwError = true] If directory creation failed, throw an error.
+             */
+            createPath: function(parent, path, throwError = true) {
+                const parts = path.split('/').reverse();
                 while (parts.length) {
-                    var part = parts.pop();
-                    if (!part) continue;
-                    var current = PATH.join(parent, part);
+                    const part = parts.pop();
+                    if (!part) {
+                        continue;
+                    }
+                    const current = PATH.join(parent, part);
                     try {
-                        FS.mkdir(current);
-                    } catch (e) {
-                        // ignore EEXIST
+                        FS.mkdir(current, undefined, throwError);
+                    } catch (error) {
+                        // console.error(error)
                     }
                     parent = current;
                 }
-                return current;
             },
-            createFile: function(parent, name, properties, canRead, canWrite) {
-                var path = PATH.join(
+
+            /**
+             * Creates a file.
+             * @function createFile
+             * @memberof LibTiMidity
+             * @instance
+             * @param {string} parent The parent folder.
+             * @param {string} name The path to create.
+             * @param {boolean} canRead
+             * @param {boolean} canWrite
+             */
+            createFile: function(parent, name, canRead, canWrite) {
+                const path = PATH.join(
                     typeof parent === 'string' ? parent : FS.getPath(parent),
                     name
                 );
-                var mode = FS.getMode(canRead, canWrite);
+                const mode = FS.getMode(canRead, canWrite);
                 return FS.create(path, mode);
             },
+
+            /**
+             * Creates a data file and writes data to it.
+             * @function createDataFile
+             * @memberof LibTiMidity
+             * @instance
+             * @param {string} parent
+             * @param {string} name
+             * @param {array} data
+             * @param {boolean} canRead
+             * @param {boolean} canWrite
+             * @param {boolean} [canOwn]
+             * @param {boolean} [throwError = true] If file creation failed, throw an error.
+             */
+
             createDataFile: function(
                 parent,
                 name,
                 data,
                 canRead,
                 canWrite,
-                canOwn
+                canOwn,
+                throwError = true
             ) {
-                // console.log('writing', { parent, name, data, canRead, canWrite, canOwn })
-                var path = name
+                const path = name
                     ? PATH.join(
                           typeof parent === 'string'
                               ? parent
@@ -3756,24 +3559,65 @@ class LibTiMidity {
                           name
                       )
                     : parent;
-                var mode = FS.getMode(canRead, canWrite);
-                var node = FS.create(path, mode);
+                const mode = FS.getMode(canRead, canWrite);
+
+                if (throwError) {
+                    FS.create(path, mode);
+                } else {
+                    try {
+                        FS.create(path, mode);
+                    } catch (error) {
+                        return;
+                    }
+                }
+
                 if (data) {
                     if (typeof data === 'string') {
-                        var arr = new Array(data.length);
-                        for (var i = 0, len = data.length; i < len; ++i)
+                        let arr = new Array(data.length);
+                        for (var i = 0, len = data.length; i < len; ++i) {
                             arr[i] = data.charCodeAt(i);
+                        }
                         data = arr;
                     }
+
                     // make sure we can write to the file
                     FS.chmod(path, mode | 146);
-                    var stream = FS.open(path, 'w');
+                    const stream = FS.open(path, 'w');
                     FS.write(stream, data, 0, data.length, 0, canOwn);
                     FS.close(stream);
                     FS.chmod(path, mode);
                 }
-                return node;
             },
+
+            /**
+             * Creates a file in the patch directory and writes the instrument data to it.
+             * @function loadPatchFromUrl
+             * @memberof LibTiMidity
+             * @instance
+             * @param {string} baseUrl The public URL where all patches can be found as a group.
+             * @param {string} filename The name of the instrument patch to load (including subfolder for drums).
+             */
+
+            loadPatchFromUrl: async function(baseUrl, filename) {
+                const response = await fetch(`${baseUrl}${filename}`);
+                if (response.status !== 200) {
+                    throw new Error(response);
+                }
+
+                const arrayBuffer = await response.arrayBuffer();
+
+                const data = new Int8Array(arrayBuffer);
+                const mode = FS.getMode(true, true);
+                const path = PATH.join(LIBTIMIDITY_PATCH_DIRECTORY, filename);
+
+                FS.create(path, mode);
+                FS.chmod(path, mode | 146);
+                const stream = FS.open(path, 'w');
+                FS.write(stream, data, 0, data.length, 0, undefined);
+                FS.close(stream);
+                FS.chmod(path, mode);
+            },
+
             createDevice: function(parent, name, input, output) {
                 var path = PATH.join(
                     typeof parent === 'string' ? parent : FS.getPath(parent),
@@ -3788,7 +3632,7 @@ class LibTiMidity {
                     open: function(stream) {
                         stream.seekable = false;
                     },
-                    close: function(stream) {
+                    close: function() {
                         // flush any pending line data
                         if (output && output.buffer && output.buffer.length) {
                             output(10);
@@ -3878,13 +3722,7 @@ class LibTiMidity {
                 } else {
                     var properties = { isDevice: false, url: url };
                 }
-                var node = FS.createFile(
-                    parent,
-                    name,
-                    properties,
-                    canRead,
-                    canWrite
-                );
+                var node = FS.createFile(parent, name, canRead, canWrite);
                 // This is a total hack, but I want to get this lazy file code out of the
                 // core of MEMFS. If we want to keep this lazy file concept I feel it should
                 // be its own thin LAZYFS proxying calls to MEMFS.
@@ -4176,7 +4014,7 @@ class LibTiMidity {
         Module['_strcpy'] = _strcpy;
         Module['_strcat'] = _strcat;
         var SOCKFS = {
-            mount: function(mount) {
+            mount: function() {
                 return FS.createNode(null, '/', 16384 | 0o777, 0);
             },
             createSocket: function(family, type, protocol) {
@@ -4229,13 +4067,7 @@ class LibTiMidity {
                     var sock = stream.node.sock;
                     return sock.sock_ops.ioctl(sock, request, varargs);
                 },
-                read: function(
-                    stream,
-                    buffer,
-                    offset,
-                    length,
-                    position /* ignored */
-                ) {
+                read: function(stream, buffer, offset, length) {
                     var sock = stream.node.sock;
                     var msg = sock.sock_ops.recvmsg(sock, length);
                     if (!msg) {
@@ -4245,13 +4077,7 @@ class LibTiMidity {
                     buffer.set(msg.buffer, offset);
                     return msg.buffer.length;
                 },
-                write: function(
-                    stream,
-                    buffer,
-                    offset,
-                    length,
-                    position /* ignored */
-                ) {
+                write: function(stream, buffer, offset, length) {
                     var sock = stream.node.sock;
                     return sock.sock_ops.sendmsg(sock, buffer, offset, length);
                 },
@@ -4539,7 +4365,7 @@ class LibTiMidity {
                     // always "fail" in non-blocking mode
                     throw new FS.ErrnoError(ERRNO_CODES.EINPROGRESS);
                 },
-                listen: function(sock, backlog) {
+                listen: function(sock) {
                     if (sock.server) {
                         throw new FS.ErrnoError(ERRNO_CODES.EINVAL); // already listening
                     }
@@ -4548,7 +4374,6 @@ class LibTiMidity {
                     sock.server = new WebSocketServer({
                         host: host,
                         port: sock.sport
-                        // TODO support backlog
                     });
                     sock.server.on('connection', function(ws) {
                         if (sock.type === 1) {
@@ -6475,13 +6300,16 @@ class LibTiMidity {
                 FS.quit();
             }
         });
+
         Module['FS_createFolder'] = FS.createFolder;
-        Module['FS_createPath'] = FS.createPath;
-        Module['FS_createDataFile'] = FS.createDataFile;
+        Module.createPath = FS.createPath;
+        Module.createDataFile = FS.createDataFile;
+        Module.loadPatchFromUrl = FS.loadPatchFromUrl;
         Module['FS_createPreloadedFile'] = FS.createPreloadedFile;
         Module['FS_createLazyFile'] = FS.createLazyFile;
         Module['FS_createLink'] = FS.createLink;
         Module['FS_createDevice'] = FS.createDevice;
+
         ___errno_state = Runtime.staticAlloc(4);
         HEAP32[___errno_state >> 2] = 0;
         __ATINIT__.unshift({
@@ -19102,39 +18930,46 @@ class LibTiMidity {
             return FS;
         }
 
-        Module['run'] = Module.run = run;
+        Module.run = run;
 
-        // PRE_RUN_ADDITIONS
+        /**
+         * Initializes the library.
+         * @function init
+         * @memberof LibTiMidity
+         * @param {boolean} [throwError = true] Throw an error if file/folder creation failed.
+         * @instance
+         */
+        Module.init = function(throwError = true) {
+            // creates folders for instrument patches
+            Module.createPath('/', LIBTIMIDITY_PATCH_DIRECTORY, throwError);
+            Module.createPath(
+                `/${LIBTIMIDITY_PATCH_DIRECTORY}`,
+                LIBTIMIDITY_PATCH_DRUM_DIRECTORY,
+                throwError
+            );
 
-        Module['FS_createPath']('/', 'pat', true, true);
-        Module['FS_createPath']('/pat', 'MT32Drums', true, true);
-
-        // prettier-ignore
-        Module['FS_createDataFile']('/', 'timidity.cfg', [100, 105, 114, 32, 46, 47, 112, 97, 116, 10, 10, 100, 114, 117, 109, 115, 101, 116, 32, 48, 10, 10, 32, 51, 53, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 48, 46, 112, 97, 116, 10, 32, 51, 54, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 49, 46, 112, 97, 116, 10, 32, 51, 55, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 50, 46, 112, 97, 116, 10, 32, 51, 56, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 51, 46, 112, 97, 116, 10, 32, 51, 57, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 52, 46, 112, 97, 116, 10, 32, 52, 48, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 53, 46, 112, 97, 116, 10, 32, 52, 49, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 54, 46, 112, 97, 116, 10, 32, 52, 50, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 55, 46, 112, 97, 116, 10, 32, 52, 51, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 56, 46, 112, 97, 116, 10, 32, 52, 52, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 57, 46, 112, 97, 116, 10, 32, 52, 53, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 49, 48, 46, 112, 97, 116, 10, 32, 52, 54, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 49, 49, 46, 112, 97, 116, 10, 32, 52, 55, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 49, 50, 46, 112, 97, 116, 10, 32, 52, 56, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 49, 51, 46, 112, 97, 116, 10, 32, 52, 57, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 49, 52, 46, 112, 97, 116, 10, 32, 53, 48, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 49, 53, 46, 112, 97, 116, 10, 32, 53, 49, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 49, 54, 46, 112, 97, 116, 10, 32, 53, 50, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 49, 55, 46, 112, 97, 116, 10, 32, 53, 51, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 49, 56, 46, 112, 97, 116, 10, 32, 53, 52, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 49, 57, 46, 112, 97, 116, 10, 32, 53, 53, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 50, 48, 46, 112, 97, 116, 10, 32, 53, 54, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 50, 49, 46, 112, 97, 116, 10, 32, 53, 55, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 50, 50, 46, 112, 97, 116, 10, 32, 53, 56, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 50, 51, 46, 112, 97, 116, 10, 32, 53, 57, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 50, 52, 46, 112, 97, 116, 10, 32, 54, 48, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 50, 53, 46, 112, 97, 116, 10, 32, 54, 49, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 50, 54, 46, 112, 97, 116, 10, 32, 54, 50, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 50, 55, 46, 112, 97, 116, 10, 32, 54, 51, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 50, 56, 46, 112, 97, 116, 10, 32, 54, 52, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 50, 57, 46, 112, 97, 116, 10, 32, 54, 53, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 51, 48, 46, 112, 97, 116, 10, 32, 54, 54, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 51, 49, 46, 112, 97, 116, 10, 32, 54, 55, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 51, 50, 46, 112, 97, 116, 10, 32, 54, 56, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 51, 51, 46, 112, 97, 116, 10, 32, 54, 57, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 51, 52, 46, 112, 97, 116, 10, 32, 55, 48, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 51, 53, 46, 112, 97, 116, 10, 32, 55, 49, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 51, 54, 46, 112, 97, 116, 10, 32, 55, 50, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 51, 55, 46, 112, 97, 116, 10, 32, 55, 51, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 51, 56, 46, 112, 97, 116, 10, 32, 55, 52, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 51, 57, 46, 112, 97, 116, 10, 32, 55, 53, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 52, 48, 46, 112, 97, 116, 10, 32, 55, 54, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 52, 49, 46, 112, 97, 116, 10, 32, 55, 55, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 52, 50, 46, 112, 97, 116, 10, 32, 55, 56, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 52, 51, 46, 112, 97, 116, 10, 32, 55, 57, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 52, 52, 46, 112, 97, 116, 10, 32, 56, 48, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 52, 53, 46, 112, 97, 116, 10, 32, 56, 49, 9, 32, 77, 84, 51, 50, 68, 114, 117, 109, 115, 47, 109, 116, 51, 50, 100, 114, 117, 109, 45, 52, 54, 46, 112, 97, 116, 10, 10, 98, 97, 110, 107, 32, 48, 10, 10, 32, 48, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 50, 55, 46, 112, 97, 116, 10, 32, 49, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 50, 54, 46, 112, 97, 116, 10, 32, 50, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 50, 53, 46, 112, 97, 116, 10, 32, 51, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 50, 52, 46, 112, 97, 116, 10, 32, 52, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 50, 51, 46, 112, 97, 116, 10, 32, 53, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 50, 50, 46, 112, 97, 116, 10, 32, 54, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 50, 49, 46, 112, 97, 116, 10, 32, 55, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 50, 48, 46, 112, 97, 116, 10, 32, 56, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 49, 57, 46, 112, 97, 116, 10, 32, 57, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 49, 56, 46, 112, 97, 116, 10, 32, 49, 48, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 49, 55, 46, 112, 97, 116, 10, 32, 49, 49, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 49, 54, 46, 112, 97, 116, 10, 32, 49, 50, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 49, 53, 46, 112, 97, 116, 10, 32, 49, 51, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 49, 52, 46, 112, 97, 116, 10, 32, 49, 52, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 49, 51, 46, 112, 97, 116, 10, 32, 49, 53, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 49, 50, 46, 112, 97, 116, 10, 32, 49, 54, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 49, 49, 46, 112, 97, 116, 10, 32, 49, 55, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 49, 48, 46, 112, 97, 116, 10, 32, 49, 56, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 48, 57, 46, 112, 97, 116, 10, 32, 49, 57, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 48, 56, 46, 112, 97, 116, 10, 32, 50, 48, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 48, 55, 46, 112, 97, 116, 10, 32, 50, 49, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 48, 54, 46, 112, 97, 116, 10, 32, 50, 50, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 48, 53, 46, 112, 97, 116, 10, 32, 50, 51, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 48, 52, 46, 112, 97, 116, 10, 32, 50, 52, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 48, 51, 46, 112, 97, 116, 10, 32, 50, 53, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 48, 50, 46, 112, 97, 116, 10, 32, 50, 54, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 48, 49, 46, 112, 97, 116, 10, 32, 50, 55, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 48, 48, 46, 112, 97, 116, 10, 32, 50, 56, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 57, 57, 46, 112, 97, 116, 10, 32, 50, 57, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 57, 56, 46, 112, 97, 116, 10, 32, 51, 48, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 57, 55, 46, 112, 97, 116, 10, 32, 51, 49, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 57, 54, 46, 112, 97, 116, 10, 32, 51, 50, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 57, 53, 46, 112, 97, 116, 10, 32, 51, 51, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 57, 52, 46, 112, 97, 116, 10, 32, 51, 52, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 57, 51, 46, 112, 97, 116, 10, 32, 51, 53, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 57, 50, 46, 112, 97, 116, 10, 32, 51, 54, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 57, 49, 46, 112, 97, 116, 10, 32, 51, 55, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 57, 48, 46, 112, 97, 116, 10, 32, 51, 56, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 56, 57, 46, 112, 97, 116, 10, 32, 51, 57, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 56, 56, 46, 112, 97, 116, 10, 32, 52, 48, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 56, 55, 46, 112, 97, 116, 10, 32, 52, 49, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 56, 54, 46, 112, 97, 116, 10, 32, 52, 50, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 56, 53, 46, 112, 97, 116, 10, 32, 52, 51, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 56, 52, 46, 112, 97, 116, 10, 32, 52, 52, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 56, 51, 46, 112, 97, 116, 10, 32, 52, 53, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 56, 50, 46, 112, 97, 116, 10, 32, 52, 54, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 56, 49, 46, 112, 97, 116, 10, 32, 52, 55, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 56, 48, 46, 112, 97, 116, 10, 32, 52, 56, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 55, 57, 46, 112, 97, 116, 10, 32, 52, 57, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 55, 56, 46, 112, 97, 116, 10, 32, 53, 48, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 55, 55, 46, 112, 97, 116, 10, 32, 53, 49, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 55, 54, 46, 112, 97, 116, 10, 32, 53, 50, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 55, 53, 46, 112, 97, 116, 10, 32, 53, 51, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 55, 52, 46, 112, 97, 116, 10, 32, 53, 52, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 55, 51, 46, 112, 97, 116, 10, 32, 53, 53, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 55, 50, 46, 112, 97, 116, 10, 32, 53, 54, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 55, 49, 46, 112, 97, 116, 10, 32, 53, 55, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 55, 48, 46, 112, 97, 116, 10, 32, 53, 56, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 54, 57, 46, 112, 97, 116, 10, 32, 53, 57, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 54, 56, 46, 112, 97, 116, 10, 32, 54, 48, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 54, 55, 46, 112, 97, 116, 10, 32, 54, 49, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 54, 54, 46, 112, 97, 116, 10, 32, 54, 50, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 54, 53, 46, 112, 97, 116, 10, 32, 54, 51, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 54, 52, 46, 112, 97, 116, 10, 32, 54, 52, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 54, 51, 46, 112, 97, 116, 10, 32, 54, 53, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 54, 50, 46, 112, 97, 116, 10, 32, 54, 54, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 54, 49, 46, 112, 97, 116, 10, 32, 54, 55, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 54, 48, 46, 112, 97, 116, 10, 32, 54, 56, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 53, 57, 46, 112, 97, 116, 10, 32, 54, 57, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 53, 56, 46, 112, 97, 116, 10, 32, 55, 48, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 53, 55, 46, 112, 97, 116, 10, 32, 55, 49, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 53, 54, 46, 112, 97, 116, 10, 32, 55, 50, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 53, 53, 46, 112, 97, 116, 10, 32, 55, 51, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 53, 52, 46, 112, 97, 116, 10, 32, 55, 52, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 53, 51, 46, 112, 97, 116, 10, 32, 55, 53, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 53, 50, 46, 112, 97, 116, 10, 32, 55, 54, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 53, 49, 46, 112, 97, 116, 10, 32, 55, 55, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 53, 48, 46, 112, 97, 116, 10, 32, 55, 56, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 52, 57, 46, 112, 97, 116, 10, 32, 55, 57, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 52, 56, 46, 112, 97, 116, 10, 32, 56, 48, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 52, 55, 46, 112, 97, 116, 10, 32, 56, 49, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 52, 54, 46, 112, 97, 116, 10, 32, 56, 50, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 52, 53, 46, 112, 97, 116, 10, 32, 56, 51, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 52, 52, 46, 112, 97, 116, 10, 32, 56, 52, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 52, 51, 46, 112, 97, 116, 10, 32, 56, 53, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 52, 50, 46, 112, 97, 116, 10, 32, 56, 54, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 52, 49, 46, 112, 97, 116, 10, 32, 56, 55, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 52, 48, 46, 112, 97, 116, 10, 32, 56, 56, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 51, 57, 46, 112, 97, 116, 10, 32, 56, 57, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 51, 56, 46, 112, 97, 116, 10, 32, 57, 48, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 51, 55, 46, 112, 97, 116, 10, 32, 57, 49, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 51, 54, 46, 112, 97, 116, 10, 32, 57, 50, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 51, 53, 46, 112, 97, 116, 10, 32, 57, 51, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 51, 52, 46, 112, 97, 116, 10, 32, 57, 52, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 51, 51, 46, 112, 97, 116, 10, 32, 57, 53, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 51, 50, 46, 112, 97, 116, 10, 32, 57, 54, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 51, 49, 46, 112, 97, 116, 10, 32, 57, 55, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 51, 48, 46, 112, 97, 116, 10, 32, 57, 56, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 50, 57, 46, 112, 97, 116, 10, 32, 57, 57, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 50, 56, 46, 112, 97, 116, 10, 32, 49, 48, 48, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 50, 55, 46, 112, 97, 116, 10, 32, 49, 48, 49, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 50, 54, 46, 112, 97, 116, 10, 32, 49, 48, 50, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 50, 53, 46, 112, 97, 116, 10, 32, 49, 48, 51, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 50, 52, 46, 112, 97, 116, 10, 32, 49, 48, 52, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 50, 51, 46, 112, 97, 116, 10, 32, 49, 48, 53, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 50, 50, 46, 112, 97, 116, 10, 32, 49, 48, 54, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 50, 49, 46, 112, 97, 116, 10, 32, 49, 48, 55, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 50, 48, 46, 112, 97, 116, 10, 32, 49, 48, 56, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 57, 46, 112, 97, 116, 10, 32, 49, 48, 57, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 56, 46, 112, 97, 116, 10, 32, 49, 49, 48, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 55, 46, 112, 97, 116, 10, 32, 49, 49, 49, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 54, 46, 112, 97, 116, 10, 32, 49, 49, 50, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 53, 46, 112, 97, 116, 10, 32, 49, 49, 51, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 52, 46, 112, 97, 116, 10, 32, 49, 49, 52, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 51, 46, 112, 97, 116, 10, 32, 49, 49, 53, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 50, 46, 112, 97, 116, 10, 32, 49, 49, 54, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 49, 46, 112, 97, 116, 10, 32, 49, 49, 55, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 48, 46, 112, 97, 116, 10, 32, 49, 49, 56, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 57, 46, 112, 97, 116, 10, 32, 49, 49, 57, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 56, 46, 112, 97, 116, 10, 32, 49, 50, 48, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 55, 46, 112, 97, 116, 10, 32, 49, 50, 49, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 54, 46, 112, 97, 116, 10, 32, 49, 50, 50, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 53, 46, 112, 97, 116, 10, 32, 49, 50, 51, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 52, 46, 112, 97, 116, 10, 32, 49, 50, 52, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 51, 46, 112, 97, 116, 10, 32, 49, 50, 53, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 50, 46, 112, 97, 116, 10, 32, 49, 50, 54, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 49, 46, 112, 97, 116, 10, 32, 49, 50, 55, 9, 32, 97, 114, 97, 99, 104, 110, 111, 45, 48, 46, 112, 97, 116, 10], true, true);
-
-        Module['FS_createDataFile'](
-            '/pat',
-            'dummy.txt',
-            [100, 117, 109, 109, 121, 10],
-            true,
-            true
-        );
-        Module['FS_createDataFile'](
-            '/pat/MT32Drums',
-            'dummy.txt',
-            [100, 117, 109, 109, 121, 10],
-            true,
-            true
-        );
+            // creates config file
+            Module.createDataFile(
+                '/',
+                LIBTIMIDITY_CONFIG_FILE,
+                LIBTIMIDITY_CONFIG_DATA,
+                true,
+                true,
+                undefined,
+                throwError
+            );
+        };
 
         // shouldRunNow refers to calling main(), not run().
 
         var shouldRunNow = true;
+
         if (Module['noInitialRun']) {
             shouldRunNow = false;
         }
 
         Module.FS = run();
+
         this.Module = Module;
     }
 }
