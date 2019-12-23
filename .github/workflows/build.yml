@@ -9,17 +9,17 @@ jobs:
         name: Create new build
         runs-on: ubuntu-latest
         steps:
-            - name: Setting up workflow...
+            - name: Set up workflow
               uses: actions/checkout@v1
-            - name: Setting up Node environment...
+            - name: Set up Node environment
               uses: actions/setup-node@v1
               with:
                   node-version: 12
-            - name: Installing dependencies...
+            - name: Instal dependencies
               run: npm ci
-            - name: Checking code format...
+            - name: Check code format
               run: npm run lint:check
-            - name: Running tests...
+            - name: Run tests
               run: npm run test
-            - name: Creating build...
+            - name: Create build
               run: npm run build:quiet
