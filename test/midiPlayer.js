@@ -66,6 +66,7 @@ describe('MidiPlayer', function() {
         });
 
         test('Player should instantiate', () => {
+            throw new Error('boom');
             midiPlayer = new MidiPlayer({ audioContext });
             expect(midiPlayer).toBeInstanceOf(MidiPlayer);
             expect(midiPlayer.playerId).not.toBeUndefined();
