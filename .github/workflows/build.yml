@@ -31,7 +31,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - run: npm run test
-    test:
+    build:
         name: Creating build
         needs: test
         runs-on: ubuntu-latest
