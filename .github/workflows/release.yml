@@ -17,20 +17,20 @@ jobs:
                   registry-url: https://registry.npmjs.org/
             - run: npm config set //registry.npmjs.org/:_authToken=$NPM_TOKEN
             - run: npm publish
-    
+
     create-release:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v1
             - uses: actions/setup-node@v1
-                with:
-                    node-version: 12
+              with:
+                  node-version: 12
             - uses: actions/create-release@v1
-                with:
-                    tag_name: ${{ github.ref }}
-                    release_name: ${{ github.ref }}
-                    draft: false
-                    prerelease: false
+              with:
+                  tag_name: ${{ github.ref }}
+                  release_name: ${{ github.ref }}
+                  draft: false
+                  prerelease: false
 
 env:
     GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
