@@ -1,0 +1,21 @@
+name: Version
+
+on:
+    pull_request:
+        types: [opened]
+
+jobs:
+    build:
+        name: Bump version
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v1
+            - uses: actions/setup-node@v1
+              with:
+                  node-version: 12
+            - run: git config user.email "gurcan.yves@gmail.com"
+            - run: git config user.name "Yves Gurcan"
+            - run: npm run patch
+
+env:
+    NPM_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}

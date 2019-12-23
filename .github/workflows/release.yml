@@ -2,15 +2,19 @@ name: Release
 
 on:
     pull_request:
+        types: [closed]
         branches:
             - master
 
 jobs:
     publish-to-npm:
-        needs: build
+        name: Publish to NPM
+        if: github.event.pull_request.merged
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v1
+              with:
+                  ref: master
             - uses: actions/setup-node@v1
               with:
                   node-version: 12
@@ -19,9 +23,13 @@ jobs:
             - run: npm publish
 
     create-release:
+        name: Create GitHub release
+        if: github.event.pull_request.merged
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v1
+              with:
+                  ref: master
             - uses: actions/setup-node@v1
               with:
                   node-version: 12
