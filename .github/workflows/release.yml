@@ -14,8 +14,6 @@ jobs:
         steps:
             - name: Set up workflow
               uses: actions/checkout@v1
-              with:
-                  ref: master
             - name: Set up Node
               uses: actions/setup-node@v1
               with:
