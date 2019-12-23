@@ -1,4 +1,4 @@
-name: Create Build
+name: Build
 
 on:
     pull_request:
@@ -6,20 +6,20 @@ on:
 
 jobs:
     build:
-        name: Build
+        name: Create new build
         runs-on: ubuntu-latest
         steps:
-            - name: Checkout source code
+            - name: Setting up workflow...
               uses: actions/checkout@v1
-            - name: Set up Node
+            - name: Setting up Node environment...
               uses: actions/setup-node@v1
               with:
                   node-version: 12
-            - name: Install dependencies
+            - name: Installing dependencies...
               run: npm ci
-            - name: Linter check
+            - name: Checking code format...
               run: npm run lint:check
-            - name: Tests
+            - name: Running tests...
               run: npm run test
-            - name: Build
+            - name: Creating build...
               run: npm run build:quiet
