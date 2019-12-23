@@ -42,6 +42,7 @@
         "test:init": "jest --init",
         "docs": "documentation build src/MidiPlayer.js -f html -o doc --config documentation.yml",
         "docs:watch": "documentation serve --watch src/MidiPlayer.js --config documentation.yml",
+        "preversion": "npm run lint && npm run test && npm run docs",
         "patch": "npm version patch",
         "minor": "npm version minor",
         "major": "npm version major",
