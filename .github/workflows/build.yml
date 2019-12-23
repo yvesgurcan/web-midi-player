@@ -17,19 +17,23 @@ jobs:
         name: Installing dependencies
         needs: setup
         runs-on: ubuntu-latest
+        steps:
             - run: npm ci
     lint:
         name: Running linter
         needs: install
         runs-on: ubuntu-latest
+        steps:
             - run: npm run lint:check
     test:
         name: Running tests
         needs: lint
         runs-on: ubuntu-latest
+        steps:
             - run: npm run test
     test:
         name: Creating build
         needs: test
         runs-on: ubuntu-latest
+        steps:
             - run: npm run build:quiet
