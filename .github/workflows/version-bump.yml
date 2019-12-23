@@ -13,7 +13,8 @@ jobs:
             - uses: actions/setup-node@v1
               with:
                   node-version: 12
-            - run: npm config set //registry.npmjs.org/:_authToken=$NPM_TOKEN
+            - run: git config user.email "gurcan.yves@gmail.com"
+            - run: git config user.name "Yves Gurcan"
             - run: npm run patch
 
 env:
