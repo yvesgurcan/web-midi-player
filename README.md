@@ -64,6 +64,14 @@ Update documentation.
 
     npm run docs
 
+### GitHub Actions
+
+This repository uses GitHub Actions to automate certain continous integration / continuous development tasks such as publishing to NPM and running tests.
+
+The list of workflows used for this project can be found [./github/workflows](here).
+
+Need help to create new workflows? Checkout out [workflow syntax help](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/workflow-syntax-for-github-actions) and [events which trigger workflows](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/events-that-trigger-workflows#webhook-events).
+
 ## Misc
 
 This libraries relies on code generated thanks to [Emscripten](https://github.com/emscripten-core/emscripten).
