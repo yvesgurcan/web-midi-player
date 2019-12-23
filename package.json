@@ -2,7 +2,7 @@
     "name": "web-midi-player",
     "name-display": "Web Midi Player",
     "description": "🎹 Event-driven JavaScript library to enable MIDI playback in the browser.",
-    "version": "1.0.37",
+    "version": "1.0.41",
     "author": {
         "name": "Yves Gurcan",
         "url": "http://yvesgurcan.com/"
@@ -42,9 +42,9 @@
         "test:init": "jest --init",
         "docs": "documentation build src/MidiPlayer.js -f html -o doc --config documentation.yml",
         "docs:watch": "documentation serve --watch src/MidiPlayer.js --config documentation.yml",
-        "patch": "npm version patch",
-        "minor": "npm version minor",
-        "major": "npm version major"
+        "patch": "git tag `npm version patch`",
+        "minor": "git tag `npm version minor`",
+        "major": "git tag `npm version major`"
     },
     "devDependencies": {
         "@babel/core": "^7.3.4",
