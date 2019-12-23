@@ -65,11 +65,14 @@ Update documentation.
 
     npm run docs
 
-### GitHub Actions
+### Continuous integration / Continuous development
 
-This repository uses GitHub Actions to automate certain continous integration / continuous development tasks such as publishing to NPM and running tests.
+This repository uses GitHub Actions to automate certain tasks such as publishing to NPM and running tests.
 
 The list of workflows used for this project can be found [./github/workflows](here).
+
+-   Builds are created and checked when you open pull requests into `master`.
+-   Merging pull requests into `master` triggers a release on NPM and GitHub.
 
 Need help to create new workflows? Checkout out [workflow syntax help](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/workflow-syntax-for-github-actions) and [events which trigger workflows](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/events-that-trigger-workflows#webhook-events).
 
