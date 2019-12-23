@@ -23,10 +23,13 @@ jobs:
               run: npm config set //registry.npmjs.org/:_authToken=$NPM_TOKEN
             - name: Publish to NPM
               run: npm publish
-            - name: Configure git
-              run: git config --global --add url."git@github.com:".insteadOf "https://github.com/"
+            - name: Configure git email
+              run: git config --local user.email "gurcan.yves@gmail.com"
+            - name: Configure git name
+              run: git config --local user.name "Yves Gurcan"
             - name: Update GitHub releases
               run: npm run upgrade:releases
 
 env:
+    GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
     NPM_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
