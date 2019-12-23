@@ -9,8 +9,10 @@
 *All checks below must be performed before the PR can be merged.*
 
 - [ ] Version was bumped with `npm run patch`, `npm run minor` or `npm run major`.
+- [ ] Code was linted with `npm run lint`.
+- [ ] Tests were added, deleted, and/or updated.
 - [ ] Example was updated and re-compiled with `cd example; npm run build`.
-- [ ] Changes are documented.
+- [ ] Changes are documented and documentation was updated with `npm run docs`.
 
 ## Issue(s) adressed
 

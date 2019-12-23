@@ -5,16 +5,31 @@ on:
         types: [opened, edited, synchronize]
 
 jobs:
-    build:
-        name: Create build
+    setup:
+        name: Setup
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v1
             - uses: actions/setup-node@v1
               with:
                   node-version: 12
+    install:
+        name: Installing dependencies
+        needs: setup
+        runs-on: ubuntu-latest
             - run: npm ci
-            - run: npm run lint
+    lint:
+        name: Running linter
+        needs: install
+        runs-on: ubuntu-latest
+            - run: npm run lint:check
+    test:
+        name: Running tests
+        needs: lint
+        runs-on: ubuntu-latest
             - run: npm run test
-            - run: npm run docs
+    test:
+        name: Creating build
+        needs: test
+        runs-on: ubuntu-latest
             - run: npm run build:quiet

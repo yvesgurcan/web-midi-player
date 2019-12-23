@@ -37,6 +37,7 @@
         "build": "webpack --mode production --progress",
         "build:quiet": "webpack --mode production",
         "lint": "prettier --write **/*.js",
+        "lint:check": "prettier --check **/*.js",
         "test": "jest",
         "test:init": "jest --init",
         "docs": "documentation build src/MidiPlayer.js -f html -o doc --config documentation.yml",
