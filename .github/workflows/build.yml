@@ -1,9 +1,5 @@
 name: Build
 
-on:
-    pull_request:
-        types: [opened, edited, synchronize]
-
 jobs:
     build:
         name: Create new build
