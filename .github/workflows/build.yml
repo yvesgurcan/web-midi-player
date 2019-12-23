@@ -6,12 +6,14 @@ on:
 
 jobs:
     build:
+        name: Create build
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v1
             - uses: actions/setup-node@v1
               with:
                   node-version: 12
+            - run: npm run patch
             - run: npm ci
             - run: npm run lint
             - run: npm run test
