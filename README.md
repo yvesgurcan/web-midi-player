@@ -1,6 +1,7 @@
 [![code triage](https://www.codetriage.com/yvesgurcan/web-midi-player/badges/users.svg)](https://www.codetriage.com/yvesgurcan/web-midi-player)
 [![npm version](https://badge.fury.io/js/web-midi-player.svg)](https://badge.fury.io/js/web-midi-player)
 [![build status](https://github.com/yvesgurcan/web-midi-player/workflows/Build/badge.svg)](https://github.com/yvesgurcan/web-midi-player/actions?query=workflow%3ABuild)
+[![release status](https://github.com/yvesgurcan/web-midi-player/workflows/Release/badge.svg)](https://github.com/yvesgurcan/web-midi-player/actions?query=workflow%3ARelease)
 
 Event-driven JavaScript library to enable MIDI playback in the browser.
 
