@@ -19,6 +19,7 @@ jobs:
               with:
                   node-version: 12
                   registry-url: https://registry.npmjs.org/
+            - run: npm run push
             - run: npm config set //registry.npmjs.org/:_authToken=$NPM_TOKEN
             - run: npm publish
 
@@ -33,6 +34,7 @@ jobs:
             - uses: actions/setup-node@v1
               with:
                   node-version: 12
+            - run: npm run push
             - uses: actions/create-release@v1
               with:
                   tag_name: ${{ github.ref }}
