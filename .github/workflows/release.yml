@@ -26,7 +26,7 @@ jobs:
             - name: Configure git
               run: git config --global --add url."git@github.com:".insteadOf "https://github.com/"
             - name: Update GitHub releases
-              run: npm run update:releases
+              run: npm run upgrade:releases
 
 env:
     NPM_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
