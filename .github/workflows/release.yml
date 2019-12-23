@@ -12,16 +12,21 @@ jobs:
         if: github.event.pull_request.merged
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v1
+            - name: Set up workflow
+              uses: actions/checkout@v1
               with:
                   ref: master
-            - uses: actions/setup-node@v1
+            - name: Set up Node
+              uses: actions/setup-node@v1
               with:
                   node-version: 12
                   registry-url: https://registry.npmjs.org/
-            - run: npm config set //registry.npmjs.org/:_authToken=$NPM_TOKEN
-            - run: npm publish
-            - uses: actions/create-release@v1
+            - name: Set up NPM auth
+              run: npm config set //registry.npmjs.org/:_authToken=$NPM_TOKEN
+            - name: Publish to NPM
+              run: npm publish
+            - name: Create GitHub release
+              uses: actions/create-release@v1
               with:
                   tag_name: ${{ github.ref }}
                   release_name: ${{ github.ref }}
@@ -30,3 +35,4 @@ jobs:
 
 env:
     NPM_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
+    GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
