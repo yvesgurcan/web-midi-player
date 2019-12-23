@@ -2,7 +2,7 @@
     "name": "web-midi-player",
     "name-display": "Web Midi Player",
     "description": "🎹 Event-driven JavaScript library to enable MIDI playback in the browser.",
-    "version": "1.0.45",
+    "version": "1.0.50",
     "author": {
         "name": "Yves Gurcan",
         "url": "http://yvesgurcan.com/"
@@ -36,16 +36,19 @@
         "start": "webpack-dev-server --mode production --progress",
         "build": "webpack --mode production --progress",
         "build:quiet": "webpack --mode production",
+        "commit:build": "git add . && git commit -m 'new build' && git push",
         "lint": "prettier --write **/*.js",
         "lint:check": "prettier --check **/*.js",
         "test": "jest",
         "test:init": "jest --init",
         "docs": "documentation build src/MidiPlayer.js -f html -o doc --config documentation.yml",
         "docs:watch": "documentation serve --watch src/MidiPlayer.js --config documentation.yml",
-        "patch": "npm version patch",
-        "minor": "npm version minor",
-        "major": "npm version major",
-        "update:releases": "git push --tags"
+        "preversion": "npm run lint && npm run test && npm run build && cd ./example && npm run build",
+        "postversion": "npm run docs && npm run commit:build",
+        "upgrade:patch": "npm version patch",
+        "upgrade:minor": "npm version minor",
+        "upgrade:major": "npm version major",
+        "upgrade:releases": "git push --tags"
     },
     "devDependencies": {
         "@babel/core": "^7.3.4",

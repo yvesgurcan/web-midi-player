@@ -22,12 +22,10 @@ Alternatively, this NPM package is hosted for free by [jsDeliver](https://www.js
 ## Getting started
 
     import MidiPlayer from 'web-midi-player';
-
     const midiPlayer = new MidiPlayer();
-
     midiPlayer.play({ url: 'song.mid' });
 
-## Contribute
+## Contributing
 
 Something doesn't work? We want to know! Open a [new issue](https://github.com/yvesgurcan/web-midi-player/issues/new).
 
@@ -47,32 +45,40 @@ Start development server.
 
     npm start
 
-### Before you commit your code
+### Before you open a pull request
 
-Run linter.
+Following [semantic version guidelines](https://semver.org/), run one of the following scripts depending on the nature of your changes:
 
+-   `npm upgrade:patch`
+-   `npm upgrade:minor`
+-   `npm upgrade:major`
+
+This will run all the scripts below, which should all execute successfully in order to merge your code changes into the NPM package.
+
+Before bumping the version:
+
+```
     npm run lint
-
-Execute tests.
-
     npm run test
-
-Create new build.
-
     npm run build
+    cd example && npm run build
+```
 
-Update documentation.
+After bumping the version:
 
+```
     npm run docs
+    npm run commit:build
+```
 
 ### Continuous integration / Continuous development
 
 This repository uses GitHub Actions to automate certain tasks such as publishing to NPM and running tests.
 
-The list of workflows used for this project can be found [./github/workflows](here).
+The list of workflows used for this project can be found [./github/workflows](here):
 
 -   Builds are created and checked when you open pull requests into `master`.
--   Merging pull requests into `master` triggers a release on NPM and GitHub.
+-   Merging pull requests into `master` triggers a release on NPM.
 
 Need help to create new workflows? Checkout out [workflow syntax help](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/workflow-syntax-for-github-actions) and [events which trigger workflows](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/events-that-trigger-workflows#webhook-events).
 
