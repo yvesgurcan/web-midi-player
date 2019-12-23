@@ -1,39 +1,25 @@
-name: Build
+name: Create Build
 
 on:
     pull_request:
         types: [opened, edited, synchronize]
 
 jobs:
-    setup:
-        name: Setup
+    build:
+        name: Build
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v1
-            - uses: actions/setup-node@v1
+            - name: Checkout source code
+              uses: actions/checkout@v1
+            - name: Set up Node
+              uses: actions/setup-node@v1
               with:
                   node-version: 12
-    install:
-        name: Installing dependencies
-        needs: setup
-        runs-on: ubuntu-latest
-        steps:
-            - run: npm ci
-    lint:
-        name: Running linter
-        needs: install
-        runs-on: ubuntu-latest
-        steps:
-            - run: npm run lint:check
-    test:
-        name: Running tests
-        needs: lint
-        runs-on: ubuntu-latest
-        steps:
-            - run: npm run test
-    build:
-        name: Creating build
-        needs: test
-        runs-on: ubuntu-latest
-        steps:
-            - run: npm run build:quiet
+            - name: Install dependencies
+              run: npm ci
+            - name: Linter check
+              run: npm run lint:check
+            - name: Tests
+              run: npm run test
+            - name: Build
+              run: npm run build:quiet
