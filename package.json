@@ -42,9 +42,10 @@
         "test:init": "jest --init",
         "docs": "documentation build src/MidiPlayer.js -f html -o doc --config documentation.yml",
         "docs:watch": "documentation serve --watch src/MidiPlayer.js --config documentation.yml",
-        "patch": "git tag `npm version patch`",
-        "minor": "git tag `npm version minor`",
-        "major": "git tag `npm version major`"
+        "patch": "npm version patch",
+        "minor": "npm version minor",
+        "major": "npm version major",
+        "update:releases": "git push --tags"
     },
     "devDependencies": {
         "@babel/core": "^7.3.4",

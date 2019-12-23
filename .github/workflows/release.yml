@@ -1,4 +1,4 @@
-name: Release
+name: Publish
 
 on:
     pull_request:
@@ -8,7 +8,7 @@ on:
 
 jobs:
     publish:
-        name: Publish
+        name: NPM
         if: github.event.pull_request.merged
         runs-on: ubuntu-latest
         steps:
@@ -23,14 +23,8 @@ jobs:
               run: npm config set //registry.npmjs.org/:_authToken=$NPM_TOKEN
             - name: Publish to NPM
               run: npm publish
-            - name: Create GitHub release
-              uses: actions/create-release@v1
-              with:
-                  tag_name: ${{ github.ref }}
-                  release_name: ${{ github.ref }}
-                  draft: false
-                  prerelease: false
+            - name: Update GitHub releases
+              run: npm run update:releases
 
 env:
     NPM_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
-    GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
