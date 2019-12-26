@@ -21,7 +21,7 @@ This library can be installed via NPM.
 
 Alternatively, this NPM package is hosted for free on [jsDeliver](https://www.jsdelivr.com/). You can add this library to your project with a `script` tag:
 
-    <script src="https://cdn.jsdelivr.net/npm/web-midi-player@latest/"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web-midi-player@latest/index.js"></script>
 
 ### Instrument patches
 
