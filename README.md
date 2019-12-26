@@ -25,7 +25,7 @@ Alternatively, this NPM package is hosted for free on [jsDeliver](https://www.js
 
 ### Instrument patches
 
-**This package requires MIDI instrument patches in order to play audio.** You can [download patches from this separate repository](https://github.com/yvesgurcan/midi-instrument-patches/releases/latest/download/patches.zip). Place the uncompressed files in your project and make sure to provide the location of the patches when instantiating the MIDI player.
+**This package requires MIDI instrument patches in order to play audio.** [Download patches from this separate repository.](https://github.com/yvesgurcan/midi-instrument-patches/releases/latest/download/patches.zip) Place the uncompressed files in your project and make sure to provide the location of the patches when instantiating the MIDI player.
 
 ## Getting started
 
