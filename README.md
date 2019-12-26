@@ -13,7 +13,7 @@ Event-driven JavaScript library to enable MIDI playback in the browser.
 
 ## Install
 
-### Library
+### Package
 
 This library can be installed via NPM.
 
