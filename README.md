@@ -17,16 +17,24 @@ This library can be installed via NPM.
 
     npm i web-midi-player
 
-Alternatively, this NPM package is hosted for free on [jsDeliver](https://www.jsdelivr.com/). You can add this library to your project with a `script` tag:
+Alternatively, you can add this library to your project with a `script` tag.
 
     <script src="https://cdn.jsdelivr.net/npm/web-midi-player@latest/index.js"></script>
 
 ## Getting started
 
-**This package requires MIDI instrument patches in order to play audio.** [Download patches from this separate repository.](https://github.com/yvesgurcan/midi-instrument-patches/releases/latest/download/patches.zip) Place the uncompressed files in your project and make sure to provide the location of the patches when instantiating the MIDI player.
+**This package requires MIDI instrument patches in order to play audio.**
+
+By default, the player loads [instrument patches via the jsDeliver CDN](https://www.jsdelivr.com/package/npm/midi-instrument-patches).
 
     import MidiPlayer from 'web-midi-player';
-    const midiPlayer = new MidiPlayer({ patchUrl: 'public/patches' });
+    const midiPlayer = new MidiPlayer();
+    midiPlayer.play({ url: 'song.mid' });
+
+Alternatively, you can [download instrument patches and add them to your project](https://github.com/yvesgurcan/midi-instrument-patches/releases/latest/download/patches.zip). Make sure to provide the path to the uncompressed files when instantiating the MIDI player.
+
+    import MidiPlayer from 'web-midi-player';
+    const midiPlayer = new MidiPlayer({ pathUrl: 'public/patches' });
     midiPlayer.play({ url: 'song.mid' });
 
 ## Contributing
