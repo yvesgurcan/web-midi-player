@@ -2,27 +2,35 @@
 [![npm version](https://badge.fury.io/js/web-midi-player.svg)](https://badge.fury.io/js/web-midi-player)
 [![build status](https://github.com/yvesgurcan/web-midi-player/workflows/Build/badge.svg)](https://github.com/yvesgurcan/web-midi-player/actions?query=workflow%3ABuild)
 [![publish status](https://github.com/yvesgurcan/web-midi-player/workflows/Publish/badge.svg)](https://github.com/yvesgurcan/web-midi-player/actions?query=workflow%3APublish)
+[![](https://data.jsdelivr.com/v1/package/npm/web-midi-player/badge?style=rounded)](https://www.jsdelivr.com/package/npm/web-midi-player)
 
 Event-driven JavaScript library to enable MIDI playback in the browser.
 
 -   Check out the [example](https://midi.yvesgurcan.com/example/).
 -   See the [NPM package](https://npmjs.com/package/web-midi-player).
 -   Read the [API documentation](https://midi.yvesgurcan.com/doc/).
+-   Download [instrument patches](https://github.com/yvesgurcan/midi-instrument-patches/releases/latest/download/patches.zip).
 
 ## Install
+
+### Library
 
 This library can be installed via NPM.
 
     npm i web-midi-player
 
-Alternatively, this NPM package is hosted for free by [jsDeliver](https://www.jsdelivr.com/). You can add this library via the jsDeliver CDN:
+Alternatively, this NPM package is hosted for free on [jsDeliver](https://www.jsdelivr.com/). You can add this library to your project with a `script` tag:
 
     <script src="https://cdn.jsdelivr.net/npm/web-midi-player@latest/"></script>
+
+### Instrument patches
+
+**This package requires MIDI instrument patches in order to play audio.** You can [download patches from this separate repository](https://github.com/yvesgurcan/midi-instrument-patches/releases/latest/download/patches.zip). Place the uncompressed files in your project and make sure to provide the location of the patches when instantiating the MIDI player.
 
 ## Getting started
 
     import MidiPlayer from 'web-midi-player';
-    const midiPlayer = new MidiPlayer();
+    const midiPlayer = new MidiPlayer({ patchUrl: 'public/patches' });
     midiPlayer.play({ url: 'song.mid' });
 
 ## Contributing
