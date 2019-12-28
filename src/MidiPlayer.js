@@ -29,7 +29,7 @@ export default class MidiPlayer {
      * @param {object} [configuration]
      * @param {function} [configuration.eventLogger = undefined] The function that receives event payloads.
      * @param {boolean} [configuration.logging = false] Turns ON or OFF logging to the console.
-     * @param {string} [configuration.patchUrl = patches/] The public path where MIDI instrument patches can be found.
+     * @param {string} [configuration.patchUrl = https://cdn.jsdelivr.net/npm/midi-instrument-patches@latest/] The public path where MIDI instrument patches can be found.
      * @param {object} [configuration.audioContext] An instance of the Web Audio API AudioContext interface.
      * @property {string} playerId ID of this instance of Midi Player.
      * @property {object} context The AudioContext instance.

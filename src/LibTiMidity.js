@@ -3601,7 +3601,7 @@ class LibTiMidity {
             loadPatchFromUrl: async function(baseUrl, filename) {
                 const response = await fetch(`${baseUrl}${filename}`);
                 if (response.status !== 200) {
-                    throw new Error(response);
+                    throw new Error(JSON.stringify(response));
                 }
 
                 const arrayBuffer = await response.arrayBuffer();
