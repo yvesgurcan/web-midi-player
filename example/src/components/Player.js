@@ -78,7 +78,12 @@ const Player = () => {
                 }
             };
 
-            setMidiPlayer(new MidiPlayer({ eventLogger }));
+            setMidiPlayer(
+                new MidiPlayer({
+                    eventLogger,
+                    patchUrl: 'patches/'
+                })
+            );
         }
     }, []);
 

@@ -4,7 +4,6 @@ import { NavLink } from 'react-router-dom';
 import { withRouter } from 'react-router';
 
 function isActive(match, propsMatch, name) {
-    console.log(name, match && match.url, propsMatch);
     return (
         // that's a match
         (match && match.url) ||
@@ -14,7 +13,6 @@ function isActive(match, propsMatch, name) {
 }
 
 const Nav = props => {
-    // console.log(props);
     return (
         <Help>
             <Link

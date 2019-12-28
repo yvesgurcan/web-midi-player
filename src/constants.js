@@ -4,7 +4,8 @@ export const MIDI_AUDIO_BUFFER_SIZE = 8192;
 
 export const MIDI_AUDIO_S16LSB = 0x8010;
 
-export const MIDI_DEFAULT_PATCH_URL = 'patches/';
+export const MIDI_DEFAULT_PATCH_URL =
+    'https://cdn.jsdelivr.net/npm/midi-instrument-patches@latest/';
 
 export const MIDI_PLAYER_MESSAGE_PREFIX = 'Midi player:';
 
