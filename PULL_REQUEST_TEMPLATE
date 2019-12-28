@@ -6,7 +6,7 @@
 
 ## Checklist
 
-*All checks below must be performed before the PR can be merged.*
+*All checks below must be performed before the PR can be merged unless the update is non-functional.*
 
 - [ ] Code was linted with `npm run lint`.
 - [ ] Tests were added, deleted, and/or updated.
