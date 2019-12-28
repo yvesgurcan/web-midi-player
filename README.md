@@ -35,7 +35,7 @@ By default, the player loads [instrument patches via the jsDeliver CDN](https://
 Alternatively, you can [download instrument patches and add them to your project](https://github.com/yvesgurcan/midi-instrument-patches/releases/latest/download/patches.zip). Make sure to provide the path to the uncompressed files when instantiating the MIDI player.
 
     import MidiPlayer from 'web-midi-player';
-    const midiPlayer = new MidiPlayer({ patchUrl: 'public/patches' });
+    const midiPlayer = new MidiPlayer({ patchUrl: 'public/patches/' });
     midiPlayer.play({ url: 'song.mid' });
 
 ## Contributing
