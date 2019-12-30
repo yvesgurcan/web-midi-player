@@ -97,4 +97,6 @@ Need help to create new workflows? Checkout out [workflow syntax help](https://h
 
 ## Misc
 
-This libraries relies on code generated thanks to [Emscripten](https://github.com/emscripten-core/emscripten).
+This library relies on:
+-   The [libTiMidity](http://libtimidity.sourceforge.net) converter library.
+-   Code generated thanks to [Emscripten](https://github.com/emscripten-core/emscripten).
