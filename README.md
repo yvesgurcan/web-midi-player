@@ -6,7 +6,7 @@
 
 Event-driven JavaScript library to enable MIDI playback in the browser.
 
--   Check out the [example](https://midi.yvesgurcan.com/example/).
+-   Check out example: [with React](https://midi.yvesgurcan.com/example/react/).
 -   See the [NPM package](https://npmjs.com/package/web-midi-player).
 -   Read the [API documentation](https://midi.yvesgurcan.com/doc/).
 -   Look at the [source code](https://github.com/yvesgurcan/web-midi-player).
@@ -85,5 +85,6 @@ Need help to create new workflows? Checkout out [workflow syntax help](https://h
 ## Misc
 
 This library relies on:
+
 -   The [libTiMidity](http://libtimidity.sourceforge.net) converter library.
 -   Code generated thanks to [Emscripten](https://github.com/emscripten-core/emscripten).
