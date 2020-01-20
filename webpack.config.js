@@ -4,7 +4,7 @@ module.exports = () => ({
         hashDigestLength: 8,
         publicPath: '',
         library: 'midi-player',
-        libraryTarget: 'commonjs2'
+        libraryTarget: 'umd'
     },
     optimization: {
         minimize: true
