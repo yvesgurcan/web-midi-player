@@ -30,7 +30,7 @@ export default class MidiPlayer {
      * @param {function} [configuration.eventLogger = undefined] The function that receives event payloads.
      * @param {boolean} [configuration.logging = false] Turns ON or OFF logging to the console.
      * @param {string} [configuration.patchUrl = https://cdn.jsdelivr.net/npm/midi-instrument-patches@latest/] The public path where MIDI instrument patches can be found.
-     * @param {object} [configuration.audioContext] An instance of the Web Audio API AudioContext interface.
+     * @param {object} [configuration.audioContext = undefined] An instance of the Web Audio API AudioContext interface.
      * @property {string} playerId ID of this instance of Midi Player.
      * @property {object} context The AudioContext instance.
      * @property {function} eventLogger The function that is called to emit events.
@@ -77,13 +77,19 @@ export default class MidiPlayer {
             this.eventLogger = eventLogger;
             this.logging = logging;
             this.patchUrl = patchUrl;
-            this.context = audioContext || new AudioContext();
             this.startTime = 0;
+
+            if (audioContext) {
+                this.context = audioContext;
+            }
+
             LibTiMidity.init(isFirstInstance);
+
             this.isFirstInstance = isFirstInstance;
             if (isFirstInstance) {
                 isFirstInstance = false;
             }
+
             this.eventHandler.emitInit();
         } catch (error) {
             this.emitEvent({
@@ -172,11 +178,12 @@ export default class MidiPlayer {
             }
         }
 
-        this.loadSong({ arrayBuffer: data, audioContext });
+        this.context = audioContext || new AudioContext();
+        this.loadSong({ arrayBuffer: data });
         return true;
     }
 
-    async loadSong({ arrayBuffer, audioContext }) {
+    async loadSong({ arrayBuffer }) {
         this.midiFileArray = new Int8Array(arrayBuffer);
         this.midiFileBuffer = LibTiMidity._malloc(this.midiFileArray.length);
         LibTiMidity.writeArrayToMemory(this.midiFileArray, this.midiFileBuffer);
@@ -274,13 +281,12 @@ export default class MidiPlayer {
             [this.stream]
         );
 
-        this.initPlayback({ audioContext });
+        this.initPlayback();
     }
 
-    initPlayback = ({ audioContext }) => {
+    initPlayback = () => {
         LibTiMidity.call('mid_song_start', 'void', ['number'], [this.song]);
 
-        this.context = audioContext || new AudioContext();
         this.connectSource();
         this.waveBuffer = LibTiMidity._malloc(MIDI_AUDIO_BUFFER_SIZE * 2);
 

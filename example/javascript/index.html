@@ -1,0 +1,44 @@
+<html>
+    <head>
+        <title>🎹 web-midi-player / javascript</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" type="text/css" href="./src/style.css" />
+        <script src="./src/web-midi-player.js"></script>
+    </head>
+    <body>
+        <div class="Player__Container">
+            <div class="Player__Playlist">
+                <div id="d_runnin.mid" class="Player__Song">
+                    Running from evil - Bobby Prince
+                </div>
+                <div id="fatcmdr.mid" class="Player__Song">
+                    Going after the fat commander - Bobby Prince
+                </div>
+                <div id="veggies.mid" class="Player__Song">
+                    You've got to eat your vegetables - Bobby Prince
+                </div>
+                <div id="this-file-does-not-exist.mid" class="Player__Song">
+                    Broken URL to MIDI file.
+                </div>
+                <div id="this-file-is-not-a-midi.wav" class="Player__Song">
+                    Not a MIDI file.
+                </div>
+            </div>
+            <div class="Player__Control">
+                <div class="Player__Button">▶️</div>
+                <div title="Stop track" class="Player__Button">
+                    ⏹️
+                </div>
+                <div title="Previous track" class="Player__Button">
+                    ⏮
+                </div>
+                <div title="Next track" class="Player__Button">
+                    ⏭
+                </div>
+            </div>
+            <div class="Player__PlaybackState"></div>
+            <div class="Player__PlaybackTime">0 second</div>
+        </div>
+        <script src="./src/player-handler.js"></script>
+    </body>
+</html>
