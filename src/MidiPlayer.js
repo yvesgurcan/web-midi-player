@@ -178,11 +178,12 @@ export default class MidiPlayer {
             }
         }
 
-        this.loadSong({ arrayBuffer: data, audioContext });
+        this.context = audioContext || new AudioContext();
+        this.loadSong({ arrayBuffer: data });
         return true;
     }
 
-    async loadSong({ arrayBuffer, audioContext }) {
+    async loadSong({ arrayBuffer }) {
         this.midiFileArray = new Int8Array(arrayBuffer);
         this.midiFileBuffer = LibTiMidity._malloc(this.midiFileArray.length);
         LibTiMidity.writeArrayToMemory(this.midiFileArray, this.midiFileBuffer);
@@ -280,13 +281,12 @@ export default class MidiPlayer {
             [this.stream]
         );
 
-        this.initPlayback({ audioContext });
+        this.initPlayback();
     }
 
-    initPlayback = ({ audioContext }) => {
+    initPlayback = () => {
         LibTiMidity.call('mid_song_start', 'void', ['number'], [this.song]);
 
-        this.context = audioContext || new AudioContext();
         this.connectSource();
         this.waveBuffer = LibTiMidity._malloc(MIDI_AUDIO_BUFFER_SIZE * 2);
 
