@@ -11,6 +11,7 @@ Event-driven JavaScript library to enable MIDI playback in the browser.
 -   Read the [API documentation](https://midi.yvesgurcan.com/doc/).
 -   Look at the [source code](https://github.com/yvesgurcan/web-midi-player).
 -   Download [instrument patches](https://github.com/yvesgurcan/midi-instrument-patches/releases/latest/download/patches.zip).
+-   Want to help? Solve an [issue](https://github.com/yvesgurcan/web-midi-player/issues).
 
 ## Install
 
@@ -40,6 +41,8 @@ Alternatively, you can [download instrument patches and add them to your project
 
 ## Contributing
 
+Make sure to read our [code of conduct](https://github.com/yvesgurcan/web-midi-player/blob/master/CODE_OF_CONDUCT.md) first.
+
 Something doesn't work? We want to know! Open a [new issue](https://github.com/yvesgurcan/web-midi-player/issues/new).
 
 Want a new feature? Awesome! Open a [pull request](https://github.com/yvesgurcan/web-midi-player/compare).
@@ -66,23 +69,7 @@ Following [semantic version guidelines](https://semver.org/), run one of the fol
 -   `npm upgrade:minor`
 -   `npm upgrade:major`
 
-This will run all the scripts below, which should all execute successfully in order to merge your code changes into the NPM package.
-
-Before bumping the version:
-
-```
-    npm run lint
-    npm run test
-    npm run build
-    cd example && npm run build
-```
-
-After bumping the version:
-
-```
-    npm run docs
-    npm run commit:build
-```
+This will run a series of scripts below, which should all execute successfully in order to merge your code changes into the NPM package.
 
 ### Continuous integration / Continuous development
 
