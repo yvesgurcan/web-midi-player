@@ -57,16 +57,12 @@ function restoreFetch() {
 // Note that the Web Audio API is not tested.
 describe('MidiPlayer', function() {
     describe('Instantiation', function() {
-        beforeAll(function() {
-            audioContext = new AudioContext();
-        });
-
         beforeEach(function() {
             midiPlayer = null;
         });
 
         test('Player should instantiate', () => {
-            midiPlayer = new MidiPlayer({ audioContext });
+            midiPlayer = new MidiPlayer();
             expect(midiPlayer).toBeInstanceOf(MidiPlayer);
             expect(midiPlayer.playerId).not.toBeUndefined();
 
@@ -83,7 +79,7 @@ describe('MidiPlayer', function() {
         });
 
         test('Player should instantiate and send init event (console logging)', function() {
-            midiPlayer = new MidiPlayer({ logging: true, audioContext });
+            midiPlayer = new MidiPlayer({ logging: true });
             expect(midiPlayer).toBeInstanceOf(MidiPlayer);
             expect(midiPlayer.playerId).not.toBeUndefined();
 
@@ -100,7 +96,7 @@ describe('MidiPlayer', function() {
         });
 
         test('Player should instantiate and send init event (custom event logger)', function() {
-            midiPlayer = new MidiPlayer({ eventLogger, audioContext });
+            midiPlayer = new MidiPlayer({ eventLogger });
             expect(midiPlayer).toBeInstanceOf(MidiPlayer);
             expect(midiPlayer.playerId).not.toBeUndefined();
 
@@ -118,8 +114,7 @@ describe('MidiPlayer', function() {
 
         test('Player should instantiate with a custom URL to find instrument patches', function() {
             midiPlayer = new MidiPlayer({
-                patchUrl: customPatchUrl,
-                audioContext
+                patchUrl: customPatchUrl
             });
             expect(midiPlayer).toBeInstanceOf(MidiPlayer);
             expect(midiPlayer.playerId).not.toBeUndefined();
@@ -142,7 +137,7 @@ describe('MidiPlayer', function() {
         });
 
         test('Player should send an error event if no array buffer or URL was provided (console logging)', function() {
-            midiPlayer = new MidiPlayer({ logging: true, audioContext });
+            midiPlayer = new MidiPlayer({ logging: true });
 
             midiPlayer.play({ audioContext });
 
@@ -152,7 +147,7 @@ describe('MidiPlayer', function() {
         });
 
         test('Player should send an error event if no array buffer or URL was provided (custom event logger)', function() {
-            midiPlayer = new MidiPlayer({ eventLogger, audioContext });
+            midiPlayer = new MidiPlayer({ eventLogger });
 
             midiPlayer.play({ audioContext });
 
@@ -162,7 +157,7 @@ describe('MidiPlayer', function() {
         });
 
         test('Player should fetch URL and send play-related events (console logging)', function() {
-            midiPlayer = new MidiPlayer({ logging: true, audioContext });
+            midiPlayer = new MidiPlayer({ logging: true });
 
             midiPlayer.play({ url: midiUrl, name: midiName, audioContext });
 
@@ -182,7 +177,7 @@ describe('MidiPlayer', function() {
         });
 
         test('Player should fetch URL and send play-related events (custom event logger)', function() {
-            midiPlayer = new MidiPlayer({ eventLogger, audioContext });
+            midiPlayer = new MidiPlayer({ eventLogger });
 
             midiPlayer.play({ url: midiUrl, name: midiName, audioContext });
 
@@ -274,7 +269,7 @@ describe('MidiPlayer', function() {
         });
 
         test('Player should send a stop event (console logging)', function() {
-            midiPlayer = new MidiPlayer({ logging: true, audioContext });
+            midiPlayer = new MidiPlayer({ logging: true });
 
             midiPlayer.stop();
 
@@ -284,7 +279,7 @@ describe('MidiPlayer', function() {
         });
 
         test('Player should send a stop event (custom event logger)', function() {
-            midiPlayer = new MidiPlayer({ eventLogger, audioContext });
+            midiPlayer = new MidiPlayer({ eventLogger });
 
             midiPlayer.stop();
 
