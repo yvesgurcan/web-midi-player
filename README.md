@@ -15,13 +15,31 @@ Event-driven JavaScript library to enable MIDI playback in the browser.
 
 ## Install
 
+### NPM
+
 This library can be installed via NPM.
 
     npm i web-midi-player
 
+You can then use ES6 module syntax to load the dependency.
+
+    import MidiPlayer from 'web-midi-player';
+
+Or use the CommonJS module system.
+
+    const MidiPlayer = require('web-midi-player');
+
+### CDN
+
 Alternatively, you can add this library to your project with a `script` tag.
 
     <script src="https://cdn.jsdelivr.net/npm/web-midi-player@latest/index.js"></script>
+
+The library will be accessible under `window['web-midi-player'].default`.
+
+    <script>
+        const { 'web-midi-player': { default: MidiPlayer } } = window;
+    </script>
 
 ## Getting started
 
@@ -29,13 +47,11 @@ Alternatively, you can add this library to your project with a `script` tag.
 
 By default, the player loads [instrument patches via the jsDeliver CDN](https://www.jsdelivr.com/package/npm/midi-instrument-patches).
 
-    import MidiPlayer from 'web-midi-player';
     const midiPlayer = new MidiPlayer();
     midiPlayer.play({ url: 'song.mid' });
 
 Alternatively, you can [download instrument patches and add them to your project](https://github.com/yvesgurcan/midi-instrument-patches/releases/latest/download/patches.zip). Make sure to provide the path to the uncompressed files when instantiating the MIDI player.
 
-    import MidiPlayer from 'web-midi-player';
     const midiPlayer = new MidiPlayer({ patchUrl: 'public/patches/' });
     midiPlayer.play({ url: 'song.mid' });
 

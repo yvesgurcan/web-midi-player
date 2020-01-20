@@ -3,7 +3,7 @@ module.exports = () => ({
         filename: '../index.js',
         hashDigestLength: 8,
         publicPath: '',
-        library: 'midi-player',
+        library: 'web-midi-player',
         libraryTarget: 'umd'
     },
     optimization: {

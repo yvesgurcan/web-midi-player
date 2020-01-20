@@ -1,4 +1,6 @@
-const { default: MidiPlayer } = window['midi-player'];
+const {
+    'web-midi-player': { default: MidiPlayer }
+} = window;
 
 const MIDI_ERROR = 'MIDI_ERROR';
 
