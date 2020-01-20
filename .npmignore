@@ -10,4 +10,6 @@ jest.config.js
 CNAME
 documentation.yml
 PULL_REQUEST_TEMPLATE
+CODE_OF_CONDUCT
+CHANGELOG
 .github
