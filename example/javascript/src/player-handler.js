@@ -20,7 +20,7 @@ Array.from(songElements).forEach(songElement => {
             sgElem.style.fontWeight = null;
         });
         songElement.style.fontWeight = 'bold';
-        midiPlayer.play({ url: `../midi/${songElement.id}` });
+        midiPlayer.play({ url: `./midi/${songElement.id}` });
     };
 });
 
