@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 const NPM_PACKAGE = 'https://npmjs.com/package/web-midi-player';
 const GITHUB_REPO = 'https://github.com/yvesgurcan/web-midi-player';
-const DOCS = 'https://midi.yvesgurcan.com/docs';
+const DOCS = 'https://midi.yvesgurcan.com/doc';
 const README = 'https://midi.yvesgurcan.com/';
 
 const ExternalLinks = () => {

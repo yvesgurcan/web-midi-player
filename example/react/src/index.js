@@ -42,6 +42,7 @@ const Example = () => {
 
 const Background = styled.div`
     background: black;
+    margin: -8px;
 `;
 
 const PageTransition = styled.div`
