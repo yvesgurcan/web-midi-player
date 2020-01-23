@@ -6,13 +6,12 @@
 
 ## Checklist
 
-*All checks below must be performed before the PR can be merged unless the update is non-functional.*
+*All tasks below must be performed in addition to automated CI/CD checks.*
 
-- [ ] Code was linted with `npm run lint`.
-- [ ] Tests were added, deleted, and/or updated.
 - [ ] Changes are documented.
-- [ ] Example was updated if applicable.
-- [ ] Version was bumped with `npm run upgrade:patch`, `npm run upgrade:minor` or `npm run upgrade:major` and scripts/build ran successfully.
+- [ ] Tests were added, deleted, and/or updated.
+- [ ] Version was bumped with `npm run upgrade:patch`, `npm run upgrade:minor` or `npm run upgrade:major`
+- [ ] Example was updated (if applicable).
 
 ## Issue(s) adressed
 

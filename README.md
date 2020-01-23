@@ -79,16 +79,6 @@ Start development server.
 
     npm start
 
-### Before you open a pull request
-
-Following [semantic version guidelines](https://semver.org/), run one of the following scripts depending on the nature of your changes:
-
--   `npm upgrade:patch`
--   `npm upgrade:minor`
--   `npm upgrade:major`
-
-This will run a series of scripts below, which should all execute successfully in order to merge your code changes into the NPM package.
-
 ### Continuous integration / Continuous development
 
 This repository uses GitHub Actions to automate certain tasks such as publishing to NPM and running tests.
@@ -96,9 +86,7 @@ This repository uses GitHub Actions to automate certain tasks such as publishing
 The list of workflows used for this project can be found [./github/workflows](here):
 
 -   Builds are created and checked when you open pull requests into `master`.
--   Merging pull requests into `master` triggers a release on NPM.
-
-Need help to create new workflows? Checkout out [workflow syntax help](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/workflow-syntax-for-github-actions) and [events which trigger workflows](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/events-that-trigger-workflows#webhook-events).
+-   Merging pull requests into `master` triggers a release to NPM.
 
 ## Misc
 
