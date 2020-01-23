@@ -35,7 +35,7 @@ jobs:
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             - name: Predicting version bump
-              uses: paulhatch/semantic-version@v1-beta
+              uses: paulhatch/semantic-version@v2
               with:
                 branch: ${{ github.head_ref }}
                 # A string which, if present in a git commit, indicates that a change represents a major change
