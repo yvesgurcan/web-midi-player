@@ -30,3 +30,5 @@ jobs:
                   branch: ${{ github.head_ref }}
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Update documentation
+              run: npm run docs
