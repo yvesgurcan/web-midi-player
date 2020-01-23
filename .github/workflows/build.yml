@@ -34,15 +34,3 @@ jobs:
                   branch: ${{ github.head_ref }}
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            - name: Predicting version bump
-              uses: paulhatch/semantic-version@v2
-              with:
-                branch: ${{ github.head_ref }}
-                # A string which, if present in a git commit, indicates that a change represents a major change
-                major_pattern: "(MAJOR)"
-                # Same as above except indicating a minor change
-                minor_pattern: "(MINOR)"
-                # A string to determine the format of the version output
-                format: "${major}.${minor}.${patch}"
-              env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
