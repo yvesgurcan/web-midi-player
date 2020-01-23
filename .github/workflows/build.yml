@@ -23,7 +23,7 @@ jobs:
               run: npm run lint
             - name: Create build
               run: npm run build
-            - name:
+            - name: Push new build
               uses: stefanzweifel/git-auto-commit-action@v2.5.0
               with:
                   commit_message: New build
