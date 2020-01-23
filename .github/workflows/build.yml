@@ -17,20 +17,16 @@ jobs:
                   node-version: 12
             - name: Install dependencies
               run: npm ci
-            - name: Check code format
-              run: npm run lint:check
             - name: Run tests
               run: npm run test
+            - name: Lint code
+              run: npm run lint
             - name: Create build
-              run: npm run build:quiet
-            - name: Commit new build
-              run: |
-                git config --local user.email "gurcan.yves+github@gmail.com"
-                git config --local user.name "Yves Gurcan"
-                git checkout ${{ github.event.pull_request.head.ref }}
-                git commit -m "New build" -a
-            - name: Push changes
-              uses: ad-m/github-push-action@master
+              run: npm run build
+            - name:
+              uses: stefanzweifel/git-auto-commit-action@v2.5.0
               with:
-                branch: ${{ github.event.pull_request.head.ref }}
-                github_token: ${{ secrets.GIT_TOKEN }}
+                  commit_message: New build
+                  branch: ${{ github.head_ref }}
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
