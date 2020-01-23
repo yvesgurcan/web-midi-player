@@ -1048,6 +1048,13 @@ class LibTiMidity {
 
         Module['intArrayFromString'] = intArrayFromString;
 
+        /**
+         * @function intArrayToString
+         * @memberof LibTiMidity
+         * @instance
+         * @param array
+         */
+
         function intArrayToString(array) {
             var ret = [];
             for (var i = 0; i < array.length; i++) {
