@@ -6,7 +6,7 @@ on:
 
 jobs:
     build:
-        name: Create new build
+        name: ${GITHUB_REF##*/}
         runs-on: ubuntu-latest
         steps:
             - name: Set up workflow
@@ -31,4 +31,5 @@ jobs:
             - name: Push changes
               uses: ad-m/github-push-action@master
               with:
+                branch: ${GITHUB_REF##*/}
                 github_token: ${{ secrets.GIT_TOKEN }}
