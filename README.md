@@ -6,12 +6,14 @@
 
 Event-driven JavaScript library to enable MIDI playback in the browser.
 
--   Check out example: [with React](https://midi.yvesgurcan.com/example/react/) and [with vanilla JavaScript](https://midi.yvesgurcan.com/example/javascript/).
+-   Check out examples [with React](https://midi.yvesgurcan.com/example/react/) and [with vanilla JavaScript](https://midi.yvesgurcan.com/example/javascript/).
 -   See the [NPM package](https://npmjs.com/package/web-midi-player).
 -   Read the [API documentation](https://midi.yvesgurcan.com/doc/).
 -   Look at the [source code](https://github.com/yvesgurcan/web-midi-player).
 -   Download [instrument patches](https://github.com/yvesgurcan/midi-instrument-patches/releases/latest/download/patches.zip).
 -   Want to help? Solve an [issue](https://github.com/yvesgurcan/web-midi-player/issues).
+
+**Want to help? We're looking for contributors! Find an issue on our [Kanban board](https://github.com/yvesgurcan/web-midi-player/projects/1) and assign it to yourself.**
 
 ## Install
 
@@ -59,7 +61,7 @@ Alternatively, you can [download instrument patches and add them to your project
 
 Make sure to read our [code of conduct](https://github.com/yvesgurcan/web-midi-player/blob/master/CODE_OF_CONDUCT.md) first.
 
-Something doesn't work? We want to know! Open a [new issue](https://github.com/yvesgurcan/web-midi-player/issues/new).
+Something doesn't work? We want to know! Create a [new issue](https://github.com/yvesgurcan/web-midi-player/issues/new).
 
 Want a new feature? Awesome! Open a [pull request](https://github.com/yvesgurcan/web-midi-player/compare).
 
