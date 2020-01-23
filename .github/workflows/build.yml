@@ -23,12 +23,12 @@ jobs:
               run: npm run lint
             - name: Create build
               run: npm run build
-            - name: Push new build
+            - name: Update documentation
+              run: npm run docs
+            - name: Push code changes
               uses: stefanzweifel/git-auto-commit-action@v2.5.0
               with:
                   commit_message: New build
                   branch: ${{ github.head_ref }}
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            - name: Update documentation
-              run: npm run docs
