@@ -6,7 +6,7 @@ on:
 
 jobs:
     build:
-        name: ${GITHUB_REF##*/}
+        name: Create new build
         runs-on: ubuntu-latest
         steps:
             - name: Set up workflow
@@ -28,7 +28,7 @@ jobs:
                 git config --local user.email "gurcan.yves+github@gmail.com"
                 git config --local user.name "Yves Gurcan"
                 git commit -m "New build" -a
-            - name: Push changes
+            - name: Push changes to ${GITHUB_REF##*/}
               uses: ad-m/github-push-action@master
               with:
                 branch: ${GITHUB_REF##*/}
