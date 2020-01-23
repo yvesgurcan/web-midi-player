@@ -1019,6 +1019,15 @@ class LibTiMidity {
 
         Module['addOnPostRun'] = addOnPostRun;
 
+        /**
+         * @function intArrayFromString
+         * @memberof LibTiMidity
+         * @instance
+         * @param stringy
+         * @param dontAddNull
+         * @param length
+         */
+
         // Tools
         // This processes a JS string into a C-line array of numbers, 0-terminated.
         // For LLVM-originating strings, see parser.js:parseLLVMString function
