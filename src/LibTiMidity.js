@@ -1462,7 +1462,7 @@ class LibTiMidity {
                 },
                 put_char: function(tty, val) {
                     if (val === null || val === 10) {
-                        Module['print'](tty.output.join(''));
+                        console.log(tty.output.join(''));
                         tty.output = [];
                     } else {
                         tty.output.push(TTY.utf8.processCChar(val));
@@ -5965,7 +5965,7 @@ class LibTiMidity {
                     }
                     if (!ctx) throw ':(';
                 } catch (e) {
-                    Module.print('Could not create canvas - ' + e);
+                    console.error('Could not create canvas - ' + e);
                     return null;
                 }
                 if (useWebGL) {
@@ -6404,11 +6404,11 @@ class LibTiMidity {
         }
 
         function asmPrintInt(x, y) {
-            Module.print('int ' + x + ',' + y); // + ' ' + new Error().stack);
+            console.log('int ' + x + ',' + y); // + ' ' + new Error().stack);
         }
 
         function asmPrintFloat(x, y) {
-            Module.print('float ' + x + ',' + y); // + ' ' + new Error().stack);
+            console.log('float ' + x + ',' + y); // + ' ' + new Error().stack);
         }
 
         // EMSCRIPTEN_START_ASM
