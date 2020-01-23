@@ -182,7 +182,7 @@ class LibTiMidity {
                         : Types.types)[typeName];
                     if (!type) return null;
                     if (type.fields.length != struct.length) {
-                        printErr(
+                        console.warn(
                             'Number of named fields must match the type for ' +
                                 typeName +
                                 ': possibly duplicate struct names. Cannot return structInfo'
@@ -237,7 +237,7 @@ class LibTiMidity {
                 if (!Runtime.warnOnce.shown) Runtime.warnOnce.shown = {};
                 if (!Runtime.warnOnce.shown[text]) {
                     Runtime.warnOnce.shown[text] = 1;
-                    Module.printErr(text);
+                    console.warn(text);
                 }
             },
             funcWrappers: {},
@@ -361,10 +361,6 @@ class LibTiMidity {
 
         Module.print = function(message) {
             console.log(message);
-        };
-
-        Module.printErr = function(error) {
-            console.warn(error);
         };
 
         Module.preRun = [];
@@ -1023,6 +1019,15 @@ class LibTiMidity {
 
         Module['addOnPostRun'] = addOnPostRun;
 
+        /**
+         * @function intArrayFromString
+         * @memberof LibTiMidity
+         * @instance
+         * @param stringy
+         * @param dontAddNull
+         * @param length
+         */
+
         // Tools
         // This processes a JS string into a C-line array of numbers, 0-terminated.
         // For LLVM-originating strings, see parser.js:parseLLVMString function
@@ -1043,6 +1048,13 @@ class LibTiMidity {
 
         Module['intArrayFromString'] = intArrayFromString;
 
+        /**
+         * @function intArrayToString
+         * @memberof LibTiMidity
+         * @instance
+         * @param array
+         */
+
         function intArrayToString(array) {
             var ret = [];
             for (var i = 0; i < array.length; i++) {
@@ -1056,6 +1068,15 @@ class LibTiMidity {
         }
 
         Module['intArrayToString'] = intArrayToString;
+
+        /**
+         * @function writeStringToMemory
+         * @memberof LibTiMidity
+         * @instance
+         * @param string
+         * @param buffer
+         * @param dontAddNull
+         */
 
         // Write a Javascript array to somewhere in the heap
         function writeStringToMemory(string, buffer, dontAddNull) {
@@ -1151,7 +1172,7 @@ class LibTiMidity {
                 assert(!runDependencyTracking[id]);
                 runDependencyTracking[id] = 1;
             } else {
-                Module.printErr('warning: run dependency added without ID');
+                console.warn('warning: run dependency added without ID');
             }
         }
         Module['addRunDependency'] = addRunDependency;
@@ -1164,7 +1185,7 @@ class LibTiMidity {
                 assert(runDependencyTracking[id]);
                 delete runDependencyTracking[id];
             } else {
-                Module.printErr('warning: run dependency removed without ID');
+                console.warn('warning: run dependency removed without ID');
             }
             if (runDependencies == 0) {
                 if (runDependencyWatcher !== null) {
@@ -1466,7 +1487,7 @@ class LibTiMidity {
                 },
                 put_char: function(tty, val) {
                     if (val === null || val === 10) {
-                        Module['print'](tty.output.join(''));
+                        console.log(tty.output.join(''));
                         tty.output = [];
                     } else {
                         tty.output.push(TTY.utf8.processCChar(val));
@@ -1476,7 +1497,7 @@ class LibTiMidity {
             default_tty1_ops: {
                 put_char: function(tty, val) {
                     if (val === null || val === 10) {
-                        Module['printErr'](tty.output.join(''));
+                        console.warn(tty.output.join(''));
                         tty.output = [];
                     } else {
                         tty.output.push(TTY.utf8.processCChar(val));
@@ -3118,7 +3139,7 @@ class LibTiMidity {
                     if (!FS.readFiles) FS.readFiles = {};
                     if (!(path in FS.readFiles)) {
                         FS.readFiles[path] = 1;
-                        Module['printErr']('read file: ' + path);
+                        console.warn('read file: ' + path);
                     }
                 }
                 return stream;
@@ -3327,7 +3348,7 @@ class LibTiMidity {
                 });
                 FS.mkdev('/dev/null', FS.makedev(1, 3));
                 // setup /dev/tty and /dev/tty1
-                // stderr needs to print output using Module['printErr']
+                // stderr needs to print output using console.warn
                 // so we register a second tty just for it.
                 TTY.register(FS.makedev(5, 0), TTY.default_tty_ops);
                 TTY.register(FS.makedev(6, 0), TTY.default_tty1_ops);
@@ -5969,7 +5990,7 @@ class LibTiMidity {
                     }
                     if (!ctx) throw ':(';
                 } catch (e) {
-                    Module.print('Could not create canvas - ' + e);
+                    console.error('Could not create canvas - ' + e);
                     return null;
                 }
                 if (useWebGL) {
@@ -6408,11 +6429,11 @@ class LibTiMidity {
         }
 
         function asmPrintInt(x, y) {
-            Module.print('int ' + x + ',' + y); // + ' ' + new Error().stack);
+            console.log('int ' + x + ',' + y); // + ' ' + new Error().stack);
         }
 
         function asmPrintFloat(x, y) {
-            Module.print('float ' + x + ',' + y); // + ' ' + new Error().stack);
+            console.log('float ' + x + ',' + y); // + ' ' + new Error().stack);
         }
 
         // EMSCRIPTEN_START_ASM
@@ -18843,7 +18864,7 @@ class LibTiMidity {
             );
             args = args || [];
             if (preloadStartTime !== null) {
-                Module.printErr(
+                console.warn(
                     'preload time: ' + (Date.now() - preloadStartTime) + ' ms'
                 );
             }
@@ -18896,7 +18917,7 @@ class LibTiMidity {
             args = args || Module['arguments'];
             if (preloadStartTime === null) preloadStartTime = Date.now();
             if (runDependencies > 0) {
-                Module.printErr(
+                console.warn(
                     'run() called, but dependencies remain, so not running'
                 );
                 return FS;
