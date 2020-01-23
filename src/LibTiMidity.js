@@ -1048,6 +1048,13 @@ class LibTiMidity {
 
         Module['intArrayFromString'] = intArrayFromString;
 
+        /**
+         * @function intArrayToString
+         * @memberof LibTiMidity
+         * @instance
+         * @param array
+         */
+
         function intArrayToString(array) {
             var ret = [];
             for (var i = 0; i < array.length; i++) {
@@ -1061,6 +1068,15 @@ class LibTiMidity {
         }
 
         Module['intArrayToString'] = intArrayToString;
+
+        /**
+         * @function writeStringToMemory
+         * @memberof LibTiMidity
+         * @instance
+         * @param string
+         * @param buffer
+         * @param dontAddNull
+         */
 
         // Write a Javascript array to somewhere in the heap
         function writeStringToMemory(string, buffer, dontAddNull) {

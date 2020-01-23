@@ -11,6 +11,8 @@ jobs:
         steps:
             - name: Set up workflow
               uses: actions/checkout@v2
+              with:
+                ref: ${{ github.head_ref }}
             - name: Set up Node environment
               uses: actions/setup-node@v1
               with:
