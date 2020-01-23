@@ -23,3 +23,12 @@ jobs:
               run: npm run test
             - name: Create build
               run: npm run build:quiet
+            - name: Commit new build
+              run: |
+                git config --local user.email "gurcan.yves+github@gmail.com"
+                git config --local user.name "Yves Gurcan"
+                git commit -m "New build" -a
+            - name: Push changes
+              uses: ad-m/github-push-action@master
+              with:
+                github_token: ${{ secrets.GIT_TOKEN }}
