@@ -24,7 +24,7 @@ jobs:
             - name: Publish to NPM
               run: npm publish
             - name: Change NPM registry to GitHub Packages
-              run: npm config set //npm.pkg.github.com/:_authToken=${NPM_TOKEN}
+              run: npm config set //npm.pkg.github.com/:_authToken=$NPM_TOKEN
             - name: Publish to GitHub Packages
               run: npm publish
             - name: Tag the library
