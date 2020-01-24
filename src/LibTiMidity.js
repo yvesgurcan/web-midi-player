@@ -1091,6 +1091,14 @@ class LibTiMidity {
 
         Module['writeStringToMemory'] = writeStringToMemory;
 
+        /**
+         * @function writeArrayToMemory
+         * @memberof LibTiMidity
+         * @instance
+         * @param array
+         * @param buffer
+         */
+
         function writeArrayToMemory(array, buffer) {
             for (var i = 0; i < array.length; i++) {
                 HEAP8[(buffer + i) | 0] = array[i];
