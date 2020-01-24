@@ -19,10 +19,19 @@ jobs:
               with:
                   node-version: 12
                   registry-url: https://registry.npmjs.org/
-            - name: Create GitHub release
-              uses: K-Phoen/semver-release-action@master
+            - name: Set up NPM auth
+              run: npm config set //registry.npmjs.org/:_authToken=$NPM_TOKEN
+            - name: Publish to NPM
+              run: npm publish
+            - name: Get latest tag
+              id: latesttag
+              uses: WyriHaximus/github-action-get-previous-tag@master
+            - name: GitHub release
+              uses: marvinpinto/action-automatic-releases@latest
               with:
-                release_branch: master
+                repo_token: ${{ secrets.GITHUB_TOKEN }}
+                automatic_release_tag: ${{ steps.previoustag.outputs.tag }}
+                prerelease: false
 
 env:
     NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
