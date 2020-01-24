@@ -25,7 +25,7 @@ jobs:
               run: npm publish
             - name: Get latest tag
               id: latesttag
-              uses: WyriHaximus/github-action-get-previous-tag@master
+              uses: olegtarasov/get-tag@v1
             - name: GitHub release
               uses: marvinpinto/action-automatic-releases@latest
               with:
