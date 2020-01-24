@@ -7,7 +7,6 @@ on:
             - master
 
 jobs:
-
     publish-gpr:
         name: Publish to GPR
         if: github.event.pull_request.merged
@@ -22,7 +21,7 @@ jobs:
                   registry-url: https://npm.pkg.github.com
                   scope: "@yvesgurcan"
             - name: Update package.json
-              uses: npm run gpr:prep
+              run: npm run gpr:prep
             - name: Publish to GitHub Packages
               run: npm publish
               env:
