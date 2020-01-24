@@ -7,34 +7,34 @@ on:
             - master
 
 jobs:
-  publish-npm:
-    name: Create release
-    if: github.event.pull_request.merged
-    runs-on: ubuntu-latest
-    steps:
-        - name: Set up workflow
-          uses: actions/checkout@v2
-        - name: Set up Node
-          uses: actions/setup-node@v1
-          with:
-              node-version: 12
-              registry-url: https://registry.npmjs.org/
-        - name: Publish to NPM
-          run: npm publish
-          env:
-            NODE_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
-        - name: Tag the library
-          id: autotag
-          uses: butlerlogic/action-autotag@stable
-          with:
-            GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-            tag_prefx: "v"
-        - name: GitHub release
-          uses: marvinpinto/action-automatic-releases@latest
-          with:
-            repo_token: ${{ secrets.GITHUB_TOKEN }}
-            automatic_release_tag: ${{ steps.autotag.outputs.version }}
-            prerelease: false
+    publish-npm:
+        name: Create release
+        if: github.event.pull_request.merged
+        runs-on: ubuntu-latest
+        steps:
+          - name: Set up workflow
+            uses: actions/checkout@v2
+          - name: Set up Node
+            uses: actions/setup-node@v1
+            with:
+                node-version: 12
+                registry-url: https://registry.npmjs.org/
+          - name: Publish to NPM
+            run: npm publish
+            env:
+              NODE_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
+          - name: Tag the library
+            id: autotag
+            uses: butlerlogic/action-autotag@stable
+            with:
+              GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+              tag_prefx: "v"
+          - name: GitHub release
+            uses: marvinpinto/action-automatic-releases@latest
+            with:
+              repo_token: ${{ secrets.GITHUB_TOKEN }}
+              automatic_release_tag: ${{ steps.autotag.outputs.version }}
+              prerelease: false
     publish-gpr:
         name: Publish to GPR
         if: github.event.pull_request.merged
