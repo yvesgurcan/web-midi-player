@@ -19,22 +19,10 @@ jobs:
               with:
                   node-version: 12
                   registry-url: https://registry.npmjs.org/
-            - name: Set up NPM registry
-              run: npm config set //registry.npmjs.org/:_authToken=$NPM_TOKEN
             - name: Publish to NPM
               run: npm publish
-            - name: Change NPM registry to GitHub Packages
-              uses: actions/setup-node@v1
-              with:
-                  node-version: 12
-                  registry-url: https://npm.pkg.github.com
-                  scope: "@yvesgurcan"
-                  always-auth: true
-            - run: echo registry=https://npm.pkg.github.com/yvesgurcan >> .npmrc
-            - name: Publish to GitHub Packages
-              run: npm publish
               env:
-                NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+                NODE_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
             - name: Tag the library
               id: autotag
               uses: butlerlogic/action-autotag@stable
@@ -47,6 +35,25 @@ jobs:
                 repo_token: ${{ secrets.GITHUB_TOKEN }}
                 automatic_release_tag: ${{ steps.autotag.outputs.version }}
                 prerelease: false
+    publish-gpr:
+        name: Publish to GPR
+        if: github.event.pull_request.merged
+        runs-on: ubuntu-latest
+        steps:
+            - name: Set up workflow
+             uses: actions/checkout@v2
+            - name: Set up Node
+              uses: actions/setup-node@v1
+              with:
+                  node-version: 12
+                  registry-url: https://npm.pkg.github.com
+                  scope: "@yvesgurcan"
+            - name: Set registry
+              run: echo registry=https://npm.pkg.github.com/yvesgurcan >> .npmrc
+            - name: Publish to GitHub Packages
+              run: npm publish
+              env:
+                  NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
 env:
     NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
