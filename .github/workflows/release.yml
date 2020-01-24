@@ -41,7 +41,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Set up workflow
-             uses: actions/checkout@v2
+              uses: actions/checkout@v2
             - name: Set up Node
               uses: actions/setup-node@v1
               with:
