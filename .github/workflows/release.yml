@@ -19,9 +19,13 @@ jobs:
               with:
                   node-version: 12
                   registry-url: https://registry.npmjs.org/
-            - name: Set up NPM auth
+            - name: Set up NPM registry
               run: npm config set //registry.npmjs.org/:_authToken=$NPM_TOKEN
             - name: Publish to NPM
+              run: npm publish
+            - name: Change NPM registry to GitHub Packages
+              run: npm config set //npm.pkg.github.com/:_authToken=${NPM_TOKEN}
+            - name: Publish to GitHub Packages
               run: npm publish
             - name: Tag the library
               id: autotag
