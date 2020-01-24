@@ -8,7 +8,7 @@ on:
 
 jobs:
     publish:
-        name: NPM
+        name: Create release
         if: github.event.pull_request.merged
         runs-on: ubuntu-latest
         steps:
@@ -19,11 +19,7 @@ jobs:
               with:
                   node-version: 12
                   registry-url: https://registry.npmjs.org/
-            - name: Set up NPM auth
-              run: npm config set //registry.npmjs.org/:_authToken=$NPM_TOKEN
-            - name: Publish to NPM
-              run: npm publish
-            - name: Tag
+            - name: Create GitHub release
               uses: K-Phoen/semver-release-action@master
               with:
                 release_branch: master
