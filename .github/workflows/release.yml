@@ -23,14 +23,14 @@ jobs:
               run: npm config set //registry.npmjs.org/:_authToken=$NPM_TOKEN
             - name: Publish to NPM
               run: npm publish
-            - name: Get latest tag
-              id: latesttag
-              uses: olegtarasov/get-tag@v1
+            - name: Tag the library
+              id: autotag
+              uses: butlerlogic/action-autotag@stable
             - name: GitHub release
               uses: marvinpinto/action-automatic-releases@latest
               with:
                 repo_token: ${{ secrets.GITHUB_TOKEN }}
-                automatic_release_tag: ${{ steps.latesttag.outputs.tag }}
+                automatic_release_tag: ${{ steps.autotag.outputs.version }}
                 prerelease: false
 
 env:
