@@ -26,6 +26,9 @@ jobs:
             - name: Tag the library
               id: autotag
               uses: butlerlogic/action-autotag@stable
+              with:
+                GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+                tag_prefx: "v"
             - name: GitHub release
               uses: marvinpinto/action-automatic-releases@latest
               with:
