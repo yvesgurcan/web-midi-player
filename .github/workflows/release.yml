@@ -30,11 +30,11 @@ jobs:
                   registry-url: https://npm.pkg.github.com
                   scope: "@yvesgurcan"
                   always-auth: true
-              env:
-                NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
             - run: echo registry=https://npm.pkg.github.com/yvesgurcan >> .npmrc
             - name: Publish to GitHub Packages
               run: npm publish
+              env:
+                NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
             - name: Tag the library
               id: autotag
               uses: butlerlogic/action-autotag@stable
