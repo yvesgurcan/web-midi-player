@@ -30,7 +30,7 @@ jobs:
               uses: marvinpinto/action-automatic-releases@latest
               with:
                 repo_token: ${{ secrets.GITHUB_TOKEN }}
-                automatic_release_tag: ${{ steps.previoustag.outputs.tag }}
+                automatic_release_tag: ${{ steps.latesttag.outputs.tag }}
                 prerelease: false
 
 env:
