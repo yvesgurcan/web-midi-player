@@ -46,7 +46,8 @@
         "upgrade:patch": "npm version patch",
         "upgrade:minor": "npm version minor",
         "upgrade:major": "npm version major",
-        "upgrade:releases": "git push --tags"
+        "upgrade:releases": "git push --tags",
+        "gpr:prep": "node scripts/gpr.js"
     },
     "devDependencies": {
         "@babel/core": "^7.3.4",
