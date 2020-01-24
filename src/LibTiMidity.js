@@ -1107,6 +1107,15 @@ class LibTiMidity {
 
         Module['writeArrayToMemory'] = writeArrayToMemory;
 
+        /**
+         * @function writeAsciiToMemory
+         * @memberof LibTiMidity
+         * @instance
+         * @param str
+         * @param buffer
+         * @param dontAddNull
+         */
+
         function writeAsciiToMemory(str, buffer, dontAddNull) {
             for (var i = 0; i < str.length; i++) {
                 HEAP8[(buffer + i) | 0] = str.charCodeAt(i);
