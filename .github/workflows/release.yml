@@ -28,10 +28,9 @@ jobs:
               with:
                   node-version: 12
                   registry-url: https://npm.pkg.github.com
-                  scope: "@yvesgurcan"
                   always-auth: true
               env:
-                NODE_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
+                NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
             - name: Publish to GitHub Packages
               run: npm publish
             - name: Tag the library
