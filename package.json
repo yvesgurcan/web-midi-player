@@ -1,13 +1,7 @@
 {
     "name": "web-midi-player",
-    "name-display": "Web Midi Player",
+    "version": "1.1.19",
     "description": "🎹 Event-driven JavaScript library to enable MIDI playback in the browser.",
-    "version": "1.1.18",
-    "author": {
-        "name": "Yves Gurcan",
-        "url": "http://yvesgurcan.com/"
-    },
-    "license": "MIT",
     "keywords": [
         "midi",
         "midi player",
@@ -19,18 +13,25 @@
         "open source",
         "audio"
     ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/yvesgurcan/web-midi-player"
+    "homepage": "https://midi.yvesgurcan.com",
+    "bugs": {
+        "url": "https://github.com/yvesgurcan/web-midi-player/issues"
     },
+    "license": "MIT",
+    "author": {
+        "name": "Yves Gurcan",
+        "url": "https://www.yvesgurcan.com/"
+    },
+    "main": "index.js",
     "directories": {
+        "lib": "./src",
         "doc": "./doc",
         "example": "./example",
         "test": "./test"
     },
-    "homepage": "https://midi.yvesgurcan.com",
-    "bugs": {
-        "url": "https://github.com/yvesgurcan/web-midi-player/issues"
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/yvesgurcan/web-midi-player"
     },
     "scripts": {
         "start": "webpack-dev-server --mode production --progress",
@@ -70,6 +71,10 @@
         "webpack": "^4.29.6",
         "webpack-cli": "^3.2.3",
         "webpack-dev-server": "^3.2.1"
+    },
+    "engines": {
+        "node": ">=12.14.1",
+        "npm": "~6.2.0"
     },
     "jest": {
         "globals": {
