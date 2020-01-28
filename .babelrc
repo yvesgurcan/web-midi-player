@@ -8,6 +8,12 @@
             }
         ],
         "@babel/plugin-transform-arrow-functions",
-        "@babel/plugin-proposal-class-properties"
+        "@babel/plugin-proposal-class-properties",
+        [
+            "@babel/plugin-transform-modules-commonjs",
+            {
+                "strictMode": false
+            }
+        ]
     ]
 }

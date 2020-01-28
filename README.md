@@ -88,6 +88,14 @@ The list of workflows used for this project can be found [./github/workflows](he
 -   Builds are created and checked when you open pull requests into `master`.
 -   Merging pull requests into `master` triggers a release to NPM.
 
+## Browser compatibility
+
+This library relies on the [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API) and more specifically the [AudioContext interface](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext) to control MIDI playback. This library will not function as expected with [browsers that do not support this API](https://caniuse.com/#search=audiocontext).
+
+It is currently not possible to use Web Midi Player with any version of Internet Explorer or Safari.
+
+The library will use the `webkit` vendor prefix on the Audio Context API as a fallback if the interface is not available at `window.AudioContext`.
+
 ## Misc
 
 This library relies on:

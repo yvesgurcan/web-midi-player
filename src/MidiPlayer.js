@@ -178,7 +178,9 @@ export default class MidiPlayer {
             }
         }
 
-        this.context = audioContext || new AudioContext();
+        this.context =
+            audioContext || new (window.webkitAudioContext || AudioContext)();
+
         this.loadSong({ arrayBuffer: data });
         return true;
     }
@@ -290,15 +292,16 @@ export default class MidiPlayer {
         this.connectSource();
         this.waveBuffer = LibTiMidity._malloc(MIDI_AUDIO_BUFFER_SIZE * 2);
 
-        let gainNode = this.context.createGain();
-        gainNode.gain.value = 1;
-
         this.startTime = this.context.currentTime;
         this.emitEvent({ event: MIDI_PLAY, time: 0 });
     };
 
     // creates script processor with auto buffer size and a single output channel
     connectSource = () => {
+        let gainNode = this.context.createGain();
+        gainNode.gain.value = 1;
+
+        // TODO: Figure out why the onaudioprocess callback does not get triggered on WebKit browsers.
         // Warning! This feature has been marked as deprecated: https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/createScriptProcessor
         // See issue: https://github.com/yvesgurcan/web-midi-player/issues/29
         this.source = this.context.createScriptProcessor(
@@ -306,11 +309,13 @@ export default class MidiPlayer {
             0,
             1
         );
-
         // event handler for next buffer full of audio data
-        this.source.onaudioprocess = event => this.handleOutput(event);
+        this.source.onaudioprocess = event => {
+            return this.handleOutput(event);
+        };
 
         // connects the source to the context's destination (the speakers)
+        gainNode.connect(this.source);
         this.source.connect(this.context.destination);
     };
 
