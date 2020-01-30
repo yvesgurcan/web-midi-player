@@ -94,3 +94,4 @@ This library relies on:
 
 -   The [libTiMidity](http://libtimidity.sourceforge.net) converter library.
 -   Code generated thanks to [Emscripten](https://github.com/emscripten-core/emscripten).
+-   Source code of [MIDIjs](http://www.midijs.net/) copied from the [babelsberg-js](https://github.com/babelsberg/babelsberg-js/tree/master/midijs) project.
