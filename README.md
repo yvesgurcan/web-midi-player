@@ -88,10 +88,11 @@ The list of workflows used for this project can be found [./github/workflows](he
 -   Builds are created and checked when you open pull requests into `master`.
 -   Merging pull requests into `master` triggers a release to NPM.
 
-## Misc
+## Related projects
 
-This library relies on:
+This library was created with the help of:
 
--   The [libTiMidity](http://libtimidity.sourceforge.net) converter library.
--   Code generated thanks to [Emscripten](https://github.com/emscripten-core/emscripten).
--   Source code of [MIDIjs](http://www.midijs.net/) copied from the [babelsberg-js](https://github.com/babelsberg/babelsberg-js/tree/master/midijs) project.
+-   The [libTiMidity](http://libtimidity.sourceforge.net) library.
+-   WebAssembly code generated thanks to [Emscripten](https://github.com/emscripten-core/emscripten).
+-   Code written for [MIDIjs](http://www.midijs.net/). The source code can be found in the [babelsberg-js](https://github.com/babelsberg/babelsberg-js/tree/master/midijs) project.
+-   MIDI instrument patches that can be found in a [separate repository](https://github.com/yvesgurcan/midi-instrument-patches).
