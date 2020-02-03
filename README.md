@@ -13,7 +13,7 @@ Event-driven JavaScript library to enable MIDI playback in the browser.
 -   Download [instrument patches](https://github.com/yvesgurcan/midi-instrument-patches/releases/latest/download/patches.zip).
 -   Want to help? Solve an [issue](https://github.com/yvesgurcan/web-midi-player/issues).
 
-**Want to help? We're looking for contributors! Find an issue on our [Kanban board](https://github.com/yvesgurcan/web-midi-player/projects/1) and assign it to yourself.**
+**We're looking for contributors! Find an issue on our [Kanban board](https://github.com/yvesgurcan/web-midi-player/projects/1) and assign it to yourself.**
 
 ## Install
 
@@ -81,12 +81,9 @@ Start development server.
 
 ### Continuous integration / Continuous development
 
-This repository uses GitHub Actions to automate certain tasks such as publishing to NPM and running tests.
+This repository uses GitHub Actions to automate certain tasks such as creating releases, publishing to NPM, and running tests.
 
-The list of workflows used for this project can be found [./github/workflows](here):
-
--   Builds are created and checked when you open pull requests into `master`.
--   Merging pull requests into `master` triggers a release to NPM.
+The list of workflows used for this project can be found [here](./github/workflows):
 
 ## Related projects
 
