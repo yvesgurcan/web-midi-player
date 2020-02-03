@@ -15,9 +15,10 @@ const FLOAT_TYPES = { float: 0, double: 0 };
 /** @class */
 class LibTiMidity {
     /**
-     * Library to allow the handling of MIDI files.
+     * Library to enable playback of MIDI files.
      * @param {undefined}
      * @return {object} The module of an instance of LibTiMidity.
+     * @property {Number} TOTAL_MEMORY The amount of memory available to the library.
      */
     constructor() {
         const Runtime = {
@@ -324,7 +325,11 @@ class LibTiMidity {
                 var ret = DYNAMICTOP;
                 DYNAMICTOP = (DYNAMICTOP + size) | 0;
                 DYNAMICTOP = (DYNAMICTOP + 7) & -8;
-                if (DYNAMICTOP >= TOTAL_MEMORY) enlargeMemory();
+
+                if (DYNAMICTOP >= TOTAL_MEMORY) {
+                    abort('Out of memory.');
+                }
+
                 return ret;
             },
             alignMemory: function(size, quantum) {
@@ -342,6 +347,58 @@ class LibTiMidity {
             GLOBAL_BASE: 8,
             QUANTUM_SIZE: 4
         };
+
+        /* Initialize the runtime memory */
+
+        // TODO: Allow user to set up how much memory LibTimidity get at initialization
+        // original amount of memory was 67108864
+        const TOTAL_MEMORY = 67108864 * 16;
+        const PAGE_SIZE = 4096;
+
+        var HEAP8, HEAPU8, HEAP16, HEAPU16, HEAP32, HEAPU32, HEAPF32, HEAPF64;
+        var STATIC_BASE = 0,
+            STATICTOP = 0;
+        var STACK_BASE = 0,
+            STACKTOP = 0,
+            STACK_MAX = 0; // stack area
+        var DYNAMIC_BASE = 0,
+            DYNAMICTOP = 0; // dynamic area handled by sbrk
+
+        assert(
+            typeof Int32Array !== 'undefined' &&
+                typeof Float64Array !== 'undefined' &&
+                !!new Int32Array(1)['subarray'] &&
+                !!new Int32Array(1)['set'],
+            'Typed arrays not supported.'
+        );
+
+        var buffer = new ArrayBuffer(TOTAL_MEMORY);
+        HEAP8 = new Int8Array(buffer);
+        HEAP16 = new Int16Array(buffer);
+        HEAP32 = new Int32Array(buffer);
+        HEAPU8 = new Uint8Array(buffer);
+        HEAPU16 = new Uint16Array(buffer);
+        HEAPU32 = new Uint32Array(buffer);
+        HEAPF32 = new Float32Array(buffer);
+        HEAPF64 = new Float64Array(buffer);
+
+        // Endianness check (note: assumes compiler arch was little-endian)
+        HEAP32[0] = 255;
+        assert(
+            HEAPU8[0] === 255 && HEAPU8[3] === 0,
+            'Typed arrays 2 must be run on a little-endian system'
+        );
+
+        /**
+         * @function alignMemoryPage
+         * @memberof LibTiMidity
+         * @instance
+         * @param {Number} x
+         */
+
+        function alignMemoryPage(x) {
+            return (x + 4095) & -4096;
+        }
 
         var Module = {};
         this.Module = Module;
@@ -366,7 +423,8 @@ class LibTiMidity {
         Module.preRun = [];
         Module.postRun = [];
 
-        var ABORT = false; // whether we are quitting the application. no code should run after this. set in exit() and abort()
+        // Whether we are quitting the application. If so, no more code should run.
+        var ABORT = false;
         var tempI64;
 
         function ExitStatus(status) {
@@ -815,72 +873,6 @@ class LibTiMidity {
         }
 
         Module['stringToUTF32'] = stringToUTF32;
-
-        // Memory management
-        var PAGE_SIZE = 4096;
-
-        function alignMemoryPage(x) {
-            return (x + 4095) & -4096;
-        }
-
-        var HEAP;
-        var HEAP8, HEAPU8, HEAP16, HEAPU16, HEAP32, HEAPU32, HEAPF32, HEAPF64;
-        var STATIC_BASE = 0,
-            STATICTOP = 0;
-        var STACK_BASE = 0,
-            STACKTOP = 0,
-            STACK_MAX = 0; // stack area
-        var DYNAMIC_BASE = 0,
-            DYNAMICTOP = 0; // dynamic area handled by sbrk
-
-        function enlargeMemory() {
-            abort(
-                'Cannot enlarge memory arrays in asm.js. Either (1) compile with -s TOTAL_MEMORY=X with X higher than the current value ' +
-                    TOTAL_MEMORY +
-                    ', or (2) set Module.TOTAL_MEMORY before the program runs.'
-            );
-        }
-
-        Module['TOTAL_STACK'] || 5242880;
-        var TOTAL_MEMORY = Module['TOTAL_MEMORY'] || 67108864;
-        Module['FAST_MEMORY'] || 2097152;
-
-        // Initialize the runtime's memory
-        // check for full engine support (use string 'subarray' to avoid closure compiler confusion)
-        assert(
-            typeof Int32Array !== 'undefined' &&
-                typeof Float64Array !== 'undefined' &&
-                !!new Int32Array(1)['subarray'] &&
-                !!new Int32Array(1)['set'],
-            'Cannot fallback to non-typed array case: Code is too specialized'
-        );
-
-        var buffer = new ArrayBuffer(TOTAL_MEMORY);
-        HEAP8 = new Int8Array(buffer);
-        HEAP16 = new Int16Array(buffer);
-        HEAP32 = new Int32Array(buffer);
-        HEAPU8 = new Uint8Array(buffer);
-        HEAPU16 = new Uint16Array(buffer);
-        HEAPU32 = new Uint32Array(buffer);
-        HEAPF32 = new Float32Array(buffer);
-        HEAPF64 = new Float64Array(buffer);
-        // Endianness check (note: assumes compiler arch was little-endian)
-        HEAP32[0] = 255;
-
-        assert(
-            HEAPU8[0] === 255 && HEAPU8[3] === 0,
-            'Typed arrays 2 must be run on a little-endian system'
-        );
-
-        Module['HEAP'] = HEAP;
-        Module['HEAP8'] = HEAP8;
-        Module['HEAP16'] = HEAP16;
-        Module['HEAP32'] = HEAP32;
-        Module['HEAPU8'] = HEAPU8;
-        Module['HEAPU16'] = HEAPU16;
-        Module['HEAPU32'] = HEAPU32;
-        Module['HEAPF32'] = HEAPF32;
-        Module['HEAPF64'] = HEAPF64;
 
         /**
          * @function callRuntimeCallbacks

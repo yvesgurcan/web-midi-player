@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
-  <title>web-midi-player 1.1.23 | Documentation</title>
+  <title>web-midi-player 1.2.0 | Documentation</title>
   <meta name='description' content='🎹 Event-driven JavaScript library to enable MIDI playback in the browser.'>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' rel='stylesheet'>
@@ -15,7 +15,7 @@
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'>web-midi-player</h3>
-          <div class='mb1'><code>1.1.23</code></div>
+          <div class='mb1'><code>1.2.0</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -89,6 +89,12 @@
                   
                     <ul class='list-reset py1-ul pl1'>
                       <li class='h5'><span>Instance members</span></li>
+                      
+                      <li><a
+                        href='#libtimidityalignmemorypage'
+                        class='regular pre-open'>
+                        #alignMemoryPage
+                      </a></li>
                       
                       <li><a
                         href='#libtimidityexit'
@@ -284,6 +290,12 @@
                         href='#eventhandleremitinit'
                         class='regular pre-open'>
                         #emitInit
+                      </a></li>
+                      
+                      <li><a
+                        href='#eventhandleremiterror'
+                        class='regular pre-open'>
+                        #emitError
                       </a></li>
                       
                       <li><a
@@ -1006,6 +1018,65 @@ midiPlayer.emitEvent({ event, message });</pre>
   
     <div class='py1 quiet mt1 prose-big'>Instance Members</div>
     <div class="clearfix">
+  
+    <div class='border-bottom' id='libtimidityalignmemorypage'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>alignMemoryPage(x)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  
+    <div class='pre p1 fill-light mt0'>alignMemoryPage(x: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>x</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
   
     <div class='border-bottom' id='libtimidityexit'>
       <div class="clearfix small pointer toggle-sibling">
@@ -3142,6 +3213,104 @@ midiPlayer.emitEvent({ event, message });</pre>
       </div>
     </div>
   
+    <div class='border-bottom' id='eventhandleremiterror'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>emitError(payload)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Emits an event that indicates that an error prevented the MIDI player to continue.</p>
+
+    <div class='pre p1 fill-light mt0'>emitError(payload: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>payload</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</code>
+	    
+          </div>
+          
+          <table class='mt1 mb2 fixed-table h5 col-12'>
+            <colgroup>
+              <col width='30%' />
+              <col width='70%' />
+            </colgroup>
+            <thead>
+              <tr class='bold fill-light'>
+                <th>Name</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody class='mt1'>
+              
+                <tr>
+  <td class='break-word'><span class='code bold'>payload.message</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?</code>
+  
+    (default <code>&#39;An error occurred.&#39;</code>)
+  </td>
+  <td class='break-word'><span>A message that indicates that an error occurred.
+</span></td>
+</tr>
+
+
+              
+                <tr>
+  <td class='break-word'><span class='code bold'>payload.error</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?</code>
+  
+    (default <code>&#39;&#39;</code>)
+  </td>
+  <td class='break-word'><span>A message that describes the details of the error.
+</span></td>
+</tr>
+
+
+              
+            </tbody>
+          </table>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
     <div class='border-bottom' id='eventhandleremitevent'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
@@ -3202,7 +3371,7 @@ midiPlayer.emitEvent({ event, message });</pre>
                 <tr>
   <td class='break-word'><span class='code bold'>payload.message</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?</code>
   </td>
-  <td class='break-word'><span>A message that described the event.
+  <td class='break-word'><span>A message that describes the event.
 </span></td>
 </tr>
 
