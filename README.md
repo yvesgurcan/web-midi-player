@@ -83,7 +83,7 @@ Start development server.
 
 This repository uses GitHub Actions to automate certain tasks such as creating releases, publishing to NPM, and running tests.
 
-The list of workflows used for this project can be found [here](./github/workflows):
+The list of workflows used for this project can be found [here](.github/workflows):
 
 ## Related projects
 
