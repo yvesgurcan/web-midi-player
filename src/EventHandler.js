@@ -32,11 +32,26 @@ export default class EventHandler {
     }
 
     /**
+     * Emits an event that indicates that an error prevented the MIDI player to continue.
+     * @function
+     * @param {object} payload
+     * @param {string} [payload.message] A message that indicates that an error occurred.
+     * @param {string} [payload.error] A message that describes the details of the error.
+     */
+    emitError = ({ message = 'An error occurred.', error = '' }) => {
+        this.emitEvent({
+            event: MIDI_ERROR,
+            message,
+            error
+        });
+    };
+
+    /**
      * Send payloads to the event logger.
      * @function
      * @param {object} payload
      * @param {string} [payload.event] The name of the event.
-     * @param {string} [payload.message] A message that described the event.
+     * @param {string} [payload.message] A message that describes the event.
      */
     emitEvent = payload => {
         const payloadWithId = {
