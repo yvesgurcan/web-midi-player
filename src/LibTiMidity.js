@@ -352,7 +352,7 @@ class LibTiMidity {
 
         // TODO: Allow user to set up how much memory LibTimidity get at initialization
         // original amount of memory was 67108864
-        const TOTAL_MEMORY = 67108864*16;
+        const TOTAL_MEMORY = 67108864 * 16;
         const PAGE_SIZE = 4096;
 
         var HEAP8, HEAPU8, HEAP16, HEAPU16, HEAP32, HEAPU32, HEAPF32, HEAPF64;
@@ -399,7 +399,7 @@ class LibTiMidity {
         function alignMemoryPage(x) {
             return (x + 4095) & -4096;
         }
-        
+
         var Module = {};
         this.Module = Module;
 
@@ -424,7 +424,7 @@ class LibTiMidity {
         Module.postRun = [];
 
         // Whether we are quitting the application. If so, no more code should run.
-        var ABORT = false; 
+        var ABORT = false;
         var tempI64;
 
         function ExitStatus(status) {
@@ -873,7 +873,6 @@ class LibTiMidity {
         }
 
         Module['stringToUTF32'] = stringToUTF32;
-
 
         /**
          * @function callRuntimeCallbacks
