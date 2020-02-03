@@ -70,7 +70,7 @@
         "uuid": "^3.3.3",
         "webpack": "^4.29.6",
         "webpack-cli": "^3.2.3",
-        "webpack-dev-server": "^3.2.1"
+        "webpack-dev-server": "^3.10.2"
     },
     "engines": {
         "node": ">=12.14.1",
