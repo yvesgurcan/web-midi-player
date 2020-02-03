@@ -8,14 +8,79 @@ const MIDI_END = 'MIDI_END';
 const MIDI_ERROR = 'MIDI_ERROR';
 
 const SONGS = [
-    { url: 'midi/d_runnin.mid', name: 'Running from evil - Bobby Prince' },
+    {
+        url: 'midi/fastway.mid',
+        name: "Rise of the Triad - Goin' down the fast way - Lee Jackson"
+    },
+    {
+        url: 'midi/runlike.mid',
+        name: 'Rise of the Triad - Run like Smeg - Lee Jackson'
+    },
+    {
+        url: 'midi/excalibr.mid',
+        name: 'Rise of the Triad - Excalibur - Bobby Prince'
+    },
+    {
+        url: 'midi/cccool.mid',
+        name: 'Rise of the Triad - CCCool - Bobby Prince'
+    },
+    {
+        url: 'midi/bunny.mid',
+        name: 'Doom - End music - Bobby Prince'
+    },
+    {
+        url: 'midi/e1m9.mid',
+        name: 'Doom - Hiding the secrets - Bobby Prince'
+    },
+    {
+        url: 'midi/e2m1.mid',
+        name: 'Doom - I sawed the demons - Bobby Prince'
+    },
+    {
+        url: 'midi/dm2ttl.mid',
+        name: 'Doom II - Title - Bobby Prince'
+    },
+    {
+        url: 'midi/d_runnin.mid',
+        name: 'Doom II - Running from evil - Bobby Prince'
+    },
+    {
+        url: 'midi/d_messag.mid',
+        name: 'Doom II - Message for the Archvile - Bobby Prince'
+    },
+    {
+        url: 'midi/grabbag.mid',
+        name: 'Duke Nukem 3D - Grabbag - Lee Jackson'
+    },
+    {
+        url: 'midi/stalker.mid',
+        name: 'Duke Nukem 3D - Stalker - Lee Jackson'
+    },
     {
         url: 'midi/fatcmdr.mid',
-        name: 'Going after the fat commander - Bobby Prince'
+        name: 'Duke Nukem 3D - Going after the fat commander - Bobby Prince'
+    },
+    {
+        url: 'midi/invader.mid',
+        name: 'Duke Nukem 3D - Invader - Bobby Prince'
+    },
+    {
+        url: 'midi/make-it-tighter.mid',
+        name: 'Commander Keen - Make it tighter - Bobby Prince'
+    },
+    {
+        url: 'midi/alienate.mid',
+        name: 'Commander Keen - Aliens ate my babysitter - Bobby Prince'
+    },
+    {
+        url: 'midi/sphereful.mid',
+        name:
+            'Commander Keen - Be Very Sphereful With My Diamonds - Bobby Prince'
     },
     {
         url: 'midi/veggies.mid',
-        name: "You've got to eat your vegetables - Bobby Prince"
+        name:
+            "Commander Keen - You've got to eat your vegetables - Bobby Prince"
     },
     {
         url: 'midi/this-file-does-not-exist.mid',
@@ -63,9 +128,14 @@ const Player = () => {
     useEffect(() => {
         if (!midiPlayer) {
             const eventLogger = payload => {
-                console[event === MIDI_ERROR ? 'error' : 'log'](payload);
+                console.log(payload);
                 setCurrentSongState(payload.event);
                 setCurrentSongTime(payload.time || 0);
+
+                if (payload.event === MIDI_ERROR) {
+                    console.error(payload.message);
+                    console.error(payload.error);
+                }
 
                 if (payload.event === MIDI_END) {
                     let nextIndex = currentSongIndex + 1;
