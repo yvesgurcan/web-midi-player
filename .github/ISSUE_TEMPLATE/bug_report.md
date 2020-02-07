@@ -17,7 +17,7 @@ title: 'Bug: '
 
 *What did you expect to happen?*
 
-## Example/ Screenshots
+## Example/Screenshots
 
 *Please provide screenshots to help reviewers  to visualize the bug and how it manifests.*
 
