@@ -17,8 +17,9 @@ title: 'Bug: '
 
 *What did you expect to happen?*
 
-## Example
+## Example/Screenshots
+
+*Please provide screenshots to help reviewers  to visualize the bug and how it manifests.*
 
 *Please provide the smallest code sample possible to reproduce the bug.*
 *We recommend using CodePen, JSbin, or CodeSandbox to provide a live example of the issue.*
-
