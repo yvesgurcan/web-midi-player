@@ -7,7 +7,7 @@
 Event-driven JavaScript library to enable MIDI playback in the browser.
 
 -   Check out examples [with React](https://midi.yvesgurcan.com/example/react/) and [with vanilla JavaScript](https://midi.yvesgurcan.com/example/javascript/).
--   See the [NPM package](https://npmjs.com/package/web-midi-player).
+-   See the [NPM package](https://npmjs.com/package/web-midi-player) and the [GPR package](https://github.com/yvesgurcan/web-midi-player/packages/92236).
 -   Read the [API documentation](https://midi.yvesgurcan.com/doc/).
 -   Look at the [source code](https://github.com/yvesgurcan/web-midi-player).
 -   Download [instrument patches](https://github.com/yvesgurcan/midi-instrument-patches/releases/latest/download/patches.zip).
@@ -19,11 +19,15 @@ Event-driven JavaScript library to enable MIDI playback in the browser.
 
 ### NPM
 
-This library can be installed via NPM.
+This library can be installed via [NPM](https://docs.npmjs.com/about-npm/), using the default registry:
 
     npm i web-midi-player
 
-You can then use ES6 module syntax to load the dependency.
+Alternatively, you can set up `npm` to use [GPR](https://github.com/features/packages) to install the library. The dependency can be then installed like this:
+
+    npm i @yvesgurcan/web-midi-player
+
+Whichever registry you've used, you can then use ES6 module syntax to load the dependency.
 
     import MidiPlayer from 'web-midi-player';
 
