@@ -19,9 +19,13 @@ Event-driven JavaScript library to enable MIDI playback in the browser.
 
 ### NPM
 
-This library can be installed via NPM.
+This library can be installed via [NPM](https://docs.npmjs.com/about-npm/:
 
     npm i web-midi-player
+
+Alternatively, you can use the [GPR](https://github.com/features/packages) registry to install the library. The dependency can be then installed like this:
+
+    npm i @yvesgurcan/web-midi-player
 
 You can then use ES6 module syntax to load the dependency.
 
