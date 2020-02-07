@@ -49,7 +49,7 @@ The library will be accessible under `window['web-midi-player'].default`.
 
 ## Getting started
 
-**This package requires MIDI instrument patches in order to play audio.**
+**This package requires MIDI instrument patches compatible with [Timidity](https://sourceforge.net/projects/timidity/) (`.pat` files) in order to play audio.**
 
 By default, the player loads [instrument patches via the jsDeliver CDN](https://www.jsdelivr.com/package/npm/midi-instrument-patches).
 
@@ -87,7 +87,7 @@ Start development server.
 
 This repository uses GitHub Actions to automate certain tasks such as creating releases, publishing to NPM, and running tests.
 
-The list of workflows used for this project can be found [here](./github/workflows):
+The list of workflows used for this project can be found [here](.github/workflows).
 
 ## Related projects
 
