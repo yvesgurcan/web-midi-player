@@ -9,7 +9,6 @@ jest.config.js
 .babelrc
 CNAME
 documentation.yml
-PULL_REQUEST_TEMPLATE
 CODE_OF_CONDUCT
 CHANGELOG
 .github
