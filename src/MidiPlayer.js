@@ -141,8 +141,7 @@ export default class MidiPlayer {
             return false;
         }
 
-        this.emitEvent({
-            event: MIDI_LOAD_FILE,
+        this.eventHandler.emitLoadFile({
             message: `Loading${MidiPlayer.formatMidiName(name)}...`
         });
 
@@ -269,9 +268,8 @@ export default class MidiPlayer {
         );
 
         if (missingPatchCount > 0) {
-            this.emitEvent({
-                event: MIDI_LOAD_PATCH,
-                message: `Loading ${missingPatchCount} MIDI instrument patches...`
+            this.eventHandler.emitLoadPatch({
+                message: `Loading ${missingPatchCount} instrument patches...`
             });
 
             for (let i = 0; i < missingPatchCount; i++) {
@@ -308,7 +306,7 @@ export default class MidiPlayer {
         gainNode.gain.value = 1;
 
         this.startTime = this.context.currentTime;
-        this.emitEvent({ event: MIDI_PLAY, time: 0 });
+        this.eventHandler.emitPlay({ time: 0 });
     };
 
     // creates script processor with auto buffer size and a single output channel
@@ -332,10 +330,7 @@ export default class MidiPlayer {
         try {
             const time = this.context.currentTime - this.startTime;
 
-            this.emitEvent({
-                event: MIDI_PLAY,
-                time
-            });
+            this.eventHandler.emitPlay({ time });
 
             // collect new wave data from LibTiMidity into waveBuffer
             const readWaveBytes = LibTiMidity.call(
@@ -347,10 +342,7 @@ export default class MidiPlayer {
 
             if (readWaveBytes === 0) {
                 this.stop();
-                this.emitEvent({
-                    event: MIDI_END,
-                    time
-                });
+                this.eventHandler.emitEnd({ time });
                 return;
             }
 
@@ -385,10 +377,7 @@ export default class MidiPlayer {
         try {
             this.context.suspend();
             const time = this.context.currentTime - this.startTime;
-            this.emitEvent({
-                event: MIDI_PAUSE,
-                time
-            });
+            this.eventHandler.emitPause({ time });
             return true;
         } catch (error) {
             this.eventHandler.emitError({
@@ -411,8 +400,7 @@ export default class MidiPlayer {
         try {
             this.context.resume();
             const time = this.context.currentTime - this.startTime;
-            this.emitEvent({
-                event: MIDI_RESUME,
+            this.eventHandler.emitResume({
                 time
             });
 
@@ -457,10 +445,7 @@ export default class MidiPlayer {
 
             this.startTime = 0;
 
-            this.emitEvent({
-                event: MIDI_STOP,
-                time: 0
-            });
+            this.eventHandler.emitStop();
 
             return true;
         } catch (error) {
@@ -486,24 +471,9 @@ export default class MidiPlayer {
      * @param {string} [payload.event] The name of the event.
      * @param {string} [payload.message] A message that described the event.
      * @example
-     * const event = 'CUSTOM_EVENT';
+     * const event = 'MIDI_CUSTOM_EVENT';
      * const message = 'Something happened.';
      * midiPlayer.emitEvent({ event, message });
      */
-    emitEvent = payload => {
-        const payloadWithId = {
-            ...payload,
-            playerId: this.playerId
-        };
-
-        if (this.eventLogger) {
-            this.eventLogger(payloadWithId);
-        } else if (this.logging) {
-            if (payloadWithId.event === MIDI_ERROR) {
-                console.error(payloadWithId);
-            } else {
-                console.log(payloadWithId);
-            }
-        }
-    };
+    emitEvent = payload => this.eventHandler.emitEvent(payload);
 }
