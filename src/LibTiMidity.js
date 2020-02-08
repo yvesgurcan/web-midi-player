@@ -1165,6 +1165,14 @@ class LibTiMidity {
         const runDependencyTracking = {};
         let runDependencyWatcher = null;
         let dependenciesFulfilled = null; // overridden to take different actions when all run dependencies are fulfilled
+
+        /**
+         * @function addRunDependency
+         * @memberof LibTiMidity
+         * @instance
+         * @param id
+         */
+        
         function addRunDependency(id) {
             runDependencies++;
             if (Module['monitorRunDependencies']) {
@@ -1177,7 +1185,9 @@ class LibTiMidity {
                 console.warn('warning: run dependency added without ID');
             }
         }
+        
         Module['addRunDependency'] = addRunDependency;
+
         function removeRunDependency(id) {
             runDependencies--;
             if (Module['monitorRunDependencies']) {
