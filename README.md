@@ -61,6 +61,12 @@ Alternatively, you can [download instrument patches and add them to your project
     const midiPlayer = new MidiPlayer({ patchUrl: 'public/patches/' });
     midiPlayer.play({ url: 'song.mid' });
 
+## Browser compatibility
+
+This library relies on the [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API) and more specifically the [AudioContext interface](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext) to control MIDI playback. This library will not function as expected with [browsers that do not support this API](https://caniuse.com/#search=audiocontext).
+
+It is currently not possible to use Web Midi Player with any version of Internet Explorer or Safari.
+
 ## Contributing
 
 Make sure to read our [code of conduct](https://github.com/yvesgurcan/web-midi-player/blob/master/CODE_OF_CONDUCT.md) first.
