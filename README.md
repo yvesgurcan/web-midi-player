@@ -63,7 +63,7 @@ Alternatively, you can [download instrument patches and add them to your project
 
 ## Browser compatibility
 
-This library relies on the [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API) and more specifically the [AudioContext interface](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext) to control MIDI playback. This library will not function as expected with [browsers that do not support this API](https://caniuse.com/#search=audiocontext).
+This library relies on the [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API) and more specifically the [AudioContext interface](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext) to control MIDI playback. This library will not function as expected with [browsers that do not fully support this API](https://caniuse.com/#search=audiocontext) (including browsers that use vendor prefixes).
 
 It is currently not possible to use Web Midi Player with any version of Internet Explorer or Safari.
 
