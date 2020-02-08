@@ -60,7 +60,7 @@ class LibTiMidity {
                         if (type[type.length - 1] === '*') {
                             return Runtime.QUANTUM_SIZE; // A pointer
                         } else if (type[0] === 'i') {
-                            var bits = parseInt(type.substr(1));
+                            const bits = parseInt(type.substr(1));
                             assert(bits % 8 === 0);
                             return bits / 8;
                         }
@@ -74,7 +74,7 @@ class LibTiMidity {
                 );
             },
             dedup: function dedup(items, ident) {
-                var seen = {};
+                const seen = {};
                 if (ident) {
                     return items.filter(function(item) {
                         if (seen[item[ident]]) return false;
@@ -90,10 +90,10 @@ class LibTiMidity {
                 }
             },
             set: function set() {
-                var args =
+                const args =
                     typeof arguments[0] === 'object' ? arguments[0] : arguments;
-                var ret = {};
-                for (var i = 0; i < args.length; i++) {
+                const ret = {};
+                for (let i = 0; i < args.length; i++) {
                     ret[args[i]] = 0;
                 }
                 return ret;
@@ -110,10 +110,10 @@ class LibTiMidity {
             calculateStructAlignment: function calculateStructAlignment(type) {
                 type.flatSize = 0;
                 type.alignSize = 0;
-                var diffs = [];
-                var prev = -1;
+                const diffs = [];
+                let prev = -1;
                 type.flatIndexes = type.fields.map(function(field) {
-                    var size, alignSize;
+                    let size, alignSize;
                     if (
                         Runtime.isNumberType(field) ||
                         Runtime.isPointerType(field)
@@ -154,7 +154,7 @@ class LibTiMidity {
                     }
                     if (type.packed) alignSize = 1;
                     type.alignSize = Math.max(type.alignSize, alignSize);
-                    var curr = Runtime.alignMemory(type.flatSize, alignSize); // if necessary, place this on aligned memory
+                    const curr = Runtime.alignMemory(type.flatSize, alignSize); // if necessary, place this on aligned memory
                     type.flatSize = curr + size;
                     if (prev >= 0) {
                         diffs.push(curr - prev);
@@ -199,7 +199,7 @@ class LibTiMidity {
                     };
                     alignment = Runtime.calculateStructAlignment(type);
                 }
-                var ret = {
+                const ret = {
                     __size__: type.flatSize
                 };
                 if (typeName) {
@@ -208,8 +208,8 @@ class LibTiMidity {
                             ret[item] = alignment[i] + offset;
                         } else {
                             // embedded struct
-                            var key;
-                            for (var k in item) key = k;
+                            let key;
+                            for (const k in item) key = k;
                             ret[key] = Runtime.generateStructInfo(
                                 item[key],
                                 type.fields[i],
@@ -243,8 +243,8 @@ class LibTiMidity {
             },
             funcWrappers: {},
             UTF8Processor: function() {
-                var buffer = [];
-                var needed = 0;
+                const buffer = [];
+                let needed = 0;
                 this.processCChar = function(code) {
                     code = code & 0xff;
                     if (buffer.length == 0) {
@@ -270,11 +270,11 @@ class LibTiMidity {
                         needed--;
                         if (needed > 0) return '';
                     }
-                    var c1 = buffer[0];
-                    var c2 = buffer[1];
-                    var c3 = buffer[2];
-                    var c4 = buffer[3];
-                    var ret;
+                    const c1 = buffer[0];
+                    const c2 = buffer[1];
+                    const c3 = buffer[2];
+                    const c4 = buffer[3];
+                    let ret;
                     if (buffer.length == 2) {
                         ret = String.fromCharCode(
                             ((c1 & 0x1f) << 6) | (c2 & 0x3f)
@@ -287,7 +287,7 @@ class LibTiMidity {
                         );
                     } else {
                         // http://mathiasbynens.be/notes/javascript-encoding#surrogate-formulae
-                        var codePoint =
+                        const codePoint =
                             ((c1 & 0x07) << 18) |
                             ((c2 & 0x3f) << 12) |
                             ((c3 & 0x3f) << 6) |
@@ -302,27 +302,27 @@ class LibTiMidity {
                 };
                 this.processJSString = function(string) {
                     string = unescape(encodeURIComponent(string));
-                    var ret = [];
-                    for (var i = 0; i < string.length; i++) {
+                    const ret = [];
+                    for (let i = 0; i < string.length; i++) {
                         ret.push(string.charCodeAt(i));
                     }
                     return ret;
                 };
             },
             stackAlloc: function(size) {
-                var ret = STACKTOP;
+                const ret = STACKTOP;
                 STACKTOP = (STACKTOP + size) | 0;
                 STACKTOP = (STACKTOP + 7) & -8;
                 return ret;
             },
             staticAlloc: function(size) {
-                var ret = STATICTOP;
+                const ret = STATICTOP;
                 STATICTOP = (STATICTOP + size) | 0;
                 STATICTOP = (STATICTOP + 7) & -8;
                 return ret;
             },
             dynamicAlloc: function(size) {
-                var ret = DYNAMICTOP;
+                const ret = DYNAMICTOP;
                 DYNAMICTOP = (DYNAMICTOP + size) | 0;
                 DYNAMICTOP = (DYNAMICTOP + 7) & -8;
 
@@ -333,13 +333,13 @@ class LibTiMidity {
                 return ret;
             },
             alignMemory: function(size, quantum) {
-                var ret = (size =
+                const ret = (size =
                     Math.ceil(size / (quantum ? quantum : 8)) *
                     (quantum ? quantum : 8));
                 return ret;
             },
             makeBigInt: function(low, high, unsigned) {
-                var ret = unsigned
+                const ret = unsigned
                     ? +(low >>> 0) + +(high >>> 0) * +4294967296
                     : +(low >>> 0) + +(high | 0) * +4294967296;
                 return ret;
@@ -352,17 +352,13 @@ class LibTiMidity {
 
         // TODO: Allow user to set up how much memory LibTimidity get at initialization
         // original amount of memory was 67108864
-        const TOTAL_MEMORY = 67108864 * 16;
+        const TOTAL_MEMORY = 67108864 * 8;
         const PAGE_SIZE = 4096;
 
-        var HEAP8, HEAPU8, HEAP16, HEAPU16, HEAP32, HEAPU32, HEAPF32, HEAPF64;
-        var STATIC_BASE = 0,
-            STATICTOP = 0;
-        var STACK_BASE = 0,
-            STACKTOP = 0,
-            STACK_MAX = 0; // stack area
-        var DYNAMIC_BASE = 0,
-            DYNAMICTOP = 0; // dynamic area handled by sbrk
+        let HEAP8, HEAPU8, HEAP16, HEAPU16, HEAP32, HEAPU32, HEAPF32, HEAPF64;
+        let STATIC_BASE = 0, STATICTOP = 0;
+        let STACK_BASE = 0, STACKTOP = 0, STACK_MAX = 0; // stack area
+        let DYNAMIC_BASE = 0, DYNAMICTOP = 0; // dynamic area handled by sbrk
 
         assert(
             typeof Int32Array !== 'undefined' &&
@@ -372,7 +368,7 @@ class LibTiMidity {
             'Typed arrays not supported.'
         );
 
-        var buffer = new ArrayBuffer(TOTAL_MEMORY);
+        const buffer = new ArrayBuffer(TOTAL_MEMORY);
         HEAP8 = new Int8Array(buffer);
         HEAP16 = new Int16Array(buffer);
         HEAP32 = new Int32Array(buffer);
@@ -400,7 +396,7 @@ class LibTiMidity {
             return (x + 4095) & -4096;
         }
 
-        var Module = {};
+        const Module = {};
         this.Module = Module;
 
         Module.arguments = arguments;
@@ -410,7 +406,7 @@ class LibTiMidity {
         }
 
         Module.read = function(url) {
-            var xhr = new XMLHttpRequest();
+            const xhr = new XMLHttpRequest();
             xhr.open('GET', url, false);
             xhr.send(null);
             return xhr.responseText;
@@ -425,7 +421,7 @@ class LibTiMidity {
 
         // Whether we are quitting the application. If so, no more code should run.
         var ABORT = false;
-        var tempI64;
+        let tempI64;
 
         function ExitStatus(status) {
             this.name = 'ExitStatus';
@@ -504,7 +500,7 @@ class LibTiMidity {
                 abort(`Unknown function: "${ident}".`);
             }
 
-            var stack = 0;
+            let stack = 0;
             function toC(value, type) {
                 if (type == 'string') {
                     if (value === null || value === undefined || value === 0)
@@ -514,7 +510,7 @@ class LibTiMidity {
                 }
                 if (type == 'array') {
                     if (!stack) stack = Runtime.stackSave();
-                    var ret = Runtime.stackAlloc(value.length);
+                    const ret = Runtime.stackAlloc(value.length);
                     writeArrayToMemory(value, ret);
                     return ret;
                 }
@@ -529,8 +525,8 @@ class LibTiMidity {
                 return value;
             }
 
-            var i = 0;
-            var cArgs = args
+            let i = 0;
+            const cArgs = args
                 ? args.map(function(arg) {
                       return toC(arg, argTypes[i++]);
                   })
@@ -632,11 +628,11 @@ class LibTiMidity {
 
         Module['getValue'] = getValue;
 
-        var ALLOC_NORMAL = 0; // Tries to use _malloc()
-        var ALLOC_STACK = 1; // Lives for the duration of the current function call
-        var ALLOC_STATIC = 2; // Cannot be freed
-        var ALLOC_DYNAMIC = 3; // Cannot be freed except through sbrk
-        var ALLOC_NONE = 4; // Do not allocate
+        const ALLOC_NORMAL = 0; // Tries to use _malloc()
+        const ALLOC_STACK = 1; // Lives for the duration of the current function call
+        const ALLOC_STATIC = 2; // Cannot be freed
+        const ALLOC_DYNAMIC = 3; // Cannot be freed except through sbrk
+        const ALLOC_NONE = 4; // Do not allocate
         Module['ALLOC_NORMAL'] = ALLOC_NORMAL;
         Module['ALLOC_STACK'] = ALLOC_STACK;
         Module['ALLOC_STATIC'] = ALLOC_STATIC;
@@ -654,7 +650,7 @@ class LibTiMidity {
          */
 
         function allocate(slab, types, allocator, ptr) {
-            var zeroinit, size;
+            let zeroinit, size;
             if (typeof slab === 'number') {
                 zeroinit = true;
                 size = slab;
@@ -662,8 +658,8 @@ class LibTiMidity {
                 zeroinit = false;
                 size = slab.length;
             }
-            var singleType = typeof types === 'string' ? types : null;
-            var ret;
+            const singleType = typeof types === 'string' ? types : null;
+            let ret;
             if (allocator == ALLOC_NONE) {
                 ret = ptr;
             } else {
@@ -698,12 +694,9 @@ class LibTiMidity {
                 }
                 return ret;
             }
-            var i = 0,
-                type,
-                typeSize,
-                previousType;
+            let i = 0, type, typeSize, previousType;
             while (i < size) {
-                var curr = slab[i];
+                let curr = slab[i];
                 if (typeof curr === 'function') {
                     curr = Runtime.getFunctionIndex(curr);
                 }
@@ -737,9 +730,9 @@ class LibTiMidity {
         function Pointer_stringify(ptr, length) {
             // TODO: use TextDecoder
             // Find the length, and check for UTF while doing so
-            var hasUtf = false;
-            var t;
-            var i = 0;
+            let hasUtf = false;
+            let t;
+            let i = 0;
             while (1) {
                 t = HEAPU8[(ptr + i) | 0];
                 if (t >= 128) hasUtf = true;
@@ -748,10 +741,10 @@ class LibTiMidity {
                 if (length && i == length) break;
             }
             if (!length) length = i;
-            var ret = '';
+            let ret = '';
             if (!hasUtf) {
-                var MAX_CHUNK = 1024; // split up into chunks, because .apply on a huge string can overflow the stack
-                var curr;
+                const MAX_CHUNK = 1024; // split up into chunks, because .apply on a huge string can overflow the stack
+                let curr;
                 while (length > 0) {
                     curr = String.fromCharCode.apply(
                         String,
@@ -763,7 +756,7 @@ class LibTiMidity {
                 }
                 return ret;
             }
-            var utf8 = new Runtime.UTF8Processor();
+            const utf8 = new Runtime.UTF8Processor();
             for (i = 0; i < length; i++) {
                 t = HEAPU8[(ptr + i) | 0];
                 ret += utf8.processCChar(t);
@@ -781,10 +774,10 @@ class LibTiMidity {
          */
 
         function UTF16ToString(ptr) {
-            var i = 0;
-            var str = '';
+            let i = 0;
+            let str = '';
             while (1) {
-                var codeUnit = HEAP16[(ptr + i * 2) >> 1];
+                const codeUnit = HEAP16[(ptr + i * 2) >> 1];
                 if (codeUnit == 0) return str;
                 ++i;
                 // fromCharCode constructs a character from a UTF-16 code unit, so we can pass the UTF16 string right through.
@@ -804,9 +797,9 @@ class LibTiMidity {
          */
 
         function stringToUTF16(str, outPtr) {
-            for (var i = 0; i < str.length; ++i) {
+            for (let i = 0; i < str.length; ++i) {
                 // charCodeAt returns a UTF-16 encoded code unit, so it can be directly written to the HEAP.
-                var codeUnit = str.charCodeAt(i); // possibly a lead surrogate
+                const codeUnit = str.charCodeAt(i); // possibly a lead surrogate
                 HEAP16[(outPtr + i * 2) >> 1] = codeUnit;
             }
             // Null-terminate the pointer to the HEAP.
@@ -824,15 +817,15 @@ class LibTiMidity {
          */
 
         function UTF32ToString(ptr) {
-            var i = 0;
-            var str = '';
+            let i = 0;
+            let str = '';
             while (1) {
-                var utf32 = HEAP32[(ptr + i * 4) >> 2];
+                const utf32 = HEAP32[(ptr + i * 4) >> 2];
                 if (utf32 == 0) return str;
                 ++i;
                 // Gotcha: fromCharCode constructs a character from a UTF-16 encoded code (pair), not from a Unicode code point! So encode the code point to UTF-16 for constructing.
                 if (utf32 >= 0x10000) {
-                    var ch = utf32 - 0x10000;
+                    const ch = utf32 - 0x10000;
                     str += String.fromCharCode(
                         0xd800 | (ch >> 10),
                         0xdc00 | (ch & 0x3ff)
@@ -855,12 +848,12 @@ class LibTiMidity {
          */
 
         function stringToUTF32(str, outPtr) {
-            var iChar = 0;
-            for (var iCodeUnit = 0; iCodeUnit < str.length; ++iCodeUnit) {
+            let iChar = 0;
+            for (let iCodeUnit = 0; iCodeUnit < str.length; ++iCodeUnit) {
                 // Gotcha: charCodeAt returns a 16-bit word that is a UTF-16 encoded code unit, not a Unicode code point of the character! We must decode the string to UTF-32 to the heap.
-                var codeUnit = str.charCodeAt(iCodeUnit); // possibly a lead surrogate
+                let codeUnit = str.charCodeAt(iCodeUnit); // possibly a lead surrogate
                 if (codeUnit >= 0xd800 && codeUnit <= 0xdfff) {
-                    var trailSurrogate = str.charCodeAt(++iCodeUnit);
+                    const trailSurrogate = str.charCodeAt(++iCodeUnit);
                     codeUnit =
                         (0x10000 + ((codeUnit & 0x3ff) << 10)) |
                         (trailSurrogate & 0x3ff);
@@ -883,12 +876,12 @@ class LibTiMidity {
 
         function callRuntimeCallbacks(callbacks) {
             while (callbacks.length > 0) {
-                var callback = callbacks.shift();
+                const callback = callbacks.shift();
                 if (typeof callback == 'function') {
                     callback();
                     continue;
                 }
-                var func = callback.func;
+                const func = callback.func;
                 if (typeof func === 'number') {
                     if (callback.arg === undefined) {
                         Runtime.dynCall('v', func);
@@ -902,11 +895,11 @@ class LibTiMidity {
         }
 
         var __ATPRERUN__ = []; // functions called before the runtime is initialized
-        var __ATINIT__ = []; // functions called during startup
-        var __ATMAIN__ = []; // functions called when main() is to be run
+        const __ATINIT__ = []; // functions called during startup
+        const __ATMAIN__ = []; // functions called when main() is to be run
         var __ATEXIT__ = []; // functions called during shutdown
         var __ATPOSTRUN__ = []; // functions called after the runtime has exited
-        var runtimeInitialized = false;
+        let runtimeInitialized = false;
 
         function preRun() {
             // compatibility - merge in anything from Module['preRun'] at this time
@@ -1028,7 +1021,7 @@ class LibTiMidity {
             dontAddNull,
             length /* optional */
         ) {
-            var ret = new Runtime.UTF8Processor().processJSString(stringy);
+            const ret = new Runtime.UTF8Processor().processJSString(stringy);
             if (length) {
                 ret.length = length;
             }
@@ -1048,9 +1041,9 @@ class LibTiMidity {
          */
 
         function intArrayToString(array) {
-            var ret = [];
-            for (var i = 0; i < array.length; i++) {
-                var chr = array[i];
+            const ret = [];
+            for (let i = 0; i < array.length; i++) {
+                let chr = array[i];
                 if (chr > 0xff) {
                     chr &= 0xff;
                 }
@@ -1072,10 +1065,10 @@ class LibTiMidity {
 
         // Write a Javascript array to somewhere in the heap
         function writeStringToMemory(string, buffer, dontAddNull) {
-            var array = intArrayFromString(string, dontAddNull);
-            var i = 0;
+            const array = intArrayFromString(string, dontAddNull);
+            let i = 0;
             while (i < array.length) {
-                var chr = array[i];
+                const chr = array[i];
                 HEAP8[(buffer + i) | 0] = chr;
                 i = i + 1;
             }
@@ -1092,7 +1085,7 @@ class LibTiMidity {
          */
 
         function writeArrayToMemory(array, buffer) {
-            for (var i = 0; i < array.length; i++) {
+            for (let i = 0; i < array.length; i++) {
                 HEAP8[(buffer + i) | 0] = array[i];
             }
         }
@@ -1109,7 +1102,7 @@ class LibTiMidity {
          */
 
         function writeAsciiToMemory(str, buffer, dontAddNull) {
-            for (var i = 0; i < str.length; i++) {
+            for (let i = 0; i < str.length; i++) {
                 HEAP8[(buffer + i) | 0] = str.charCodeAt(i);
             }
             if (!dontAddNull) HEAP8[(buffer + str.length) | 0] = 0;
@@ -1130,7 +1123,7 @@ class LibTiMidity {
             if (value <= 0) {
                 return value;
             }
-            var half =
+            const half =
                 bits <= 32
                     ? Math.abs(1 << (bits - 1)) // abs is needed if bits == 32
                     : Math.pow(2, bits - 1);
@@ -1145,20 +1138,20 @@ class LibTiMidity {
 
         if (!Math['imul'])
             Math['imul'] = function(a, b) {
-                var ah = a >>> 16;
-                var al = a & 0xffff;
-                var bh = b >>> 16;
-                var bl = b & 0xffff;
+                const ah = a >>> 16;
+                const al = a & 0xffff;
+                const bh = b >>> 16;
+                const bl = b & 0xffff;
                 return (al * bl + ((ah * bl + al * bh) << 16)) | 0;
             };
 
         Math.imul = Math['imul'];
 
         var Math_abs = Math.abs;
-        var Math_sin = Math.sin;
+        const Math_sin = Math.sin;
         var Math_ceil = Math.ceil;
         var Math_floor = Math.floor;
-        var Math_pow = Math.pow;
+        const Math_pow = Math.pow;
         var Math_min = Math.min;
 
         // A counter of dependencies for calling run(). If we need to
@@ -1168,10 +1161,10 @@ class LibTiMidity {
         // Note that you can add dependencies in preRun, even though
         // it happens right before run - run will be postponed until
         // the dependencies are met.
-        var runDependencies = 0;
-        var runDependencyTracking = {};
-        var runDependencyWatcher = null;
-        var dependenciesFulfilled = null; // overridden to take different actions when all run dependencies are fulfilled
+        let runDependencies = 0;
+        const runDependencyTracking = {};
+        let runDependencyWatcher = null;
+        let dependenciesFulfilled = null; // overridden to take different actions when all run dependencies are fulfilled
         function addRunDependency(id) {
             runDependencies++;
             if (Module['monitorRunDependencies']) {
@@ -1202,7 +1195,7 @@ class LibTiMidity {
                     runDependencyWatcher = null;
                 }
                 if (dependenciesFulfilled) {
-                    var callback = dependenciesFulfilled;
+                    const callback = dependenciesFulfilled;
                     dependenciesFulfilled = null;
                     callback(); // can add another dependenciesFulfilled
                 }
@@ -1211,7 +1204,7 @@ class LibTiMidity {
         Module['removeRunDependency'] = removeRunDependency;
         Module['preloadedImages'] = {}; // maps url to image data
         Module['preloadedAudios'] = {}; // maps url to audio data
-        var memoryInitializer = null;
+        const memoryInitializer = null;
         // === Body ===
         STATIC_BASE = 8;
         STATICTOP = STATIC_BASE + 8448;
@@ -1229,13 +1222,13 @@ class LibTiMidity {
         /* memory initializer */
         // prettier-ignore
         allocate([0,0,0,0,0,0,144,63,75,191,53,65,90,136,144,63,241,46,189,130,62,21,145,63,249,198,51,115,211,166,145,63,194,109,221,10,65,61,146,63,61,194,157,150,176,216,146,63,232,234,78,195,76,121,147,63,204,6,121,169,65,31,148,63,172,119,109,217,188,202,148,63,136,88,201,103,237,123,149,63,154,143,98,250,3,51,150,63,89,8,163,213,50,240,150,63,69,192,85,234,173,179,151,63,98,112,233,227,170,125,152,63,242,189,44,55,97,78,153,63,189,253,135,49,10,38,154,63,84,184,184,8,225,4,155,63,232,64,19,235,34,235,155,63,101,213,78,16,15,217,156,63,82,228,224,202,230,206,157,63,110,60,236,153,237,204,158,63,149,18,201,59,105,211,159,63,39,122,149,224,80,113,160,63,129,244,116,208,112,253,160,63,39,24,58,230,58,142,161,63,74,29,119,226,214,35,162,63,50,84,131,216,109,190,162,63,137,39,194,57,42,94,163,63,195,57,74,225,55,3,164,63,225,208,239,31,196,173,164,63,141,222,181,200,253,93,165,63,62,15,169,61,21,20,166,63,223,103,40,125,60,208,166,63,155,23,159,47,167,146,167,63,148,66,179,181,138,91,168,63,80,170,237,54,30,43,169,63,237,57,222,176,154,1,170,63,104,158,193,6,59,223,170,63,182,54,172,17,60,196,171,63,248,203,62,177,220,176,172,63,49,168,233,220,93,165,173,63,115,200,194,181,2,162,174,63,108,16,244,152,16,167,175,63,78,71,99,153,103,90,176,63,213,5,40,73,196,229,176,63,17,38,228,158,196,117,177,63,185,204,197,35,144,10,178,63,128,43,232,177,79,164,178,63,152,204,138,127,45,67,179,63,121,115,168,42,85,231,179,63,129,193,240,196,243,144,180,63,19,232,39,224,55,64,181,63,242,205,239,154,81,245,181,63,121,42,254,173,114,176,182,63,62,55,195,121,206,113,183,63,150,183,132,20,154,57,184,63,124,53,241,88,12,8,185,63,40,116,47,245,93,221,185,63,234,58,110,122,201,185,186,63,0,190,248,108,139,157,187,63,185,15,212,84,226,136,188,63,119,41,234,206,14,124,189,63,90,67,199,158,83,119,190,63,113,89,238,192,245,122,191,63,90,243,228,62,158,67,192,63,134,4,159,190,56,206,192,63,250,182,112,109,112,93,193,63,134,74,113,157,108,241,193,63,158,146,207,239,85,138,194,63,241,160,249,95,86,40,195,63,53,128,35,79,153,203,195,63,8,41,48,144,75,116,196,63,52,246,255,115,155,34,197,63,60,249,39,214,184,214,197,63,231,172,21,42,213,144,198,63,103,161,162,136,35,81,199,63,64,220,27,190,216,23,200,63,253,197,192,88,43,229,200,63,169,160,189,183,83,185,201,63,151,163,165,26,140,148,202,63,112,252,112,177,16,119,203,63,132,25,3,173,31,97,204,63,196,198,61,80,249,82,205,63,129,205,165,1,224,76,206,63,12,239,157,93,24,79,207,63,179,157,158,164,244,44,208,63,24,248,226,2,206,182,208,63,221,27,97,34,62,69,209,63,241,38,102,30,108,216,209,63,184,223,131,95,128,112,210,63,143,212,168,166,164,13,211,63,246,6,151,24,4,176,211,63,25,72,188,73,203,87,212,63,38,135,111,74,40,5,213,63,234,109,150,179,74,184,213,63,94,196,182,179,99,113,214,63,191,49,119,28,166,48,215,63,64,16,147,112,70,246,215,63,245,39,69,242,122,194,216,63,68,70,45,178,123,149,217,63,234,200,180,158,130,111,218,63,100,86,246,147,203,80,219,63,204,33,45,108,148,57,220,63,17,61,176,16,29,42,221,63,59,163,126,139,167,34,222,63,13,204,96,25,120,35,223,63,161,97,82,158,106,22,224,63,42,244,60,232,131,159,224,63,162,211,120,142,45,45,225,63,38,84,213,117,142,191,225,63,187,17,150,206,206,86,226,63,84,154,123,31,24,243,226,63,218,31,42,81,149,148,227,63,89,83,241,185,114,59,228,63,111,165,248,41,222,231,228,63,145,67,211,247,6,154,229,63,32,70,127,13,30,82,230,63,216,160,211,245,85,16,231,63,137,133,96,234,226,212,231,63,76,8,198,225,250,159,232,63,27,245,132,158,213,113,233,63,9,232,77,190,172,74,234,63,44,220,210,201,187,42,235,63,254,136,31,69,64,18,236,63,11,11,125,192,121,1,237,63,244,122,229,233,169,248,237,63,130,61,12,159,20,248,238,63,0,0,0,0,0,0,240,63,0,0,128,63,0,0,0,0,0,0,220,67,0,0,0,0,168,25,0,0,0,0,0,0,240,31,0,0,214,33,0,0,217,35,0,0,251,37,0,0,61,40,0,0,161,42,0,0,42,45,0,0,218,47,0,0,178,50,0,0,182,53,0,0,232,56,0,0,74,60,0,0,224,63,0,0,172,67,0,0,178,71,0,0,245,75,0,0,122,80,0,0,67,85,0,0,85,90,0,0,180,95,0,0,101,101,0,0,108,107,0,0,207,113,0,0,148,120,0,0,191,127,0,0,88,135,0,0,100,143,0,0,235,151,0,0,243,160,0,0,134,170,0,0,169,180,0,0,103,191,0,0,201,202,0,0,216,214,0,0,158,227,0,0,39,241,0,0,126,255,0,0,176,14,1,0,200,30,1,0,214,47,1,0,231,65,1,0,11,85,1,0,83,105,1,0,207,126,1,0,146,149,1,0,176,173,1,0,61,199,1,0,79,226,1,0,253,254,1,0,95,29,2,0,144,61,2,0,171,95,2,0,206,131,2,0,22,170,2,0,165,210,2,0,158,253,2,0,36,43,3,0,96,91,3,0,122,142,3,0,158,196,3,0,250,253,3,0,191,58,4,0,33,123,4,0,87,191,4,0,156,7,5,0,44,84,5,0,74,165,5,0,59,251,5,0,73,86,6,0,192,182,6,0,244,28,7,0,59,137,7,0,243,251,7,0,125,117,8,0,66,246,8,0,174,126,9,0,55,15,10,0,88,168,10,0,149,74,11,0,119,246,11,0,145,172,12,0,128,109,13,0,232,57,14,0,119,18,15,0,230,247,15,0,251,234,16,0,131,236,17,0,92,253,18,0,110,30,20,0,177,80,21,0,42,149,22,0,238,236,23,0,35,89,25,0,0,219,26,0,207,115,28,0,237,36,30,0,205,239,31,0,245,213,33,0,6,217,35,0,184,250,37,0,220,60,40,0,98,161,42,0,83,42,45,0,219,217,47,0,70,178,50,0,0,182,53,0,158,231,56,0,218,73,60,0,153,223,63,0,234,171,67,0,12,178,71,0,112,245,75,0,185,121,80,0,196,66,85,0,167,84,90,0,183,179,95,0,139,100,101,0,0,108,107,0,60,207,113,0,181,147,120,0,50,191,127,0,212,87,135,0,25,100,143,0,223,234,151,0,114,243,160,0,135,133,170,0,78,169,180,0,110,103,191,0,32,161,7,0,0,0,0,0,0,0,128,63,0,0,128,63,0,0,128,63,0,0,128,63,0,0,128,63,0,0,128,63,0,0,128,63,0,0,128,63,0,0,128,63,0,0,128,63,0,0,128,63,0,0,128,63,0,0,128,63,0,0,128,63,0,0,128,63,0,0,128,63,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,0,0,0,0,0,0,240,63,113,93,245,158,236,0,240,63,84,18,150,75,217,1,240,63,207,232,226,5,198,2,240,63,21,171,220,205,178,3,240,63,102,35,132,163,159,4,240,63,10,28,218,134,140,5,240,63,88,95,223,119,121,6,240,63,177,183,148,118,102,7,240,63,131,239,250,130,83,8,240,63,70,209,18,157,64,9,240,63,127,39,221,196,45,10,240,63,191,188,90,250,26,11,240,63,160,91,140,61,8,12,240,63,204,206,114,142,245,12,240,63,245,224,14,237,226,13,240,63,218,92,97,89,208,14,240,63,71,13,107,211,189,15,240,63,17,189,44,91,171,16,240,63,28,55,167,240,152,17,240,63,85,70,219,147,134,18,240,63,181,181,201,68,116,19,240,63,66,80,115,3,98,20,240,63,14,225,216,207,79,21,240,63,53,51,251,169,61,22,240,63,224,17,219,145,43,23,240,63,68,72,121,135,25,24,240,63,159,161,214,138,7,25,240,63,63,233,243,155,245,25,240,63,122,234,209,186,227,26,240,63,180,112,113,231,209,27,240,63,93,71,211,33,192,28,240,63,238,57,248,105,174,29,240,63,239,19,225,191,156,30,240,63,242,160,142,35,139,31,240,63,148,172,1,149,121,32,240,63,129,2,59,20,104,33,240,63,109,110,59,161,86,34,240,63,26,188,3,60,69,35,240,63,85,183,148,228,51,36,240,63,247,43,239,154,34,37,240,63,228,229,19,95,17,38,240,63,14,177,3,49,0,39,240,63,112,89,191,16,239,39,240,63,19,171,71,254,221,40,240,63,10,114,157,249,204,41,240,63,117,122,193,2,188,42,240,63,128,144,180,25,171,43,240,63,97,128,119,62,154,44,240,63,92,22,11,113,137,45,240,63,191,30,112,177,120,46,240,63,230,101,167,255,103,47,240,63,54,184,177,91,87,48,240,63,34,226,143,197,70,49,240,63,39,176,66,61,54,50,240,63,209,238,202,194,37,51,240,63,180,106,41,86,21,52,240,63,113,240,94,247,4,53,240,63,183,76,108,166,244,53,240,63,63,76,82,99,228,54,240,63,204,187,17,46,212,55,240,63,49,104,171,6,196,56,240,63,73,30,32,237,179,57,240,63,254,170,112,225,163,58,240,63,67,219,157,227,147,59,240,63,24,124,168,243,131,60,240,63,138,90,145,17,116,61,240,63,177,67,89,61,100,62,240,63,176,4,1,119,84,63,240,63,182,106,137,190,68,64,240,63,0,67,243,19,53,65,240,63,212,90,63,119,37,66,240,63,133,127,110,232,21,67,240,63,114,126,129,103,6,68,240,63,7,37,121,244,246,68,240,63,185,64,86,143,231,69,240,63,12,159,25,56,216,70,240,63,141,13,196,238,200,71,240,63,216,89,86,179,185,72,240,63,146,81,209,133,170,73,240,63,109,194,53,102,155,74,240,63,40,122,132,84,140,75,240,63,140,70,190,80,125,76,240,63,110,245,227,90,110,77,240,63,177,84,246,114,95,78,240,63,66,50,246,152,80,79,240,63,26,92,228,204,65,80,240,63,63,160,193,14,51,81,240,63,194,204,142,94,36,82,240,63,192,175,76,188,21,83,240,63,98,23,252,39,7,84,240,63,220,209,157,161,248,84,240,63,112,173,50,41,234,85,240,63,107,120,187,190,219,86,240,63,37,1,57,98,205,87,240,63,2,22,172,19,191,88,240,63,116,133,21,211,176,89,240,63,247,29,118,160,162,90,240,63,18,174,206,123,148,91,240,63,91,4,32,101,134,92,240,63,113,239,106,92,120,93,240,63,1,62,176,97,106,94,240,63,194,190,240,116,92,95,240,63,122,64,45,150,78,96,240,63,247,145,102,197,64,97,240,63,22,130,157,2,51,98,240,63,191,223,210,77,37,99,240,63,229,121,7,167,23,100,240,63,137,31,60,14,10,101,240,63,181,159,113,131,252,101,240,63,130,201,168,6,239,102,240,63,20,108,226,151,225,103,240,63,154,86,31,55,212,104,240,63,79,88,96,228,198,105,240,63,124,64,166,159,185,106,240,63,115,222,241,104,172,107,240,63,149,1,68,64,159,108,240,63,77,121,157,37,146,109,240,63,18,21,255,24,133,110,240,63,104,164,105,26,120,111,240,63,222,246,221,41,107,112,240,63,16,220,92,71,94,113,240,63,165,35,231,114,81,114,240,63,81,157,125,172,68,115,240,63,211,24,33,244,55,116,240,63,246,101,210,73,43,117,240,63,147,84,146,173,30,118,240,63,140,180,97,31,18,119,240,63,209,85,65,159,5,120,240,63,93,8,50,45,249,120,240,63,57,156,52,201,236,121,240,63,118,225,73,115,224,122,240,63,54,168,114,43,212,123,240,63,163,192,175,241,199,124,240,63,246,250,1,198,187,125,240,63,113,39,106,168,175,126,240,63,101,22,233,152,163,127,240,63,44,152,127,151,151,128,240,63,48,125,46,164,139,129,240,63,226,149,246,190,127,130,240,63,197,178,216,231,115,131,240,63,98,164,213,30,104,132,240,63,82,59,238,99,92,133,240,63,58,72,35,183,80,134,240,63,200,155,117,24,69,135,240,63,185,6,230,135,57,136,240,63,214,89,117,5,46,137,240,63,242,101,36,145,34,138,240,63,237,251,243,42,23,139,240,63,180,236,228,210,11,140,240,63,63,9,248,136,0,141,240,63,147,34,46,77,245,141,240,63,192,9,136,31,234,142,240,63,226,143,6,0,223,143,240,63,35,134,170,238,211,144,240,63,184,189,116,235,200,145,240,63,224,7,102,246,189,146,240,63,233,53,127,15,179,147,240,63,44,25,193,54,168,148,240,63,13,131,44,108,157,149,240,63,0,69,194,175,146,150,240,63,127,48,131,1,136,151,240,63,22,23,112,97,125,152,240,63,89,202,137,207,114,153,240,63,234,27,209,75,104,154,240,63,119,221,70,214,93,155,240,63,185,224,235,110,83,156,240,63,119,247,192,21,73,157,240,63,131,243,198,202,62,158,240,63,187,166,254,141,52,159,240,63,9,227,104,95,42,160,240,63,99,122,6,63,32,161,240,63,205,62,216,44,22,162,240,63,85,2,223,40,12,163,240,63,21,151,27,51,2,164,240,63,53,207,142,75,248,164,240,63,233,124,57,114,238,165,240,63,110,114,28,167,228,166,240,63,17,130,56,234,218,167,240,63,40,126,142,59,209,168,240,63,25,57,31,155,199,169,240,63,83,133,235,8,190,170,240,63,81,53,244,132,180,171,240,63,156,27,58,15,171,172,240,63,200,10,190,167,161,173,240,63,118,213,128,78,152,174,240,63,82,78,131,3,143,175,240,63,22,72,198,198,133,176,240,63,134,149,74,152,124,177,240,63,116,9,17,120,115,178,240,63,188,118,26,102,106,179,240,63,73,176,103,98,97,180,240,63,15,137,249,108,88,181,240,63,18,212,208,133,79,182,240,63,95,100,238,172,70,183,240,63,17,13,83,226,61,184,240,63,78,161,255,37,53,185,240,63,72,244,244,119,44,186,240,63,63,217,51,216,35,187,240,63,125,35,189,70,27,188,240,63,91,166,145,195,18,189,240,63,59,53,178,78,10,190,240,63,142,163,31,232,1,191,240,63,206,196,218,143,249,191,240,63,133,108,228,69,241,192,240,63,71,110,61,10,233,193,240,63,180,157,230,220,224,194,240,63,122,206,224,189,216,195,240,63,80,212,44,173,208,196,240,63,253,130,203,170,200,197,240,63,83,174,189,182,192,198,240,63,46,42,4,209,184,199,240,63,121,202,159,249,176,200,240,63,42,99,145,48,169,201,240,63,67,200,217,117,161,202,240,63,212,205,121,201,153,203,240,63,247,71,114,43,146,204,240,63,212,10,196,155,138,205,240,63,158,234,111,26,131,206,240,63,148,187,118,167,123,207,240,63,3,82,217,66,116,208,240,63,68,130,152,236,108,209,240,63,186,32,181,164,101,210,240,63,214,1,48,107,94,211,240,63,22,250,9,64,87,212,240,63,2,222,67,35,80,213,240,63,50,130,222,20,73,214,240,63,69,187,218,20,66,215,240,63,236,93,57,35,59,216,240,63,223,62,251,63,52,217,240,63,230,50,33,107,45,218,240,63,213,14,172,164,38,219,240,63,137,167,156,236,31,220,240,63,240,209,243,66,25,221,240,63,0,99,178,167,18,222,240,63,191,47,217,26,12,223,240,63,61,13,105,156,5,224,240,63,150,208,98,44,255,224,240,63,245,78,199,202,248,225,240,63,141,93,151,119,242,226,240,63,162,209,211,50,236,227,240,63,129,128,125,252,229,228,240,63,133,63,149,212,223,229,240,63,21,228,27,187,217,230,240,63,163,67,18,176,211,231,240,63,176,51,121,179,205,232,240,63,198,137,81,197,199,233,240,63,127,27,156,229,193,234,240,63,126,190,89,20,188,235,240,63,116,72,139,81,182,236,240,63,31,143,49,157,176,237,240,63,72,104,77,247,170,238,240,63,197,169,223,95,165,239,240,63,119,41,233,214,159,240,240,63,79,189,106,92,154,241,240,63,69,59,101,240,148,242,240,63,0,0,0,0,0,0,240,63,99,121,217,146,143,243,240,63,192,214,199,195,154,245,241,63,21,183,49,10,254,6,243,63,139,114,141,249,162,40,244,63,94,236,240,8,129,91,245,63,205,59,127,102,158,160,246,63,176,207,104,215,16,249,247,63,60,110,61,165,254,101,249,63,173,211,90,153,159,232,250,63,41,193,78,7,62,130,252,63,67,19,16,231,55,52,254,63,0,0,0,0,0,0,0,64,99,121,217,146,143,243,0,64,192,214,199,195,154,245,1,64,21,183,49,10,254,6,3,64,139,114,141,249,162,40,4,64,94,236,240,8,129,91,5,64,205,59,127,102,158,160,6,64,176,207,104,215,16,249,7,64,61,110,61,165,254,101,9,64,173,211,90,153,159,232,10,64,41,193,78,7,62,130,12,64,68,19,16,231,55,52,14,64,0,0,0,0,0,0,16,64,99,121,217,146,143,243,16,64,191,214,199,195,154,245,17,64,21,183,49,10,254,6,19,64,139,114,141,249,162,40,20,64,93,236,240,8,129,91,21,64,205,59,127,102,158,160,22,64,177,207,104,215,16,249,23,64,60,110,61,165,254,101,25,64,173,211,90,153,159,232,26,64,42,193,78,7,62,130,28,64,67,19,16,231,55,52,30,64,0,0,0,0,0,0,32,64,99,121,217,146,143,243,32,64,191,214,199,195,154,245,33,64,21,183,49,10,254,6,35,64,139,114,141,249,162,40,36,64,93,236,240,8,129,91,37,64,205,59,127,102,158,160,38,64,177,207,104,215,16,249,39,64,60,110,61,165,254,101,41,64,173,211,90,153,159,232,42,64,42,193,78,7,62,130,44,64,67,19,16,231,55,52,46,64,0,0,0,0,0,0,48,64,98,121,217,146,143,243,48,64,193,214,199,195,154,245,49,64,21,183,49,10,254,6,51,64,138,114,141,249,162,40,52,64,95,236,240,8,129,91,53,64,205,59,127,102,158,160,54,64,175,207,104,215,16,249,55,64,62,110,61,165,254,101,57,64,173,211,90,153,159,232,58,64,40,193,78,7,62,130,60,64,69,19,16,231,55,52,62,64,0,0,0,0,0,0,64,64,98,121,217,146,143,243,64,64,193,214,199,195,154,245,65,64,21,183,49,10,254,6,67,64,138,114,141,249,162,40,68,64,95,236,240,8,129,91,69,64,205,59,127,102,158,160,70,64,175,207,104,215,16,249,71,64,62,110,61,165,254,101,73,64,173,211,90,153,159,232,74,64,40,193,78,7,62,130,76,64,69,19,16,231,55,52,78,64,0,0,0,0,0,0,80,64,98,121,217,146,143,243,80,64,193,214,199,195,154,245,81,64,21,183,49,10,254,6,83,64,138,114,141,249,162,40,84,64,95,236,240,8,129,91,85,64,205,59,127,102,158,160,86,64,175,207,104,215,16,249,87,64,62,110,61,165,254,101,89,64,173,211,90,153,159,232,90,64,40,193,78,7,62,130,92,64,69,19,16,231,55,52,94,64,0,0,0,0,0,0,96,64,98,121,217,146,143,243,96,64,193,214,199,195,154,245,97,64,21,183,49,10,254,6,99,64,138,114,141,249,162,40,100,64,95,236,240,8,129,91,101,64,205,59,127,102,158,160,102,64,175,207,104,215,16,249,103,64,62,110,61,165,254,101,105,64,173,211,90,153,159,232,106,64,40,193,78,7,62,130,108,64,69,19,16,231,55,52,110,64,0,0,0,0,0,0,112,64,101,121,217,146,143,243,112,64,190,214,199,195,154,245,113,64,21,183,49,10,254,6,115,64,141,114,141,249,162,40,116,64,92,236,240,8,129,91,117,64,205,59,127,102,158,160,118,64,179,207,104,215,16,249,119,64,58,110,61,165,254,101,121,64,173,211,90,153,159,232,122,64,45,193,78,7,62,130,124,64,64,19,16,231,55,52,126,64,0,0,0,0,0,0,128,64,101,121,217,146,143,243,128,64,190,214,199,195,154,245,129,64,21,183,49,10,254,6,131,64,141,114,141,249,162,40,132,64,92,236,240,8,129,91,133,64,205,59,127,102,158,160,134,64,179,207,104,215,16,249,135,64,58,110,61,165,254,101,137,64,173,211,90,153,159,232,138,64,45,193,78,7,62,130,140,64,64,19,16,231,55,52,142,64,0,0,0,0,0,0,144,64,101,121,217,146,143,243,144,64,190,214,199,195,154,245,145,64,21,183,49,10,254,6,147,64,141,114,141,249,162,40,148,64,92,236,240,8,129,91,149,64,205,59,127,102,158,160,150,64,179,207,104,215,16,249,151,64,77,84,104,100,0,0,0,0,86,101,108,111,99,105,116,121,32,37,100,32,37,100,10,0,70,84,80,112,114,111,120,121,0,0,0,0,0,0,0,0,72,84,84,80,112,114,111,120,121,0,0,0,0,0,0,0,99,111,109,109,0,0,0,0,35,101,120,116,101,110,115,105,111,110,0,0,0,0,0,0,78,117,109,32,77,105,115,115,105,110,103,32,112,97,116,99,104,101,115,58,32,37,100,10,0,0,0,0,0,0,0,0,37,115,58,32,108,105,110,101,32,37,100,58,32,115,116,114,105,112,32,109,117,115,116,32,98,101,32,101,110,118,44,32,108,111,111,112,44,32,111,114,32,116,97,105,108,10,0,0,116,97,105,108,0,0,0,0,115,116,114,105,112,0,0,0,37,115,58,32,108,105,110,101,32,37,100,58,32,107,101,101,112,32,109,117,115,116,32,98,101,32,101,110,118,32,111,114,32,108,111,111,112,10,0,0,108,111,111,112,0,0,0,0,101,110,118,0,0,0,0,0,107,101,101,112,0,0,0,0,37,115,58,32,108,105,110,101,32,37,100,58,32,112,97,110,110,105,110,103,32,109,117,115,116,32,98,101,32,108,101,102,116,44,32,114,105,103,104,116,44,32,99,101,110,116,101,114,44,32,111,114,32,98,101,116,119,101,101,110,32,45,49,48,48,32,97,110,100,32,49,48,48,10,0,0,0,0,0,0,32,9,160,0,0,0,0,0,114,105,103,104,116,0,0,0,108,101,102,116,0,0,0,0,77,105,115,115,105,110,103,32,112,97,116,99,104,58,32,37,115,10,0,0,0,0,0,0,99,101,110,116,101,114,0,0,112,97,110,0,0,0,0,0,37,115,58,32,108,105,110,101,32,37,100,58,32,110,111,116,101,32,109,117,115,116,32,98,101,32,98,101,116,119,101,101,110,32,48,32,97,110,100,32,49,50,55,10,0,0,0,0,110,111,116,101,0,0,0,0,37,115,58,32,108,105,110,101,32,37,100,58,32,97,109,112,108,105,102,105,99,97,116,105,111,110,32,109,117,115,116,32,98,101,32,98,101,116,119,101,101,110,32,48,32,97,110,100,32,37,100,10,0,0,0,0,97,109,112,0,0,0,0,0,37,115,58,32,108,105,110,101,32,37,100,58,32,98,97,100,32,112,97,116,99,104,32,111,112,116,105,111,110,32,37,115,10,0,0,0,0,0,0,0,37,115,58,32,108,105,110,101,32,37,100,58,32,77,117,115,116,32,115,112,101,99,105,102,121,32,116,111,110,101,32,98,97,110,107,32,111,114,32,100,114,117,109,32,115,101,116,32,98,101,102,111,114,101,32,97,115,115,105,103,110,109,101,110,116,10,0,0,0,0,0,0,67,111,110,102,105,103,117,114,97,116,105,111,110,32,102,105,108,101,32,37,115,32,110,111,116,32,102,111,117,110,100,10,0,0,0,0,0,0,0,0,37,115,58,32,108,105,110,101,32,37,100,58,32,80,114,111,103,114,97,109,32,109,117,115,116,32,98,101,32,98,101,116,119,101,101,110,32,48,32,97,110,100,32,49,50,55,10,0,37,115,58,32,108,105,110,101,32,37,100,58,32,115,121,110,116,97,120,32,101,114,114,111,114,10,0,0,0,0,0,0,63,63,63,63,63,63,0,0,37,115,58,32,108,105,110,101,32,37,100,58,32,84,111,110,101,32,98,97,110,107,32,109,117,115,116,32,98,101,32,98,101,116,119,101,101,110,32,48,32,97,110,100,32,49,50,55,10,0,0,0,0,0,0,0,37,115,58,32,108,105,110,101,32,37,100,58,32,78,111,32,98,97,110,107,32,110,117,109,98,101,114,32,103,105,118,101,110,10,0,0,0,0,0,0,98,97,110,107,0,0,0,0,37,115,58,32,108,105,110,101,32,37,100,58,32,68,114,117,109,32,115,101,116,32,109,117,115,116,32,98,101,32,98,101,116,119,101,101,110,32,48,32,97,110,100,32,49,50,55,10,0,0,0,0,0,0,0,0,37,115,58,32,108,105,110,101,32,37,100,58,32,78,111,32,100,114,117,109,32,115,101,116,32,110,117,109,98,101,114,32,103,105,118,101,110,10,0,0,100,114,117,109,115,101,116,0,37,115,58,32,108,105,110,101,32,37,100,58,32,77,117,115,116,32,115,112,101,99,105,102,121,32,101,120,97,99,116,108,121,32,111,110,101,32,112,97,116,99,104,32,110,97,109,101,10,0,0,0,0,0,0,0,100,101,102,97,117,108,116,0,80,114,111,98,97,98,108,101,32,115,111,117,114,99,101,32,108,111,111,112,32,105,110,32,99,111,110,102,105,103,117,114,97,116,105,111,110,32,102,105,108,101,115,10,0,0,0,0,37,115,58,32,108,105,110,101,32,37,100,58,32,78,111,32,102,105,108,101,32,110,97,109,101,32,103,105,118,101,110,10,0,0,0,0,0,0,0,0,115,111,117,114,99,101,0,0,71,70,49,80,65,84,67,72,49,48,48,0,73,68,35,48,48,48,48,48,50,0,0,0,37,115,58,32,108,105,110,101,32,37,100,58,32,78,111,32,100,105,114,101,99,116,111,114,121,32,103,105,118,101,110,10,0,0,0,0,0,0,0,0,100,105,114,0,0,0,0,0,70,73,88,77,69,58,32,73,109,112,108,101,109,101,110,116,32,34,109,97,112,34,32,105,110,32,84,105,77,105,100,105,116,121,32,99,111,110,102,105,103,46,10,0,0,0,0,0,109,97,112,0,0,0,0,0,70,73,88,77,69,58,32,73,109,112,108,101,109,101,110,116,32,34,112,114,111,103,98,97,115,101,34,32,105,110,32,84,105,77,105,100,105,116,121,32,99,111,110,102,105,103,46,10,0,0,0,0,0,0,0,0,112,114,111,103,98,97,115,101,0,0,0,0,0,0,0,0,70,73,88,77,69,58,32,73,109,112,108,109,101,109,101,110,116,32,34,37,115,34,32,105,110,32,84,105,77,105,100,105,116,121,32,99,111,110,102,105,103,46,10,0,0,0,0,0,102,111,110,116,0,0,0,0,85,110,115,117,112,112,111,114,116,101,100,32,97,117,100,105,111,32,102,111,114,109,97,116,10,0,0,0,0,0,0,0,115,111,117,110,100,102,111,110,116,0,0,0,0,0,0,0,70,73,88,77,69,58,32,73,109,112,108,101,109,101,110,116,32,34,97,108,116,97,115,115,105,103,110,34,32,105,110,32,84,105,77,105,100,105,116,121,32,99,111,110,102,105,103,46,10,0,0,0,0,0,0,0,71,70,49,80,65,84,67,72,49,49,48,0,73,68,35,48,48,48,48,48,50,0,0,0,77,84,114,107,0,0,0,0,97,108,116,97,115,115,105,103,110,0,0,0,0,0,0,0,70,73,88,77,69,58,32,73,109,112,108,101,109,101,110,116,32,34,117,110,100,101,102,34,32,105,110,32,84,105,77,105,100,105,116,121,32,99,111,110,102,105,103,46,10,0,0,0,117,110,100,101,102,0,0,0,70,73,88,77,69,58,32,73,109,112,108,101,109,101,110,116,32,34,37,115,34,32,105,110,32,84,105,77,105,100,105,116,121,32,99,111,110,102,105,103,46,10,0,0,0,0,0,0,99,111,112,121,98,97,110,107,0,0,0,0,0,0,0,0,99,111,112,121,100,114,117,109,115,101,116,0,0,0,0,0,70,73,88,77,69,58,32,73,109,112,108,101,109,101,110,116,32,34,116,105,109,101,111,117,116,34,32,105,110,32,84,105,77,105,100,105,116,121,32,99,111,110,102,105,103,46,10,0,97,100,100,32,116,111,32,112,97,116,104,108,105,115,116,58,32,37,115,10,0,0,0,0,116,105,109,101,111,117,116,0,46,0,0,0,0,0,0,0,116,105,109,105,100,105,116,121,46,99,102,103,0,0,0,0,111,112,116,0,0,0,0,0,114,98,0,0,0,0,0,0,109,97,105,108,97,100,100,114,0,0,0,0,0,0,0,0,46,112,97,116,0,0,0,0,114,98,0,0,0,0,0,0], "i8", ALLOC_NONE, Runtime.GLOBAL_BASE)
-        var tempDoublePtr = Runtime.alignMemory(
+        const tempDoublePtr = Runtime.alignMemory(
             allocate(12, 'i8', ALLOC_STATIC),
             8
         );
         assert(tempDoublePtr % 8 == 0);
 
-        var ___errno_state = 0;
+        let ___errno_state = 0;
         function ___setErrNo(value) {
             // For convenient setting and returning of errno.
             HEAP32[___errno_state >> 2] = value;
@@ -1244,14 +1237,14 @@ class LibTiMidity {
 
         const PATH = {
             splitPath: function(filename) {
-                var splitPathRe = /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
+                const splitPathRe = /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
                 return splitPathRe.exec(filename).slice(1);
             },
             normalizeArray: function(parts, allowAboveRoot) {
                 // if the path tries to go above the root, `up` ends up > 0
-                var up = 0;
-                for (var i = parts.length - 1; i >= 0; i--) {
-                    var last = parts[i];
+                let up = 0;
+                for (let i = parts.length - 1; i >= 0; i--) {
+                    const last = parts[i];
                     if (last === '.') {
                         parts.splice(i, 1);
                     } else if (last === '..') {
@@ -1271,8 +1264,7 @@ class LibTiMidity {
                 return parts;
             },
             normalize: function(path) {
-                var isAbsolute = path.charAt(0) === '/',
-                    trailingSlash = path.substr(-1) === '/';
+                const isAbsolute = path.charAt(0) === '/', trailingSlash = path.substr(-1) === '/';
                 // Normalize the path
                 path = PATH.normalizeArray(
                     path.split('/').filter(function(p) {
@@ -1289,9 +1281,7 @@ class LibTiMidity {
                 return (isAbsolute ? '/' : '') + path;
             },
             dirname: function(path) {
-                var result = PATH.splitPath(path),
-                    root = result[0],
-                    dir = result[1];
+                let result = PATH.splitPath(path), root = result[0], dir = result[1];
                 if (!root && !dir) {
                     // No dirname whatsoever
                     return '.';
@@ -1305,7 +1295,7 @@ class LibTiMidity {
             basename: function(path, ext) {
                 // EMSCRIPTEN return '/'' for '/', not an empty string
                 if (path === '/') return '/';
-                var f = PATH.splitPath(path)[2];
+                let f = PATH.splitPath(path)[2];
                 if (ext && f.substr(-1 * ext.length) === ext) {
                     f = f.substr(0, f.length - ext.length);
                 }
@@ -1315,7 +1305,7 @@ class LibTiMidity {
                 return PATH.splitPath(path)[3];
             },
             join: function() {
-                var paths = Array.prototype.slice.call(arguments, 0);
+                const paths = Array.prototype.slice.call(arguments, 0);
                 return PATH.normalize(
                     paths
                         .filter(function(p, index) {
@@ -1330,14 +1320,13 @@ class LibTiMidity {
                 );
             },
             resolve: function() {
-                var resolvedPath = '',
-                    resolvedAbsolute = false;
+                let resolvedPath = '', resolvedAbsolute = false;
                 for (
-                    var i = arguments.length - 1;
+                    let i = arguments.length - 1;
                     i >= -1 && !resolvedAbsolute;
                     i--
                 ) {
-                    var path = i >= 0 ? arguments[i] : FS.cwd();
+                    const path = i >= 0 ? arguments[i] : FS.cwd();
                     // Skip empty and invalid entries
                     if (typeof path !== 'string') {
                         throw new TypeError(
@@ -1363,28 +1352,28 @@ class LibTiMidity {
                 from = PATH.resolve(from).substr(1);
                 to = PATH.resolve(to).substr(1);
                 function trim(arr) {
-                    var start = 0;
+                    let start = 0;
                     for (; start < arr.length; start++) {
                         if (arr[start] !== '') break;
                     }
-                    var end = arr.length - 1;
+                    let end = arr.length - 1;
                     for (; end >= 0; end--) {
                         if (arr[end] !== '') break;
                     }
                     if (start > end) return [];
                     return arr.slice(start, end - start + 1);
                 }
-                var fromParts = trim(from.split('/'));
-                var toParts = trim(to.split('/'));
+                const fromParts = trim(from.split('/'));
+                const toParts = trim(to.split('/'));
                 var length = Math.min(fromParts.length, toParts.length);
-                var samePartsLength = length;
+                let samePartsLength = length;
                 for (var i = 0; i < length; i++) {
                     if (fromParts[i] !== toParts[i]) {
                         samePartsLength = i;
                         break;
                     }
                 }
-                var outputParts = [];
+                let outputParts = [];
                 for (var i = samePartsLength; i < fromParts.length; i++) {
                     outputParts.push('..');
                 }
@@ -1394,7 +1383,7 @@ class LibTiMidity {
                 return outputParts.join('/');
             }
         };
-        var TTY = {
+        const TTY = {
             ttys: [],
             init: function() {},
             shutdown: function() {},
@@ -1404,7 +1393,7 @@ class LibTiMidity {
             },
             stream_ops: {
                 open: function(stream) {
-                    var tty = TTY.ttys[stream.node.rdev];
+                    const tty = TTY.ttys[stream.node.rdev];
                     if (!tty) {
                         throw new FS.ErrnoError(ERRNO_CODES.ENODEV);
                     }
@@ -1427,9 +1416,9 @@ class LibTiMidity {
                     if (!stream.tty || !stream.tty.ops.get_char) {
                         throw new FS.ErrnoError(ERRNO_CODES.ENXIO);
                     }
-                    var bytesRead = 0;
-                    for (var i = 0; i < length; i++) {
-                        var result;
+                    let bytesRead = 0;
+                    for (let i = 0; i < length; i++) {
+                        let result;
                         try {
                             result = stream.tty.ops.get_char(stream.tty);
                         } catch (e) {
@@ -1470,7 +1459,7 @@ class LibTiMidity {
             default_tty_ops: {
                 get_char: function(tty) {
                     if (!tty.input.length) {
-                        var result = null;
+                        let result = null;
                         if (
                             typeof window != 'undefined' &&
                             typeof window.prompt == 'function'
@@ -1514,7 +1503,7 @@ class LibTiMidity {
                 }
             }
         };
-        var MEMFS = {
+        const MEMFS = {
             CONTENT_OWNING: 1,
             CONTENT_FLEXIBLE: 2,
             CONTENT_FIXED: 3,
@@ -1526,7 +1515,7 @@ class LibTiMidity {
                     // no supported
                     throw new FS.ErrnoError(ERRNO_CODES.EPERM);
                 }
-                var node = FS.createNode(parent, name, mode, dev);
+                const node = FS.createNode(parent, name, mode, dev);
                 if (FS.isDir(node.mode)) {
                     node.node_ops = {
                         getattr: MEMFS.node_ops.getattr,
@@ -1581,14 +1570,14 @@ class LibTiMidity {
             },
             ensureFlexible: function(node) {
                 if (node.contentMode !== MEMFS.CONTENT_FLEXIBLE) {
-                    var contents = node.contents;
+                    const contents = node.contents;
                     node.contents = Array.prototype.slice.call(contents);
                     node.contentMode = MEMFS.CONTENT_FLEXIBLE;
                 }
             },
             node_ops: {
                 getattr: function(node) {
-                    var attr = {};
+                    const attr = {};
                     // device numbers reuse inode numbers.
                     attr.dev = FS.isChrdev(node.mode) ? node.id : 1;
                     attr.ino = node.id;
@@ -1624,7 +1613,7 @@ class LibTiMidity {
                     }
                     if (attr.size !== undefined) {
                         MEMFS.ensureFlexible(node);
-                        var contents = node.contents;
+                        const contents = node.contents;
                         if (attr.size < contents.length)
                             contents.length = attr.size;
                         else
@@ -1641,12 +1630,12 @@ class LibTiMidity {
                 rename: function(old_node, new_dir, new_name) {
                     // if we're overwriting a directory at new_name, make sure it's empty.
                     if (FS.isDir(old_node.mode)) {
-                        var new_node;
+                        let new_node;
                         try {
                             new_node = FS.lookupNode(new_dir, new_name);
                         } catch (e) {}
                         if (new_node) {
-                            for (var i in new_node.contents) {
+                            for (const i in new_node.contents) {
                                 throw new FS.ErrnoError(ERRNO_CODES.ENOTEMPTY);
                             }
                         }
@@ -1660,15 +1649,15 @@ class LibTiMidity {
                     delete parent.contents[name];
                 },
                 rmdir: function(parent, name) {
-                    var node = FS.lookupNode(parent, name);
-                    for (var i in node.contents) {
+                    const node = FS.lookupNode(parent, name);
+                    for (const i in node.contents) {
                         throw new FS.ErrnoError(ERRNO_CODES.ENOTEMPTY);
                     }
                     delete parent.contents[name];
                 },
                 readdir: function(node) {
-                    var entries = ['.', '..'];
-                    for (var key in node.contents) {
+                    const entries = ['.', '..'];
+                    for (const key in node.contents) {
                         if (!node.contents.hasOwnProperty(key)) {
                             continue;
                         }
@@ -1677,7 +1666,7 @@ class LibTiMidity {
                     return entries;
                 },
                 symlink: function(parent, newname, oldpath) {
-                    var node = MEMFS.createNode(
+                    const node = MEMFS.createNode(
                         parent,
                         newname,
                         0o777 | 40960,
@@ -1695,9 +1684,9 @@ class LibTiMidity {
             },
             stream_ops: {
                 read: function(stream, buffer, offset, length, position) {
-                    var contents = stream.node.contents;
+                    const contents = stream.node.contents;
                     if (position >= contents.length) return 0;
-                    var size = Math.min(contents.length - position, length);
+                    const size = Math.min(contents.length - position, length);
                     assert(size >= 0);
                     if (size > 8 && contents.subarray) {
                         // non-trivial, and typed array
@@ -1706,7 +1695,7 @@ class LibTiMidity {
                             offset
                         );
                     } else {
-                        for (var i = 0; i < size; i++) {
+                        for (let i = 0; i < size; i++) {
                             buffer[offset + i] = contents[position + i];
                         }
                     }
@@ -1720,7 +1709,7 @@ class LibTiMidity {
                     position,
                     canOwn
                 ) {
-                    var node = stream.node;
+                    const node = stream.node;
                     node.timestamp = Date.now();
                     var contents = node.contents;
                     if (
@@ -1749,13 +1738,13 @@ class LibTiMidity {
                     MEMFS.ensureFlexible(node);
                     var contents = node.contents;
                     while (contents.length < position) contents.push(0);
-                    for (var i = 0; i < length; i++) {
+                    for (let i = 0; i < length; i++) {
                         contents[position + i] = buffer[offset + i];
                     }
                     return length;
                 },
                 llseek: function(stream, offset, whence) {
-                    var position = offset;
+                    let position = offset;
                     if (whence === 1) {
                         // SEEK_CUR.
                         position += stream.position;
@@ -1774,8 +1763,8 @@ class LibTiMidity {
                 },
                 allocate: function(stream, offset, length) {
                     MEMFS.ensureFlexible(stream.node);
-                    var contents = stream.node.contents;
-                    var limit = offset + length;
+                    const contents = stream.node.contents;
+                    const limit = offset + length;
                     while (limit > contents.length) contents.push(0);
                 },
                 mmap: function(
@@ -1790,9 +1779,9 @@ class LibTiMidity {
                     if (!FS.isFile(stream.node.mode)) {
                         throw new FS.ErrnoError(ERRNO_CODES.ENODEV);
                     }
-                    var ptr;
-                    var allocated;
-                    var contents = stream.node.contents;
+                    let ptr;
+                    let allocated;
+                    let contents = stream.node.contents;
                     // Only make a new copy when MAP_PRIVATE is specified.
                     if (
                         !(flags & 2) &&
@@ -1833,7 +1822,7 @@ class LibTiMidity {
                 }
             }
         };
-        var IDBFS = {
+        const IDBFS = {
             dbs: {},
             indexedDB: function() {
                 return (
@@ -1853,15 +1842,15 @@ class LibTiMidity {
                     if (err) return callback(err);
                     IDBFS.getRemoteSet(mount, function(err, remote) {
                         if (err) return callback(err);
-                        var src = populate ? remote : local;
-                        var dst = populate ? local : remote;
+                        const src = populate ? remote : local;
+                        const dst = populate ? local : remote;
                         IDBFS.reconcile(src, dst, callback);
                     });
                 });
             },
             reconcile: function(src, dst, callback) {
-                var total = 0;
-                var create = {};
+                let total = 0;
+                const create = {};
                 for (var key in src.files) {
                     if (!src.files.hasOwnProperty(key)) continue;
                     var e = src.files[key];
@@ -1871,7 +1860,7 @@ class LibTiMidity {
                         total++;
                     }
                 }
-                var remove = {};
+                const remove = {};
                 for (var key in dst.files) {
                     if (!dst.files.hasOwnProperty(key)) continue;
                     var e = dst.files[key];
@@ -1885,23 +1874,23 @@ class LibTiMidity {
                     // early out
                     return callback(null);
                 }
-                var completed = 0;
-                var done = function(err) {
+                let completed = 0;
+                const done = function(err) {
                     if (err) return callback(err);
                     if (++completed >= total) {
                         return callback(null);
                     }
                 };
                 // create a single transaction to handle and IDB reads / writes we'll need to do
-                var db = src.type === 'remote' ? src.db : dst.db;
-                var transaction = db.transaction(
+                const db = src.type === 'remote' ? src.db : dst.db;
+                const transaction = db.transaction(
                     [IDBFS.DB_STORE_NAME],
                     'readwrite'
                 );
                 transaction.onerror = function() {
                     callback(this.error);
                 };
-                var store = transaction.objectStore(IDBFS.DB_STORE_NAME);
+                const store = transaction.objectStore(IDBFS.DB_STORE_NAME);
                 for (var path in create) {
                     if (!create.hasOwnProperty(path)) continue;
                     var entry = create[path];
@@ -1911,7 +1900,7 @@ class LibTiMidity {
                             if (FS.isDir(entry.mode)) {
                                 FS.mkdir(path, entry.mode);
                             } else if (FS.isFile(entry.mode)) {
-                                var stream = FS.open(path, 'w+', 0o666);
+                                const stream = FS.open(path, 'w+', 0o666);
                                 FS.write(
                                     stream,
                                     entry.contents,
@@ -1966,23 +1955,23 @@ class LibTiMidity {
                 }
             },
             getLocalSet: function(mount, callback) {
-                var files = {};
-                var isRealDir = function(p) {
+                const files = {};
+                const isRealDir = function(p) {
                     return p !== '.' && p !== '..';
                 };
-                var toAbsolute = function(root) {
+                const toAbsolute = function(root) {
                     return function(p) {
                         return PATH.join(root, p);
                     };
                 };
-                var check = FS.readdir(mount.mountpoint)
+                const check = FS.readdir(mount.mountpoint)
                     .filter(isRealDir)
                     .map(toAbsolute(mount.mountpoint));
                 while (check.length) {
-                    var path = check.pop();
-                    var stat, node;
+                    const path = check.pop();
+                    let stat, node;
                     try {
-                        var lookup = FS.lookupPath(path);
+                        const lookup = FS.lookupPath(path);
                         node = lookup.node;
                         stat = FS.stat(path);
                     } catch (e) {
@@ -2013,11 +2002,11 @@ class LibTiMidity {
             },
             getDB: function(name, callback) {
                 // look it up in the cache
-                var db = IDBFS.dbs[name];
+                let db = IDBFS.dbs[name];
                 if (db) {
                     return callback(null, db);
                 }
-                var req;
+                let req;
                 try {
                     req = IDBFS.indexedDB().open(name, IDBFS.DB_VERSION);
                 } catch (e) {
@@ -2038,19 +2027,19 @@ class LibTiMidity {
                 };
             },
             getRemoteSet: function(mount, callback) {
-                var files = {};
+                const files = {};
                 IDBFS.getDB(mount.mountpoint, function(err, db) {
                     if (err) return callback(err);
-                    var transaction = db.transaction(
+                    const transaction = db.transaction(
                         [IDBFS.DB_STORE_NAME],
                         'readonly'
                     );
                     transaction.onerror = function() {
                         callback(this.error);
                     };
-                    var store = transaction.objectStore(IDBFS.DB_STORE_NAME);
+                    const store = transaction.objectStore(IDBFS.DB_STORE_NAME);
                     store.openCursor().onsuccess = function(event) {
-                        var cursor = event.target.result;
+                        const cursor = event.target.result;
                         if (!cursor) {
                             return callback(null, {
                                 type: 'remote',
@@ -2064,19 +2053,19 @@ class LibTiMidity {
                 });
             }
         };
-        var NODEFS = {
+        const NODEFS = {
             mount: function() {},
             createNode: function(parent, name, mode, dev) {
                 if (!FS.isDir(mode) && !FS.isFile(mode) && !FS.isLink(mode)) {
                     throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
                 }
-                var node = FS.createNode(parent, name, mode);
+                const node = FS.createNode(parent, name, mode);
                 node.node_ops = NODEFS.node_ops;
                 node.stream_ops = NODEFS.stream_ops;
                 return node;
             },
             getMode: function(path) {
-                var stat;
+                let stat;
                 try {
                     stat = fs.lstatSync(path);
                 } catch (e) {
@@ -2086,7 +2075,7 @@ class LibTiMidity {
                 return stat.mode;
             },
             realPath: function(node) {
-                var parts = [];
+                const parts = [];
                 while (node.parent !== node) {
                     parts.push(node.name);
                     node = node.parent;
@@ -2097,8 +2086,8 @@ class LibTiMidity {
             },
             node_ops: {
                 getattr: function(node) {
-                    var path = NODEFS.realPath(node);
-                    var stat;
+                    const path = NODEFS.realPath(node);
+                    let stat;
                     try {
                         stat = fs.lstatSync(path);
                     } catch (e) {
@@ -2122,7 +2111,7 @@ class LibTiMidity {
                     };
                 },
                 setattr: function(node, attr) {
-                    var path = NODEFS.realPath(node);
+                    const path = NODEFS.realPath(node);
                     try {
                         if (attr.mode !== undefined) {
                             fs.chmodSync(path, attr.mode);
@@ -2130,7 +2119,7 @@ class LibTiMidity {
                             node.mode = attr.mode;
                         }
                         if (attr.timestamp !== undefined) {
-                            var date = new Date(attr.timestamp);
+                            const date = new Date(attr.timestamp);
                             fs.utimesSync(path, date, date);
                         }
                         if (attr.size !== undefined) {
@@ -2142,14 +2131,14 @@ class LibTiMidity {
                     }
                 },
                 lookup: function(parent, name) {
-                    var path = PATH.join(NODEFS.realPath(parent), name);
-                    var mode = NODEFS.getMode(path);
+                    const path = PATH.join(NODEFS.realPath(parent), name);
+                    const mode = NODEFS.getMode(path);
                     return NODEFS.createNode(parent, name, mode);
                 },
                 mknod: function(parent, name, mode, dev) {
-                    var node = NODEFS.createNode(parent, name, mode, dev);
+                    const node = NODEFS.createNode(parent, name, mode, dev);
                     // create the backing node for this in the fs root as well
-                    var path = NODEFS.realPath(node);
+                    const path = NODEFS.realPath(node);
                     try {
                         if (FS.isDir(node.mode)) {
                             fs.mkdirSync(path, node.mode);
@@ -2163,8 +2152,8 @@ class LibTiMidity {
                     return node;
                 },
                 rename: function(oldNode, newDir, newName) {
-                    var oldPath = NODEFS.realPath(oldNode);
-                    var newPath = PATH.join(NODEFS.realPath(newDir), newName);
+                    const oldPath = NODEFS.realPath(oldNode);
+                    const newPath = PATH.join(NODEFS.realPath(newDir), newName);
                     try {
                         fs.renameSync(oldPath, newPath);
                     } catch (e) {
@@ -2173,7 +2162,7 @@ class LibTiMidity {
                     }
                 },
                 unlink: function(parent, name) {
-                    var path = PATH.join(NODEFS.realPath(parent), name);
+                    const path = PATH.join(NODEFS.realPath(parent), name);
                     try {
                         fs.unlinkSync(path);
                     } catch (e) {
@@ -2182,7 +2171,7 @@ class LibTiMidity {
                     }
                 },
                 rmdir: function(parent, name) {
-                    var path = PATH.join(NODEFS.realPath(parent), name);
+                    const path = PATH.join(NODEFS.realPath(parent), name);
                     try {
                         fs.rmdirSync(path);
                     } catch (e) {
@@ -2191,7 +2180,7 @@ class LibTiMidity {
                     }
                 },
                 readdir: function(node) {
-                    var path = NODEFS.realPath(node);
+                    const path = NODEFS.realPath(node);
                     try {
                         return fs.readdirSync(path);
                     } catch (e) {
@@ -2200,7 +2189,7 @@ class LibTiMidity {
                     }
                 },
                 symlink: function(parent, newName, oldPath) {
-                    var newPath = PATH.join(NODEFS.realPath(parent), newName);
+                    const newPath = PATH.join(NODEFS.realPath(parent), newName);
                     try {
                         fs.symlinkSync(oldPath, newPath);
                     } catch (e) {
@@ -2209,7 +2198,7 @@ class LibTiMidity {
                     }
                 },
                 readlink: function(node) {
-                    var path = NODEFS.realPath(node);
+                    const path = NODEFS.realPath(node);
                     try {
                         return fs.readlinkSync(path);
                     } catch (e) {
@@ -2220,7 +2209,7 @@ class LibTiMidity {
             },
             stream_ops: {
                 open: function(stream) {
-                    var path = NODEFS.realPath(stream.node);
+                    const path = NODEFS.realPath(stream.node);
                     try {
                         if (FS.isFile(stream.node.mode)) {
                             stream.nfd = fs.openSync(path, stream.flags);
@@ -2242,8 +2231,8 @@ class LibTiMidity {
                 },
                 read: function(stream, buffer, offset, length, position) {
                     // FIXME this is terrible.
-                    var nbuffer = new Buffer(length);
-                    var res;
+                    const nbuffer = new Buffer(length);
+                    let res;
                     try {
                         res = fs.readSync(
                             stream.nfd,
@@ -2256,7 +2245,7 @@ class LibTiMidity {
                         throw new FS.ErrnoError(ERRNO_CODES[e.code]);
                     }
                     if (res > 0) {
-                        for (var i = 0; i < res; i++) {
+                        for (let i = 0; i < res; i++) {
                             buffer[offset + i] = nbuffer[i];
                         }
                     }
@@ -2264,10 +2253,10 @@ class LibTiMidity {
                 },
                 write: function(stream, buffer, offset, length, position) {
                     // FIXME this is terrible.
-                    var nbuffer = new Buffer(
+                    const nbuffer = new Buffer(
                         buffer.subarray(offset, offset + length)
                     );
-                    var res;
+                    let res;
                     try {
                         res = fs.writeSync(
                             stream.nfd,
@@ -2282,7 +2271,7 @@ class LibTiMidity {
                     return res;
                 },
                 llseek: function(stream, offset, whence) {
-                    var position = offset;
+                    let position = offset;
                     if (whence === 1) {
                         // SEEK_CUR.
                         position += stream.position;
@@ -2290,7 +2279,7 @@ class LibTiMidity {
                         // SEEK_END.
                         if (FS.isFile(stream.node.mode)) {
                             try {
-                                var stat = fs.fstatSync(stream.nfd);
+                                const stat = fs.fstatSync(stream.nfd);
                                 position += stat.size;
                             } catch (e) {
                                 throw new FS.ErrnoError(ERRNO_CODES[e.code]);
@@ -2305,15 +2294,15 @@ class LibTiMidity {
                 }
             }
         };
-        var _stdin = allocate(1, 'i32*', ALLOC_STATIC);
-        var _stdout = allocate(1, 'i32*', ALLOC_STATIC);
+        const _stdin = allocate(1, 'i32*', ALLOC_STATIC);
+        const _stdout = allocate(1, 'i32*', ALLOC_STATIC);
         var _stderr = allocate(1, 'i32*', ALLOC_STATIC);
         function _fflush(stream) {
             // int fflush(FILE *stream);
             // http://pubs.opengroup.org/onlinepubs/000095399/functions/fflush.html
             // we don't currently perform any user-space buffering of data
         }
-        var FS = {
+        const FS = {
             root: null,
             mounts: [],
             devices: [null],
@@ -2349,17 +2338,17 @@ class LibTiMidity {
                     throw new FS.ErrnoError(ERRNO_CODES.ELOOP);
                 }
                 // split the path
-                var parts = PATH.normalizeArray(
+                const parts = PATH.normalizeArray(
                     path.split('/').filter(function(p) {
                         return !!p;
                     }),
                     false
                 );
                 // start at the root
-                var current = FS.root;
-                var current_path = '/';
-                for (var i = 0; i < parts.length; i++) {
-                    var islast = i === parts.length - 1;
+                let current = FS.root;
+                let current_path = '/';
+                for (let i = 0; i < parts.length; i++) {
+                    const islast = i === parts.length - 1;
                     if (islast && opts.parent) {
                         // stop resolving
                         break;
@@ -2374,14 +2363,14 @@ class LibTiMidity {
                     // by default, lookupPath will not follow a symlink if it is the final path component.
                     // setting opts.follow = true will override this behavior.
                     if (!islast || opts.follow) {
-                        var count = 0;
+                        let count = 0;
                         while (FS.isLink(current.mode)) {
-                            var link = FS.readlink(current_path);
+                            const link = FS.readlink(current_path);
                             current_path = PATH.resolve(
                                 PATH.dirname(current_path),
                                 link
                             );
-                            var lookup = FS.lookupPath(current_path, {
+                            const lookup = FS.lookupPath(current_path, {
                                 recurse_count: opts.recurse_count
                             });
                             current = lookup.node;
@@ -2395,7 +2384,7 @@ class LibTiMidity {
                 return { path: current_path, node: current };
             },
             getPath: function(node) {
-                var path;
+                let path;
                 while (true) {
                     if (FS.isRoot(node)) {
                         return path
@@ -2407,23 +2396,23 @@ class LibTiMidity {
                 }
             },
             hashName: function(parentid, name) {
-                var hash = 0;
-                for (var i = 0; i < name.length; i++) {
+                let hash = 0;
+                for (let i = 0; i < name.length; i++) {
                     hash = ((hash << 5) - hash + name.charCodeAt(i)) | 0;
                 }
                 return ((parentid + hash) >>> 0) % FS.nameTable.length;
             },
             hashAddNode: function(node) {
-                var hash = FS.hashName(node.parent.id, node.name);
+                const hash = FS.hashName(node.parent.id, node.name);
                 node.name_next = FS.nameTable[hash];
                 FS.nameTable[hash] = node;
             },
             hashRemoveNode: function(node) {
-                var hash = FS.hashName(node.parent.id, node.name);
+                const hash = FS.hashName(node.parent.id, node.name);
                 if (FS.nameTable[hash] === node) {
                     FS.nameTable[hash] = node.name_next;
                 } else {
-                    var current = FS.nameTable[hash];
+                    let current = FS.nameTable[hash];
                     while (current) {
                         if (current.name_next === node) {
                             current.name_next = node.name_next;
@@ -2434,17 +2423,17 @@ class LibTiMidity {
                 }
             },
             lookupNode: function(parent, name) {
-                var err = FS.mayLookup(parent);
+                const err = FS.mayLookup(parent);
                 if (err) {
                     throw new FS.ErrnoError(err, name);
                 }
-                var hash = FS.hashName(parent.id, name);
+                const hash = FS.hashName(parent.id, name);
                 for (
-                    var node = FS.nameTable[hash];
+                    let node = FS.nameTable[hash];
                     node;
                     node = node.name_next
                 ) {
-                    var nodeName = node.name;
+                    const nodeName = node.name;
                     if (node.parent.id === parent.id && nodeName === name) {
                         return node;
                     }
@@ -2453,7 +2442,7 @@ class LibTiMidity {
                 return FS.lookup(parent, name);
             },
             createNode: function(parent, name, mode, rdev) {
-                var node = {
+                const node = {
                     id: FS.nextInode++,
                     name: name,
                     mode: mode,
@@ -2469,8 +2458,8 @@ class LibTiMidity {
                 node.parent = parent;
                 node.mount = parent.mount;
                 // compatibility
-                var readMode = 292 | 73;
-                var writeMode = 146;
+                const readMode = 292 | 73;
+                const writeMode = 146;
                 // NOTE we must use Object.defineProperties instead of individual calls to
                 // Object.defineProperty in order to make closure compiler happy
                 Object.defineProperties(node, {
@@ -2556,15 +2545,15 @@ class LibTiMidity {
                 'xa+': 1218
             },
             modeStringToFlags: function(str) {
-                var flags = FS.flagModes[str];
+                const flags = FS.flagModes[str];
                 if (typeof flags === 'undefined') {
                     throw new Error('Unknown file open mode: ' + str);
                 }
                 return flags;
             },
             flagsToPermissionString: function(flag) {
-                var accmode = flag & 2097155;
-                var perms = ['r', 'w', 'rw'][accmode];
+                const accmode = flag & 2097155;
+                let perms = ['r', 'w', 'rw'][accmode];
                 if (flag & 512) {
                     perms += 'w';
                 }
@@ -2595,13 +2584,13 @@ class LibTiMidity {
                 return FS.nodePermissions(dir, 'wx');
             },
             mayDelete: function(dir, name, isdir) {
-                var node;
+                let node;
                 try {
                     node = FS.lookupNode(dir, name);
                 } catch (e) {
                     return e.errno;
                 }
-                var err = FS.nodePermissions(dir, 'wx');
+                const err = FS.nodePermissions(dir, 'wx');
                 if (err) {
                     return err;
                 }
@@ -2642,7 +2631,7 @@ class LibTiMidity {
             nextfd: function(fd_start, fd_end) {
                 fd_start = fd_start || 1;
                 fd_end = fd_end || FS.MAX_OPEN_FDS;
-                for (var fd = fd_start; fd <= fd_end; fd++) {
+                for (let fd = fd_start; fd <= fd_end; fd++) {
                     if (!FS.streams[fd]) {
                         return fd;
                     }
@@ -2653,7 +2642,7 @@ class LibTiMidity {
                 return FS.streams[fd];
             },
             createStream: function(stream, fd_start, fd_end) {
-                var fd = FS.nextfd(fd_start, fd_end);
+                const fd = FS.nextfd(fd_start, fd_end);
                 stream.fd = fd;
                 // compatibility
                 Object.defineProperties(stream, {
@@ -2689,7 +2678,7 @@ class LibTiMidity {
             },
             chrdev_stream_ops: {
                 open: function(stream) {
-                    var device = FS.getDevice(stream.node.rdev);
+                    const device = FS.getDevice(stream.node.rdev);
                     // override node's stream ops with the device's
                     stream.stream_ops = device.stream_ops;
                     // forward the open call
@@ -2721,9 +2710,9 @@ class LibTiMidity {
                     callback = populate;
                     populate = false;
                 }
-                var completed = 0;
-                var total = FS.mounts.length;
-                var done = function(err) {
+                let completed = 0;
+                const total = FS.mounts.length;
+                const done = function(err) {
                     if (err) {
                         return callback(err);
                     }
@@ -2732,8 +2721,8 @@ class LibTiMidity {
                     }
                 };
                 // sync all mounts
-                for (var i = 0; i < FS.mounts.length; i++) {
-                    var mount = FS.mounts[i];
+                for (let i = 0; i < FS.mounts.length; i++) {
+                    const mount = FS.mounts[i];
                     if (!mount.type.syncfs) {
                         done(null);
                         continue;
@@ -2742,12 +2731,12 @@ class LibTiMidity {
                 }
             },
             mount: function(type, opts, mountpoint) {
-                var lookup;
+                let lookup;
                 if (mountpoint) {
                     lookup = FS.lookupPath(mountpoint, { follow: false });
                     mountpoint = lookup.path; // use the absolute path
                 }
-                var mount = {
+                const mount = {
                     type: type,
                     opts: opts,
                     mountpoint: mountpoint,
@@ -2813,10 +2802,10 @@ class LibTiMidity {
                 return FS.mknod(path, mode, dev);
             },
             symlink: function(oldpath, newpath) {
-                var lookup = FS.lookupPath(newpath, { parent: true });
+                const lookup = FS.lookupPath(newpath, { parent: true });
                 var parent = lookup.node;
-                var newname = PATH.basename(newpath);
-                var err = FS.mayCreate(parent, newname);
+                const newname = PATH.basename(newpath);
+                const err = FS.mayCreate(parent, newname);
                 if (err) {
                     throw new FS.ErrnoError(err);
                 }
@@ -2826,12 +2815,12 @@ class LibTiMidity {
                 return parent.node_ops.symlink(parent, newname, oldpath);
             },
             rename: function(old_path, new_path) {
-                var old_dirname = PATH.dirname(old_path);
-                var new_dirname = PATH.dirname(new_path);
-                var old_name = PATH.basename(old_path);
-                var new_name = PATH.basename(new_path);
+                const old_dirname = PATH.dirname(old_path);
+                const new_dirname = PATH.dirname(new_path);
+                const old_name = PATH.basename(old_path);
+                const new_name = PATH.basename(new_path);
                 // parents must exist
-                var lookup, old_dir, new_dir;
+                let lookup, old_dir, new_dir;
                 try {
                     lookup = FS.lookupPath(old_path, { parent: true });
                     old_dir = lookup.node;
@@ -2845,9 +2834,9 @@ class LibTiMidity {
                     throw new FS.ErrnoError(ERRNO_CODES.EXDEV);
                 }
                 // source must exist
-                var old_node = FS.lookupNode(old_dir, old_name);
+                const old_node = FS.lookupNode(old_dir, old_name);
                 // old path should not be an ancestor of the new path
-                var relative = PATH.relative(old_path, new_dirname);
+                let relative = PATH.relative(old_path, new_dirname);
                 if (relative.charAt(0) !== '.') {
                     throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
                 }
@@ -2857,7 +2846,7 @@ class LibTiMidity {
                     throw new FS.ErrnoError(ERRNO_CODES.ENOTEMPTY);
                 }
                 // see if the new path already exists
-                var new_node;
+                let new_node;
                 try {
                     new_node = FS.lookupNode(new_dir, new_name);
                 } catch (e) {
@@ -2868,8 +2857,8 @@ class LibTiMidity {
                     return;
                 }
                 // we'll need to delete the old entry
-                var isdir = FS.isDir(old_node.mode);
-                var err = FS.mayDelete(old_dir, old_name, isdir);
+                const isdir = FS.isDir(old_node.mode);
+                let err = FS.mayDelete(old_dir, old_name, isdir);
                 if (err) {
                     throw new FS.ErrnoError(err);
                 }
@@ -2911,11 +2900,11 @@ class LibTiMidity {
                 }
             },
             rmdir: function(path) {
-                var lookup = FS.lookupPath(path, { parent: true });
+                const lookup = FS.lookupPath(path, { parent: true });
                 var parent = lookup.node;
-                var name = PATH.basename(path);
+                const name = PATH.basename(path);
                 var node = FS.lookupNode(parent, name);
-                var err = FS.mayDelete(parent, name, true);
+                const err = FS.mayDelete(parent, name, true);
                 if (err) {
                     throw new FS.ErrnoError(err);
                 }
@@ -2929,19 +2918,19 @@ class LibTiMidity {
                 FS.destroyNode(node);
             },
             readdir: function(path) {
-                var lookup = FS.lookupPath(path, { follow: true });
-                var node = lookup.node;
+                const lookup = FS.lookupPath(path, { follow: true });
+                const node = lookup.node;
                 if (!node.node_ops.readdir) {
                     throw new FS.ErrnoError(ERRNO_CODES.ENOTDIR);
                 }
                 return node.node_ops.readdir(node);
             },
             unlink: function(path) {
-                var lookup = FS.lookupPath(path, { parent: true });
+                const lookup = FS.lookupPath(path, { parent: true });
                 var parent = lookup.node;
-                var name = PATH.basename(path);
+                const name = PATH.basename(path);
                 var node = FS.lookupNode(parent, name);
-                var err = FS.mayDelete(parent, name, false);
+                let err = FS.mayDelete(parent, name, false);
                 if (err) {
                     // POSIX says unlink should set EPERM, not EISDIR
                     if (err === ERRNO_CODES.EISDIR) err = ERRNO_CODES.EPERM;
@@ -2957,16 +2946,16 @@ class LibTiMidity {
                 FS.destroyNode(node);
             },
             readlink: function(path) {
-                var lookup = FS.lookupPath(path, { follow: false });
-                var link = lookup.node;
+                const lookup = FS.lookupPath(path, { follow: false });
+                const link = lookup.node;
                 if (!link.node_ops.readlink) {
                     throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
                 }
                 return link.node_ops.readlink(link);
             },
             stat: function(path, dontFollow) {
-                var lookup = FS.lookupPath(path, { follow: !dontFollow });
-                var node = lookup.node;
+                const lookup = FS.lookupPath(path, { follow: !dontFollow });
+                const node = lookup.node;
                 if (!node.node_ops.getattr) {
                     throw new FS.ErrnoError(ERRNO_CODES.EPERM);
                 }
@@ -2976,9 +2965,9 @@ class LibTiMidity {
                 return FS.stat(path, true);
             },
             chmod: function(path, mode, dontFollow) {
-                var node;
+                let node;
                 if (typeof path === 'string') {
-                    var lookup = FS.lookupPath(path, { follow: !dontFollow });
+                    const lookup = FS.lookupPath(path, { follow: !dontFollow });
                     node = lookup.node;
                 } else {
                     node = path;
@@ -2995,16 +2984,16 @@ class LibTiMidity {
                 FS.chmod(path, mode, true);
             },
             fchmod: function(fd, mode) {
-                var stream = FS.getStream(fd);
+                const stream = FS.getStream(fd);
                 if (!stream) {
                     throw new FS.ErrnoError(ERRNO_CODES.EBADF);
                 }
                 FS.chmod(stream.node, mode);
             },
             chown: function(path, uid, gid, dontFollow) {
-                var node;
+                let node;
                 if (typeof path === 'string') {
-                    var lookup = FS.lookupPath(path, { follow: !dontFollow });
+                    const lookup = FS.lookupPath(path, { follow: !dontFollow });
                     node = lookup.node;
                 } else {
                     node = path;
@@ -3021,7 +3010,7 @@ class LibTiMidity {
                 FS.chown(path, uid, gid, true);
             },
             fchown: function(fd, uid, gid) {
-                var stream = FS.getStream(fd);
+                const stream = FS.getStream(fd);
                 if (!stream) {
                     throw new FS.ErrnoError(ERRNO_CODES.EBADF);
                 }
@@ -3031,9 +3020,9 @@ class LibTiMidity {
                 if (len < 0) {
                     throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
                 }
-                var node;
+                let node;
                 if (typeof path === 'string') {
-                    var lookup = FS.lookupPath(path, { follow: true });
+                    const lookup = FS.lookupPath(path, { follow: true });
                     node = lookup.node;
                 } else {
                     node = path;
@@ -3047,7 +3036,7 @@ class LibTiMidity {
                 if (!FS.isFile(node.mode)) {
                     throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
                 }
-                var err = FS.nodePermissions(node, 'w');
+                const err = FS.nodePermissions(node, 'w');
                 if (err) {
                     throw new FS.ErrnoError(err);
                 }
@@ -3057,7 +3046,7 @@ class LibTiMidity {
                 });
             },
             ftruncate: function(fd, len) {
-                var stream = FS.getStream(fd);
+                const stream = FS.getStream(fd);
                 if (!stream) {
                     throw new FS.ErrnoError(ERRNO_CODES.EBADF);
                 }
@@ -3067,8 +3056,8 @@ class LibTiMidity {
                 FS.truncate(stream.node, len);
             },
             utime: function(path, atime, mtime) {
-                var lookup = FS.lookupPath(path, { follow: true });
-                var node = lookup.node;
+                const lookup = FS.lookupPath(path, { follow: true });
+                const node = lookup.node;
                 node.node_ops.setattr(node, {
                     timestamp: Math.max(atime, mtime)
                 });
@@ -3085,9 +3074,9 @@ class LibTiMidity {
                 } else {
                     mode = 0;
                 }
-                var node;
+                let node;
                 try {
-                    var lookup = FS.lookupPath(path, {
+                    const lookup = FS.lookupPath(path, {
                         follow: !(flags & 131072)
                     });
                     node = lookup.node;
@@ -3114,7 +3103,7 @@ class LibTiMidity {
                     flags &= ~512;
                 }
                 // check permissions
-                var err = FS.mayOpen(node, flags);
+                const err = FS.mayOpen(node, flags);
                 if (err) {
                     throw new FS.ErrnoError(err);
                 }
@@ -3125,7 +3114,7 @@ class LibTiMidity {
                 // we've already handled these, don't pass down to the underlying vfs
                 flags &= ~(128 | 512);
                 // register the stream with the filesystem
-                var stream = FS.createStream(
+                const stream = FS.createStream(
                     {
                         node: node,
                         path: FS.getPath(node), // we want the absolute path to the node
@@ -3183,14 +3172,14 @@ class LibTiMidity {
                 if (!stream.stream_ops.read) {
                     throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
                 }
-                var seeking = true;
+                let seeking = true;
                 if (typeof position === 'undefined') {
                     position = stream.position;
                     seeking = false;
                 } else if (!stream.seekable) {
                     throw new FS.ErrnoError(ERRNO_CODES.ESPIPE);
                 }
-                var bytesRead = stream.stream_ops.read(
+                const bytesRead = stream.stream_ops.read(
                     stream,
                     buffer,
                     offset,
@@ -3213,7 +3202,7 @@ class LibTiMidity {
                 if (!stream.stream_ops.write) {
                     throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
                 }
-                var seeking = true;
+                let seeking = true;
                 if (typeof position === 'undefined') {
                     position = stream.position;
                     seeking = false;
@@ -3224,7 +3213,7 @@ class LibTiMidity {
                     // seek to the end before writing in append mode
                     FS.llseek(stream, 0, 2);
                 }
-                var bytesWritten = stream.stream_ops.write(
+                const bytesWritten = stream.stream_ops.write(
                     stream,
                     buffer,
                     offset,
@@ -3286,16 +3275,16 @@ class LibTiMidity {
                 opts = opts || {};
                 opts.flags = opts.flags || 'r';
                 opts.encoding = opts.encoding || 'binary';
-                var ret;
-                var stream = FS.open(path, opts.flags);
-                var stat = FS.stat(path);
-                var length = stat.size;
-                var buf = new Uint8Array(length);
+                let ret;
+                const stream = FS.open(path, opts.flags);
+                const stat = FS.stat(path);
+                const length = stat.size;
+                const buf = new Uint8Array(length);
                 FS.read(stream, buf, 0, length, 0);
                 if (opts.encoding === 'utf8') {
                     ret = '';
-                    var utf8 = new Runtime.UTF8Processor();
-                    for (var i = 0; i < length; i++) {
+                    const utf8 = new Runtime.UTF8Processor();
+                    for (let i = 0; i < length; i++) {
                         ret += utf8.processCChar(buf[i]);
                     }
                 } else if (opts.encoding === 'binary') {
@@ -3312,10 +3301,10 @@ class LibTiMidity {
                 opts = opts || {};
                 opts.flags = opts.flags || 'w';
                 opts.encoding = opts.encoding || 'utf8';
-                var stream = FS.open(path, opts.flags, opts.mode);
+                const stream = FS.open(path, opts.flags, opts.mode);
                 if (opts.encoding === 'utf8') {
-                    var utf8 = new Runtime.UTF8Processor();
-                    var buf = new Uint8Array(utf8.processJSString(data));
+                    const utf8 = new Runtime.UTF8Processor();
+                    const buf = new Uint8Array(utf8.processJSString(data));
                     FS.write(stream, buf, 0, buf.length, 0);
                 } else if (opts.encoding === 'binary') {
                     FS.write(stream, data, 0, data.length, 0);
@@ -3330,11 +3319,11 @@ class LibTiMidity {
                 return FS.currentPath;
             },
             chdir: function(path) {
-                var lookup = FS.lookupPath(path, { follow: true });
+                const lookup = FS.lookupPath(path, { follow: true });
                 if (!FS.isDir(lookup.node.mode)) {
                     throw new FS.ErrnoError(ERRNO_CODES.ENOTDIR);
                 }
-                var err = FS.nodePermissions(lookup.node, 'x');
+                const err = FS.nodePermissions(lookup.node, 'x');
                 if (err) {
                     throw new FS.ErrnoError(err);
                 }
@@ -3392,19 +3381,19 @@ class LibTiMidity {
                     FS.symlink('/dev/tty1', '/dev/stderr');
                 }
                 // open default streams for the stdin, stdout and stderr devices
-                var stdin = FS.open('/dev/stdin', 'r');
+                const stdin = FS.open('/dev/stdin', 'r');
                 HEAP32[_stdin >> 2] = stdin.fd;
                 assert(
                     stdin.fd === 1,
                     'invalid handle for stdin (' + stdin.fd + ')'
                 );
-                var stdout = FS.open('/dev/stdout', 'w');
+                const stdout = FS.open('/dev/stdout', 'w');
                 HEAP32[_stdout >> 2] = stdout.fd;
                 assert(
                     stdout.fd === 2,
                     'invalid handle for stdout (' + stdout.fd + ')'
                 );
-                var stderr = FS.open('/dev/stderr', 'w');
+                const stderr = FS.open('/dev/stderr', 'w');
                 HEAP32[_stderr >> 2] = stderr.fd;
                 assert(
                     stderr.fd === 3,
@@ -3432,8 +3421,8 @@ class LibTiMidity {
             },
             quit: function() {
                 FS.init.initialized = false;
-                for (var i = 0; i < FS.streams.length; i++) {
-                    var stream = FS.streams[i];
+                for (let i = 0; i < FS.streams.length; i++) {
+                    const stream = FS.streams[i];
                     if (!stream) {
                         continue;
                     }
@@ -3441,13 +3430,13 @@ class LibTiMidity {
                 }
             },
             getMode: function(canRead, canWrite) {
-                var mode = 0;
+                let mode = 0;
                 if (canRead) mode |= 292 | 73;
                 if (canWrite) mode |= 146;
                 return mode;
             },
             joinPath: function(parts, forceRelative) {
-                var path = PATH.join.apply(null, parts);
+                let path = PATH.join.apply(null, parts);
                 if (forceRelative && path[0] == '/') path = path.substr(1);
                 return path;
             },
@@ -3458,7 +3447,7 @@ class LibTiMidity {
                 return PATH.normalize(path);
             },
             findObject: function(path, dontResolveLastLink) {
-                var ret = FS.analyzePath(path, dontResolveLastLink);
+                const ret = FS.analyzePath(path, dontResolveLastLink);
                 if (ret.exists) {
                     return ret.object;
                 } else {
@@ -3474,7 +3463,7 @@ class LibTiMidity {
                     });
                     path = lookup.path;
                 } catch (e) {}
-                var ret = {
+                const ret = {
                     isRoot: false,
                     exists: false,
                     error: 0,
@@ -3505,11 +3494,11 @@ class LibTiMidity {
                 return ret;
             },
             createFolder: function(parent, name, canRead, canWrite) {
-                var path = PATH.join(
+                const path = PATH.join(
                     typeof parent === 'string' ? parent : FS.getPath(parent),
                     name
                 );
-                var mode = FS.getMode(canRead, canWrite);
+                const mode = FS.getMode(canRead, canWrite);
                 return FS.mkdir(path, mode);
             },
 
@@ -3604,7 +3593,7 @@ class LibTiMidity {
                 if (data) {
                     if (typeof data === 'string') {
                         let arr = new Array(data.length);
-                        for (var i = 0, len = data.length; i < len; ++i) {
+                        for (let i = 0, len = data.length; i < len; ++i) {
                             arr[i] = data.charCodeAt(i);
                         }
                         data = arr;
@@ -3649,13 +3638,13 @@ class LibTiMidity {
             },
 
             createDevice: function(parent, name, input, output) {
-                var path = PATH.join(
+                const path = PATH.join(
                     typeof parent === 'string' ? parent : FS.getPath(parent),
                     name
                 );
-                var mode = FS.getMode(!!input, !!output);
+                const mode = FS.getMode(!!input, !!output);
                 if (!FS.createDevice.major) FS.createDevice.major = 64;
-                var dev = FS.makedev(FS.createDevice.major++, 0);
+                const dev = FS.makedev(FS.createDevice.major++, 0);
                 // Create a fake device that a set of stream ops to emulate
                 // the old behavior.
                 FS.registerDevice(dev, {
@@ -3675,9 +3664,9 @@ class LibTiMidity {
                         length,
                         pos /* ignored */
                     ) {
-                        var bytesRead = 0;
-                        for (var i = 0; i < length; i++) {
-                            var result;
+                        let bytesRead = 0;
+                        for (let i = 0; i < length; i++) {
+                            let result;
                             try {
                                 result = input();
                             } catch (e) {
@@ -3712,7 +3701,7 @@ class LibTiMidity {
                 return FS.mkdev(path, mode, dev);
             },
             createLink: function(parent, name, target, canRead, canWrite) {
-                var path = PATH.join(
+                const path = PATH.join(
                     typeof parent === 'string' ? parent : FS.getPath(parent),
                     name
                 );
@@ -3721,7 +3710,7 @@ class LibTiMidity {
             forceLoadFile: function(obj) {
                 if (obj.isDevice || obj.isFolder || obj.link || obj.contents)
                     return true;
-                var success = true;
+                let success = true;
                 if (typeof XMLHttpRequest !== 'undefined') {
                     throw new Error(
                         'Lazy loading should have been performed (contents set) in createLazyFile, but it was not. Lazy loading only works in web workers. Use --embed-file or --preload-file in emcc on the main thread.'
@@ -3752,7 +3741,7 @@ class LibTiMidity {
                 } else {
                     var properties = { isDevice: false, url: url };
                 }
-                var node = FS.createFile(parent, name, canRead, canWrite);
+                const node = FS.createFile(parent, name, canRead, canWrite);
                 // This is a total hack, but I want to get this lazy file code out of the
                 // core of MEMFS. If we want to keep this lazy file concept I feel it should
                 // be its own thin LAZYFS proxying calls to MEMFS.
@@ -3763,10 +3752,10 @@ class LibTiMidity {
                     node.url = properties.url;
                 }
                 // override each stream op with one that tries to force load the lazy file first
-                var stream_ops = {};
-                var keys = Object.keys(node.stream_ops);
+                const stream_ops = {};
+                const keys = Object.keys(node.stream_ops);
                 keys.forEach(function(key) {
-                    var fn = node.stream_ops[key];
+                    const fn = node.stream_ops[key];
                     stream_ops[key] = function() {
                         if (!FS.forceLoadFile(node)) {
                             throw new FS.ErrnoError(ERRNO_CODES.EIO);
@@ -3785,9 +3774,9 @@ class LibTiMidity {
                     if (!FS.forceLoadFile(node)) {
                         throw new FS.ErrnoError(ERRNO_CODES.EIO);
                     }
-                    var contents = stream.node.contents;
+                    const contents = stream.node.contents;
                     if (position >= contents.length) return 0;
-                    var size = Math.min(contents.length - position, length);
+                    const size = Math.min(contents.length - position, length);
                     assert(size >= 0);
                     if (contents.slice) {
                         // normal array
@@ -3819,7 +3808,7 @@ class LibTiMidity {
                 Browser.init();
                 // TODO we should allow people to just pass in a complete filename instead
                 // of parent and name being that we just join them anyways
-                var fullname = name
+                const fullname = name
                     ? PATH.resolve(PATH.join(parent, name))
                     : parent;
                 function processData(byteArray) {
@@ -3837,7 +3826,7 @@ class LibTiMidity {
                         if (onload) onload();
                         removeRunDependency('cp ' + fullname);
                     }
-                    var handled = false;
+                    let handled = false;
                     Module['preloadPlugins'].forEach(function(plugin) {
                         if (handled) return;
                         if (plugin['canHandle'](fullname)) {
@@ -3884,7 +3873,7 @@ class LibTiMidity {
             saveFilesToDB: function(paths, onload, onerror) {
                 onload = onload || function() {};
                 onerror = onerror || function() {};
-                var indexedDB = FS.indexedDB();
+                const indexedDB = FS.indexedDB();
                 try {
                     var openRequest = indexedDB.open(
                         FS.DB_NAME(),
@@ -3895,25 +3884,23 @@ class LibTiMidity {
                 }
                 openRequest.onupgradeneeded = function() {
                     // console.log('creating db');
-                    var db = openRequest.result;
+                    const db = openRequest.result;
                     db.createObjectStore(FS.DB_STORE_NAME);
                 };
                 openRequest.onsuccess = function() {
-                    var db = openRequest.result;
-                    var transaction = db.transaction(
+                    const db = openRequest.result;
+                    const transaction = db.transaction(
                         [FS.DB_STORE_NAME],
                         'readwrite'
                     );
-                    var files = transaction.objectStore(FS.DB_STORE_NAME);
-                    var ok = 0,
-                        fail = 0,
-                        total = paths.length;
+                    const files = transaction.objectStore(FS.DB_STORE_NAME);
+                    let ok = 0, fail = 0, total = paths.length;
                     function finish() {
                         if (fail == 0) onload();
                         else onerror();
                     }
                     paths.forEach(function(path) {
-                        var putRequest = files.put(
+                        const putRequest = files.put(
                             FS.analyzePath(path).object.contents,
                             path
                         );
@@ -3933,7 +3920,7 @@ class LibTiMidity {
             loadFilesFromDB: function(paths, onload, onerror) {
                 onload = onload || function() {};
                 onerror = onerror || function() {};
-                var indexedDB = FS.indexedDB();
+                const indexedDB = FS.indexedDB();
                 try {
                     var openRequest = indexedDB.open(
                         FS.DB_NAME(),
@@ -3944,7 +3931,7 @@ class LibTiMidity {
                 }
                 openRequest.onupgradeneeded = onerror; // no database to load from
                 openRequest.onsuccess = function() {
-                    var db = openRequest.result;
+                    const db = openRequest.result;
                     try {
                         var transaction = db.transaction(
                             [FS.DB_STORE_NAME],
@@ -3954,16 +3941,14 @@ class LibTiMidity {
                         onerror(e);
                         return;
                     }
-                    var files = transaction.objectStore(FS.DB_STORE_NAME);
-                    var ok = 0,
-                        fail = 0,
-                        total = paths.length;
+                    const files = transaction.objectStore(FS.DB_STORE_NAME);
+                    let ok = 0, fail = 0, total = paths.length;
                     function finish() {
                         if (fail == 0) onload();
                         else onerror();
                     }
                     paths.forEach(function(path) {
-                        var getRequest = files.get(path);
+                        const getRequest = files.get(path);
                         getRequest.onsuccess = function() {
                             if (FS.analyzePath(path).exists) {
                                 FS.unlink(path);
@@ -3992,10 +3977,10 @@ class LibTiMidity {
         function _open(path, oflag, varargs) {
             // int open(const char *path, int oflag, ...);
             // http://pubs.opengroup.org/onlinepubs/009695399/functions/open.html
-            var mode = HEAP32[varargs >> 2];
+            const mode = HEAP32[varargs >> 2];
             path = Pointer_stringify(path);
             try {
-                var stream = FS.open(path, oflag, mode);
+                const stream = FS.open(path, oflag, mode);
                 return stream.fd;
             } catch (e) {
                 FS.handleFSError(e);
@@ -4005,7 +3990,7 @@ class LibTiMidity {
         function _fopen(filename, mode) {
             // FILE *fopen(const char *restrict filename, const char *restrict mode);
             // http://pubs.opengroup.org/onlinepubs/000095399/functions/fopen.html
-            var flags;
+            let flags;
             mode = Pointer_stringify(mode);
             if (mode[0] == 'r') {
                 if (mode.indexOf('+') != -1) {
@@ -4033,7 +4018,7 @@ class LibTiMidity {
                 ___setErrNo(ERRNO_CODES.EINVAL);
                 return 0;
             }
-            var ret = _open(
+            const ret = _open(
                 filename,
                 flags,
                 allocate([0x1ff, 0, 0, 0], 'i32', ALLOC_STACK)
@@ -4043,17 +4028,17 @@ class LibTiMidity {
         Module['_strlen'] = _strlen;
         Module['_strcpy'] = _strcpy;
         Module['_strcat'] = _strcat;
-        var SOCKFS = {
+        const SOCKFS = {
             mount: function() {
                 return FS.createNode(null, '/', 16384 | 0o777, 0);
             },
             createSocket: function(family, type, protocol) {
-                var streaming = type == 1;
+                const streaming = type == 1;
                 if (protocol) {
                     assert(streaming == (protocol == 6)); // if SOCK_STREAM, must be tcp
                 }
                 // create our internal socket structure
-                var sock = {
+                const sock = {
                     family: family,
                     type: type,
                     protocol: protocol,
@@ -4064,12 +4049,12 @@ class LibTiMidity {
                     sock_ops: SOCKFS.websocket_sock_ops
                 };
                 // create the filesystem node to store the socket structure
-                var name = SOCKFS.nextname();
-                var node = FS.createNode(SOCKFS.root, name, 49152, 0);
+                const name = SOCKFS.nextname();
+                const node = FS.createNode(SOCKFS.root, name, 49152, 0);
                 node.sock = sock;
                 // and the wrapping stream that enables library functions such
                 // as read and write to indirectly interact with the socket
-                var stream = FS.createStream({
+                const stream = FS.createStream({
                     path: name,
                     node: node,
                     flags: FS.modeStringToFlags('r+'),
@@ -4082,7 +4067,7 @@ class LibTiMidity {
                 return sock;
             },
             getSocket: function(fd) {
-                var stream = FS.getStream(fd);
+                const stream = FS.getStream(fd);
                 if (!stream || !FS.isSocket(stream.node.mode)) {
                     return null;
                 }
@@ -4090,16 +4075,16 @@ class LibTiMidity {
             },
             stream_ops: {
                 poll: function(stream) {
-                    var sock = stream.node.sock;
+                    const sock = stream.node.sock;
                     return sock.sock_ops.poll(sock);
                 },
                 ioctl: function(stream, request, varargs) {
-                    var sock = stream.node.sock;
+                    const sock = stream.node.sock;
                     return sock.sock_ops.ioctl(sock, request, varargs);
                 },
                 read: function(stream, buffer, offset, length) {
-                    var sock = stream.node.sock;
-                    var msg = sock.sock_ops.recvmsg(sock, length);
+                    const sock = stream.node.sock;
+                    const msg = sock.sock_ops.recvmsg(sock, length);
                     if (!msg) {
                         // socket is closed
                         return 0;
@@ -4108,11 +4093,11 @@ class LibTiMidity {
                     return msg.buffer.length;
                 },
                 write: function(stream, buffer, offset, length) {
-                    var sock = stream.node.sock;
+                    const sock = stream.node.sock;
                     return sock.sock_ops.sendmsg(sock, buffer, offset, length);
                 },
                 close: function(stream) {
-                    var sock = stream.node.sock;
+                    const sock = stream.node.sock;
                     sock.sock_ops.close(sock);
                 }
             },
@@ -4124,7 +4109,7 @@ class LibTiMidity {
             },
             websocket_sock_ops: {
                 createPeer: function(sock, addr, port) {
-                    var ws;
+                    let ws;
                     if (typeof addr === 'object') {
                         ws = addr;
                         addr = null;
@@ -4140,7 +4125,7 @@ class LibTiMidity {
                         // if we're just now initializing a connection to the remote,
                         // inspect the url property
                         else {
-                            var result = /ws[s]?:\/\/([^:]+):(\d+)/.exec(
+                            const result = /ws[s]?:\/\/([^:]+):(\d+)/.exec(
                                 ws.url
                             );
                             if (!result) {
@@ -4156,14 +4141,14 @@ class LibTiMidity {
                         try {
                             var url = 'ws://' + addr + ':' + port;
                             // the node ws library API is slightly different than the browser's
-                            var opts = ['binary'];
+                            const opts = ['binary'];
                             ws = new WebSocket(url, opts);
                             ws.binaryType = 'arraybuffer';
                         } catch (e) {
                             throw new FS.ErrnoError(ERRNO_CODES.EHOSTUNREACH);
                         }
                     }
-                    var peer = {
+                    const peer = {
                         addr: addr,
                         port: port,
                         socket: ws,
@@ -4202,10 +4187,10 @@ class LibTiMidity {
                     delete sock.peers[peer.addr + ':' + peer.port];
                 },
                 handlePeerEvents: function(sock, peer) {
-                    var first = true;
-                    var handleOpen = function() {
+                    let first = true;
+                    const handleOpen = function() {
                         try {
-                            var queued = peer.dgram_send_queue.shift();
+                            let queued = peer.dgram_send_queue.shift();
                             while (queued) {
                                 peer.socket.send(queued);
                                 queued = peer.dgram_send_queue.shift();
@@ -4216,14 +4201,14 @@ class LibTiMidity {
                             peer.socket.close();
                         }
                     };
-                    var handleMessage = function(data) {
+                    const handleMessage = function(data) {
                         assert(
                             typeof data !== 'string' &&
                                 data.byteLength !== undefined
                         ); // must receive an ArrayBuffer
                         data = new Uint8Array(data); // make a typed array view on the array buffer
                         // if this is the port message, override the peer's port with it
-                        var wasfirst = first;
+                        const wasfirst = first;
                         first = false;
                         if (
                             wasfirst &&
@@ -4238,7 +4223,7 @@ class LibTiMidity {
                             data[7] === 't'.charCodeAt(0)
                         ) {
                             // update the peer's port and it's key in the peer map
-                            var newport = (data[8] << 8) | data[9];
+                            const newport = (data[8] << 8) | data[9];
                             SOCKFS.websocket_sock_ops.removePeer(sock, peer);
                             peer.port = newport;
                             SOCKFS.websocket_sock_ops.addPeer(sock, peer);
@@ -4261,8 +4246,8 @@ class LibTiMidity {
                         // if there are pending clients.
                         return sock.pending.length ? 64 | 1 : 0;
                     }
-                    var mask = 0;
-                    var dest =
+                    let mask = 0;
+                    const dest =
                         sock.type === 1 // we only care about the socket state for connection-based sockets
                             ? SOCKFS.websocket_sock_ops.getPeer(
                                   sock,
@@ -4298,7 +4283,7 @@ class LibTiMidity {
                 ioctl: function(sock, request, arg) {
                     switch (request) {
                         case 21531:
-                            var bytes = 0;
+                            let bytes = 0;
                             if (sock.recv_queue.length) {
                                 bytes = sock.recv_queue[0].data.length;
                             }
@@ -4317,9 +4302,9 @@ class LibTiMidity {
                         sock.server = null;
                     }
                     // close any peer connections
-                    var peers = Object.keys(sock.peers);
-                    for (var i = 0; i < peers.length; i++) {
-                        var peer = sock.peers[peers[i]];
+                    const peers = Object.keys(sock.peers);
+                    for (let i = 0; i < peers.length; i++) {
+                        const peer = sock.peers[peers[i]];
                         try {
                             peer.socket.close();
                         } catch (e) {}
@@ -4367,7 +4352,7 @@ class LibTiMidity {
                         typeof sock.daddr !== 'undefined' &&
                         typeof sock.dport !== 'undefined'
                     ) {
-                        var dest = SOCKFS.websocket_sock_ops.getPeer(
+                        const dest = SOCKFS.websocket_sock_ops.getPeer(
                             sock,
                             sock.daddr,
                             sock.dport
@@ -4385,7 +4370,7 @@ class LibTiMidity {
                     }
                     // add the socket to our peer list and set our
                     // destination address / port to match
-                    var peer = SOCKFS.websocket_sock_ops.createPeer(
+                    const peer = SOCKFS.websocket_sock_ops.createPeer(
                         sock,
                         addr,
                         port
@@ -4399,21 +4384,21 @@ class LibTiMidity {
                     if (sock.server) {
                         throw new FS.ErrnoError(ERRNO_CODES.EINVAL); // already listening
                     }
-                    var WebSocketServer = require('ws').Server;
-                    var host = sock.saddr;
+                    const WebSocketServer = require('ws').Server;
+                    const host = sock.saddr;
                     sock.server = new WebSocketServer({
                         host: host,
                         port: sock.sport
                     });
                     sock.server.on('connection', function(ws) {
                         if (sock.type === 1) {
-                            var newsock = SOCKFS.createSocket(
+                            const newsock = SOCKFS.createSocket(
                                 sock.family,
                                 sock.type,
                                 sock.protocol
                             );
                             // create a peer on the new socket
-                            var peer = SOCKFS.websocket_sock_ops.createPeer(
+                            const peer = SOCKFS.websocket_sock_ops.createPeer(
                                 newsock,
                                 ws
                             );
@@ -4439,12 +4424,12 @@ class LibTiMidity {
                     if (!listensock.server) {
                         throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
                     }
-                    var newsock = listensock.pending.shift();
+                    const newsock = listensock.pending.shift();
                     newsock.stream.flags = listensock.stream.flags;
                     return newsock;
                 },
                 getname: function(sock, peer) {
-                    var addr, port;
+                    let addr, port;
                     if (peer) {
                         if (
                             sock.daddr === undefined ||
@@ -4480,7 +4465,7 @@ class LibTiMidity {
                         port = sock.dport;
                     }
                     // find the peer for the destination address
-                    var dest = SOCKFS.websocket_sock_ops.getPeer(
+                    let dest = SOCKFS.websocket_sock_ops.getPeer(
                         sock,
                         addr,
                         port
@@ -4502,7 +4487,7 @@ class LibTiMidity {
                     // create a copy of the incoming data to send, as the WebSocket API
                     // doesn't work entirely with an ArrayBufferView, it'll just send
                     // the entire underlying buffer
-                    var data;
+                    let data;
                     if (
                         buffer instanceof Array ||
                         buffer instanceof ArrayBuffer
@@ -4554,10 +4539,10 @@ class LibTiMidity {
                         // tcp servers should not be recv()'ing on the listen socket
                         throw new FS.ErrnoError(ERRNO_CODES.ENOTCONN);
                     }
-                    var queued = sock.recv_queue.shift();
+                    const queued = sock.recv_queue.shift();
                     if (!queued) {
                         if (sock.type === 1) {
-                            var dest = SOCKFS.websocket_sock_ops.getPeer(
+                            const dest = SOCKFS.websocket_sock_ops.getPeer(
                                 sock,
                                 sock.daddr,
                                 sock.dport
@@ -4582,12 +4567,12 @@ class LibTiMidity {
                     }
                     // queued.data will be an ArrayBuffer if it's unadulterated, but if it's
                     // requeued TCP data it'll be an ArrayBufferView
-                    var queuedLength =
+                    const queuedLength =
                         queued.data.byteLength || queued.data.length;
-                    var queuedOffset = queued.data.byteOffset || 0;
-                    var queuedBuffer = queued.data.buffer || queued.data;
-                    var bytesRead = Math.min(length, queuedLength);
-                    var res = {
+                    const queuedOffset = queued.data.byteOffset || 0;
+                    const queuedBuffer = queued.data.buffer || queued.data;
+                    const bytesRead = Math.min(length, queuedLength);
+                    const res = {
                         buffer: new Uint8Array(
                             queuedBuffer,
                             queuedOffset,
@@ -4598,7 +4583,7 @@ class LibTiMidity {
                     };
                     // push back any unread data for TCP connections
                     if (sock.type === 1 && bytesRead < queuedLength) {
-                        var bytesRemaining = queuedLength - bytesRead;
+                        const bytesRemaining = queuedLength - bytesRead;
                         queued.data = new Uint8Array(
                             queuedBuffer,
                             queuedOffset + bytesRead,
@@ -4611,7 +4596,7 @@ class LibTiMidity {
             }
         };
         function _send(fd, buf, len, flags) {
-            var sock = SOCKFS.getSocket(fd);
+            const sock = SOCKFS.getSocket(fd);
             if (!sock) {
                 ___setErrNo(ERRNO_CODES.EBADF);
                 return -1;
@@ -4622,13 +4607,13 @@ class LibTiMidity {
         function _pwrite(fildes, buf, nbyte, offset) {
             // ssize_t pwrite(int fildes, const void *buf, size_t nbyte, off_t offset);
             // http://pubs.opengroup.org/onlinepubs/000095399/functions/write.html
-            var stream = FS.getStream(fildes);
+            const stream = FS.getStream(fildes);
             if (!stream) {
                 ___setErrNo(ERRNO_CODES.EBADF);
                 return -1;
             }
             try {
-                var slab = HEAP8;
+                const slab = HEAP8;
                 return FS.write(stream, slab, buf, nbyte, offset);
             } catch (e) {
                 FS.handleFSError(e);
@@ -4638,13 +4623,13 @@ class LibTiMidity {
         function _write(fildes, buf, nbyte) {
             // ssize_t write(int fildes, const void *buf, size_t nbyte);
             // http://pubs.opengroup.org/onlinepubs/000095399/functions/write.html
-            var stream = FS.getStream(fildes);
+            const stream = FS.getStream(fildes);
             if (!stream) {
                 ___setErrNo(ERRNO_CODES.EBADF);
                 return -1;
             }
             try {
-                var slab = HEAP8;
+                const slab = HEAP8;
                 return FS.write(stream, slab, buf, nbyte);
             } catch (e) {
                 FS.handleFSError(e);
@@ -4654,11 +4639,11 @@ class LibTiMidity {
         function _fwrite(ptr, size, nitems, stream) {
             // size_t fwrite(const void *restrict ptr, size_t size, size_t nitems, FILE *restrict stream);
             // http://pubs.opengroup.org/onlinepubs/000095399/functions/fwrite.html
-            var bytesToWrite = nitems * size;
+            const bytesToWrite = nitems * size;
             if (bytesToWrite == 0) return 0;
-            var bytesWritten = _write(stream, ptr, bytesToWrite);
+            const bytesWritten = _write(stream, ptr, bytesToWrite);
             if (bytesWritten == -1) {
-                var streamObj = FS.getStream(stream);
+                const streamObj = FS.getStream(stream);
                 if (streamObj) streamObj.error = true;
                 return 0;
             } else {
@@ -4669,12 +4654,12 @@ class LibTiMidity {
             return x < 0 || (x === 0 && 1 / x === -Infinity);
         }
         function __formatString(format, varargs) {
-            var textIndex = format;
-            var argIndex = 0;
+            let textIndex = format;
+            let argIndex = 0;
             function getNextArg(type) {
                 // NOTE: Explicitly ignoring type safety. Otherwise this fails:
                 //       int x = 4; printf("%c\n", (char)x);
-                var ret;
+                let ret;
                 if (type === 'double') {
                     ret = HEAPF64[(varargs + argIndex) >> 3];
                 } else if (type == 'i64') {
@@ -4696,17 +4681,17 @@ class LibTiMidity {
             var ret = [];
             var curr, next, currArg;
             while (1) {
-                var startTextIndex = textIndex;
+                const startTextIndex = textIndex;
                 curr = HEAP8[textIndex];
                 if (curr === 0) break;
                 next = HEAP8[(textIndex + 1) | 0];
                 if (curr == 37) {
                     // Handle flags.
-                    var flagAlwaysSigned = false;
-                    var flagLeftAlign = false;
-                    var flagAlternative = false;
-                    var flagZeroPad = false;
-                    var flagPadSign = false;
+                    let flagAlwaysSigned = false;
+                    let flagLeftAlign = false;
+                    let flagAlternative = false;
+                    let flagZeroPad = false;
+                    let flagPadSign = false;
                     flagsLoop: while (1) {
                         switch (next) {
                             case 43:
@@ -4735,7 +4720,7 @@ class LibTiMidity {
                         next = HEAP8[(textIndex + 1) | 0];
                     }
                     // Handle width.
-                    var width = 0;
+                    let width = 0;
                     if (next == 42) {
                         width = getNextArg('i32');
                         textIndex++;
@@ -4748,7 +4733,7 @@ class LibTiMidity {
                         }
                     }
                     // Handle precision.
-                    var precisionSet = false;
+                    let precisionSet = false;
                     if (next == 46) {
                         var precision = 0;
                         precisionSet = true;
@@ -4759,7 +4744,7 @@ class LibTiMidity {
                             textIndex++;
                         } else {
                             while (1) {
-                                var precisionChr = HEAP8[(textIndex + 1) | 0];
+                                const precisionChr = HEAP8[(textIndex + 1) | 0];
                                 if (precisionChr < 48 || precisionChr > 57)
                                     break;
                                 precision =
@@ -4772,7 +4757,7 @@ class LibTiMidity {
                         var precision = 6; // Standard default.
                     }
                     // Handle integer sizes. WARNING: These assume a 32-bit architecture!
-                    var argSize;
+                    let argSize;
                     switch (String.fromCharCode(next)) {
                         case 'h':
                             var nextNext = HEAP8[(textIndex + 2) | 0];
@@ -4817,10 +4802,10 @@ class LibTiMidity {
                         case 'X':
                         case 'p': {
                             // Integer.
-                            var signed = next == 100 || next == 105;
+                            const signed = next == 100 || next == 105;
                             argSize = argSize || 4;
                             var currArg = getNextArg('i' + argSize * 8);
-                            var origArg = currArg;
+                            const origArg = currArg;
                             var argText;
                             // Flatten i64-1 [low, high] into a (slightly rounded) double
                             if (argSize == 8) {
@@ -4832,15 +4817,15 @@ class LibTiMidity {
                             }
                             // Truncate to requested size.
                             if (argSize <= 4) {
-                                var limit = Math.pow(256, argSize) - 1;
+                                const limit = Math.pow(256, argSize) - 1;
                                 currArg = (signed ? reSign : unSign)(
                                     currArg & limit,
                                     argSize * 8
                                 );
                             }
                             // Format the number.
-                            var currAbsArg = Math.abs(currArg);
-                            var prefix = '';
+                            const currAbsArg = Math.abs(currArg);
+                            let prefix = '';
                             if (next == 100 || next == 105) {
                                 if (argSize == 8 && i64Math)
                                     argText = i64Math.stringify(
@@ -4880,7 +4865,7 @@ class LibTiMidity {
                                         argText = (origArg[1] >>> 0).toString(
                                             16
                                         );
-                                        var lower = (origArg[0] >>> 0).toString(
+                                        let lower = (origArg[0] >>> 0).toString(
                                             16
                                         );
                                         while (lower.length < 8)
@@ -4895,7 +4880,7 @@ class LibTiMidity {
                                     // Represent negative numbers in hex as 2's complement.
                                     currArg = -currArg;
                                     argText = (currAbsArg - 1).toString(16);
-                                    var buffer = [];
+                                    const buffer = [];
                                     for (var i = 0; i < argText.length; i++) {
                                         buffer.push(
                                             (
@@ -4974,8 +4959,8 @@ class LibTiMidity {
                                 argText = (currArg < 0 ? '-' : '') + 'inf';
                                 flagZeroPad = false;
                             } else {
-                                var isGeneral = false;
-                                var effectivePrecision = Math.min(
+                                let isGeneral = false;
+                                let effectivePrecision = Math.min(
                                     precision,
                                     20
                                 );
@@ -4984,7 +4969,7 @@ class LibTiMidity {
                                 if (next == 103 || next == 71) {
                                     isGeneral = true;
                                     precision = precision || 1;
-                                    var exponent = parseInt(
+                                    const exponent = parseInt(
                                         currArg
                                             .toExponential(effectivePrecision)
                                             .split('e')[1],
@@ -5033,7 +5018,7 @@ class LibTiMidity {
                                         argText = '-' + argText;
                                     }
                                 }
-                                var parts = argText.split('e');
+                                const parts = argText.split('e');
                                 if (isGeneral && !flagAlternative) {
                                     // Discard trailing zeros and periods.
                                     while (
@@ -5096,8 +5081,8 @@ class LibTiMidity {
                         }
                         case 's': {
                             // String.
-                            var arg = getNextArg('i8*');
-                            var argLength = arg
+                            let arg = getNextArg('i8*');
+                            let argLength = arg
                                 ? _strlen(arg)
                                 : '(null)'.length;
                             if (precisionSet)
@@ -5137,7 +5122,7 @@ class LibTiMidity {
                         }
                         case 'n': {
                             // Write the length written so far to the next parameter.
-                            var ptr = getNextArg('i32*');
+                            const ptr = getNextArg('i32*');
                             HEAP32[ptr >> 2] = ret.length;
                             break;
                         }
@@ -5170,9 +5155,9 @@ class LibTiMidity {
         function _fprintf(stream, format, varargs) {
             // int fprintf(FILE *restrict stream, const char *restrict format, ...);
             // http://pubs.opengroup.org/onlinepubs/000095399/functions/printf.html
-            var result = __formatString(format, varargs);
-            var stack = Runtime.stackSave();
-            var ret = _fwrite(
+            const result = __formatString(format, varargs);
+            const stack = Runtime.stackSave();
+            const ret = _fwrite(
                 allocate(result, 'i8', ALLOC_STACK),
                 1,
                 result.length,
@@ -5182,7 +5167,7 @@ class LibTiMidity {
             return ret;
         }
         function _recv(fd, buf, len, flags) {
-            var sock = SOCKFS.getSocket(fd);
+            const sock = SOCKFS.getSocket(fd);
             if (!sock) {
                 ___setErrNo(ERRNO_CODES.EBADF);
                 return -1;
@@ -5193,13 +5178,13 @@ class LibTiMidity {
         function _pread(fildes, buf, nbyte, offset) {
             // ssize_t pread(int fildes, void *buf, size_t nbyte, off_t offset);
             // http://pubs.opengroup.org/onlinepubs/000095399/functions/read.html
-            var stream = FS.getStream(fildes);
+            const stream = FS.getStream(fildes);
             if (!stream) {
                 ___setErrNo(ERRNO_CODES.EBADF);
                 return -1;
             }
             try {
-                var slab = HEAP8;
+                const slab = HEAP8;
                 return FS.read(stream, slab, buf, nbyte, offset);
             } catch (e) {
                 FS.handleFSError(e);
@@ -5209,13 +5194,13 @@ class LibTiMidity {
         function _read(fildes, buf, nbyte) {
             // ssize_t read(int fildes, void *buf, size_t nbyte);
             // http://pubs.opengroup.org/onlinepubs/000095399/functions/read.html
-            var stream = FS.getStream(fildes);
+            const stream = FS.getStream(fildes);
             if (!stream) {
                 ___setErrNo(ERRNO_CODES.EBADF);
                 return -1;
             }
             try {
-                var slab = HEAP8;
+                const slab = HEAP8;
                 return FS.read(stream, slab, buf, nbyte);
             } catch (e) {
                 FS.handleFSError(e);
@@ -5225,18 +5210,18 @@ class LibTiMidity {
         function _fread(ptr, size, nitems, stream) {
             // size_t fread(void *restrict ptr, size_t size, size_t nitems, FILE *restrict stream);
             // http://pubs.opengroup.org/onlinepubs/000095399/functions/fread.html
-            var bytesToRead = nitems * size;
+            let bytesToRead = nitems * size;
             if (bytesToRead == 0) {
                 return 0;
             }
-            var bytesRead = 0;
-            var streamObj = FS.getStream(stream);
+            let bytesRead = 0;
+            const streamObj = FS.getStream(stream);
             while (streamObj.ungotten.length && bytesToRead > 0) {
                 HEAP8[ptr++ | 0] = streamObj.ungotten.pop();
                 bytesToRead--;
                 bytesRead++;
             }
-            var err = _read(stream, ptr, bytesToRead);
+            const err = _read(stream, ptr, bytesToRead);
             if (err == -1) {
                 if (streamObj) streamObj.error = true;
                 return 0;
@@ -5249,7 +5234,7 @@ class LibTiMidity {
         function _lseek(fildes, offset, whence) {
             // off_t lseek(int fildes, off_t offset, int whence);
             // http://pubs.opengroup.org/onlinepubs/000095399/functions/lseek.html
-            var stream = FS.getStream(fildes);
+            const stream = FS.getStream(fildes);
             if (!stream) {
                 ___setErrNo(ERRNO_CODES.EBADF);
                 return -1;
@@ -5264,7 +5249,7 @@ class LibTiMidity {
         function _fseek(stream, offset, whence) {
             // int fseek(FILE *stream, long offset, int whence);
             // http://pubs.opengroup.org/onlinepubs/000095399/functions/fseek.html
-            var ret = _lseek(stream, offset, whence);
+            const ret = _lseek(stream, offset, whence);
             if (ret == -1) {
                 return -1;
             }
@@ -5275,7 +5260,7 @@ class LibTiMidity {
         function _close(fildes) {
             // int close(int fildes);
             // http://pubs.opengroup.org/onlinepubs/000095399/functions/close.html
-            var stream = FS.getStream(fildes);
+            const stream = FS.getStream(fildes);
             if (!stream) {
                 ___setErrNo(ERRNO_CODES.EBADF);
                 return -1;
@@ -5291,7 +5276,7 @@ class LibTiMidity {
         function _fsync(fildes) {
             // int fsync(int fildes);
             // http://pubs.opengroup.org/onlinepubs/000095399/functions/fsync.html
-            var stream = FS.getStream(fildes);
+            const stream = FS.getStream(fildes);
             if (stream) {
                 // We write directly to the file system, so there's nothing to do here.
                 return 0;
@@ -5309,29 +5294,29 @@ class LibTiMidity {
         function _printf(format, varargs) {
             // int printf(const char *restrict format, ...);
             // http://pubs.opengroup.org/onlinepubs/000095399/functions/printf.html
-            var stdout = HEAP32[_stdout >> 2];
+            const stdout = HEAP32[_stdout >> 2];
             return _fprintf(stdout, format, varargs);
         }
         Module['_memset'] = _memset;
-        var _llvm_memset_p0i8_i32 = _memset;
+        const _llvm_memset_p0i8_i32 = _memset;
         Module['_memcpy'] = _memcpy;
-        var _llvm_memcpy_p0i8_p0i8_i32 = _memcpy;
-        var _llvm_pow_f64 = Math_pow;
-        var _sin = Math_sin;
+        const _llvm_memcpy_p0i8_p0i8_i32 = _memcpy;
+        const _llvm_pow_f64 = Math_pow;
+        const _sin = Math_sin;
         function _strrchr(ptr, chr) {
-            var ptr2 = ptr + _strlen(ptr);
+            let ptr2 = ptr + _strlen(ptr);
             do {
                 if (HEAP8[ptr2] == chr) return ptr2;
                 ptr2--;
             } while (ptr2 >= ptr);
             return 0;
         }
-        var ___strtok_state = 0;
+        let ___strtok_state = 0;
         function _strtok_r(s, delim, lasts) {
-            var skip_leading_delim = 1;
-            var spanp;
-            var c, sc;
-            var tok;
+            const skip_leading_delim = 1;
+            let spanp;
+            let c, sc;
+            let tok;
             if (s == 0 && (s = getValue(lasts, 'i8*')) == 0) {
                 return 0;
             }
@@ -5376,10 +5361,10 @@ class LibTiMidity {
             return _strtok_r(s, delim, ___strtok_state);
         }
         function _strncmp(px, py, n) {
-            var i = 0;
+            let i = 0;
             while (i < n) {
-                var x = HEAPU8[(px + i) | 0];
-                var y = HEAPU8[(py + i) | 0];
+                const x = HEAPU8[(px + i) | 0];
+                const y = HEAPU8[(py + i) | 0];
                 if (x == y && x == 0) return 0;
                 if (x == 0) return -1;
                 if (y == 0) return 1;
@@ -5403,7 +5388,7 @@ class LibTiMidity {
             // Skip space.
             while (_isspace(HEAP8[str])) str++;
             // Check for a plus/minus sign.
-            var multiplier = 1;
+            let multiplier = 1;
             if (HEAP8[str] == 45) {
                 multiplier = -1;
                 str++;
@@ -5411,7 +5396,7 @@ class LibTiMidity {
                 str++;
             }
             // Find base.
-            var finalBase = base;
+            let finalBase = base;
             if (!finalBase) {
                 if (HEAP8[str] == 48) {
                     if (
@@ -5437,10 +5422,10 @@ class LibTiMidity {
             }
             if (!finalBase) finalBase = 10;
             // Get digits.
-            var chr;
-            var ret = 0;
+            let chr;
+            let ret = 0;
             while ((chr = HEAP8[str]) != 0) {
-                var digit = parseInt(String.fromCharCode(chr), finalBase);
+                const digit = parseInt(String.fromCharCode(chr), finalBase);
                 if (isNaN(digit)) {
                     break;
                 } else {
@@ -5517,7 +5502,7 @@ class LibTiMidity {
             // Changes the size of the memory area by |bytes|; returns the
             // address of the previous top ('break') of the memory area
             // We control the "dynamic" memory - DYNAMIC_BASE to DYNAMICTOP
-            var self = _sbrk;
+            const self = _sbrk;
             if (!self.called) {
                 DYNAMICTOP = alignMemoryPage(DYNAMICTOP); // make sure we start out aligned
                 self.called = true;
@@ -5527,7 +5512,7 @@ class LibTiMidity {
                     abort('cannot dynamically allocate, sbrk now has control');
                 };
             }
-            var ret = DYNAMICTOP;
+            const ret = DYNAMICTOP;
             if (bytes != 0) self.alloc(bytes);
             return ret; // Previous break location.
         }
@@ -5688,13 +5673,13 @@ class LibTiMidity {
             return -1;
         }
         function _time(ptr) {
-            var ret = Math.floor(Date.now() / 1000);
+            const ret = Math.floor(Date.now() / 1000);
             if (ptr) {
                 HEAP32[ptr >> 2] = ret;
             }
             return ret;
         }
-        var Browser = {
+        const Browser = {
             mainLoop: {
                 scheduler: null,
                 shouldPause: false,
@@ -5712,10 +5697,10 @@ class LibTiMidity {
                 },
                 updateStatus: function() {
                     if (Module['setStatus']) {
-                        var message =
+                        const message =
                             Module['statusMessage'] || 'Please wait...';
-                        var remaining = Browser.mainLoop.remainingBlockers;
-                        var expected = Browser.mainLoop.expectedBlockers;
+                        const remaining = Browser.mainLoop.remainingBlockers;
+                        const expected = Browser.mainLoop.expectedBlockers;
                         if (remaining) {
                             if (remaining < expected) {
                                 Module['setStatus'](
@@ -5782,7 +5767,7 @@ class LibTiMidity {
                 // it is given the file's raw data. When it is done, it calls a callback with the file's
                 // (possibly modified) data. For example, a plugin might decompress a file, or it
                 // might create some side data structure for use later (like an Image element, etc.).
-                var imagePlugin = {};
+                const imagePlugin = {};
                 imagePlugin['canHandle'] = function(name) {
                     return (
                         !Module.noImageDecoding &&
@@ -5795,7 +5780,7 @@ class LibTiMidity {
                     onload,
                     onerror
                 ) {
-                    var b = null;
+                    let b = null;
                     if (Browser.hasBlobConstructor) {
                         try {
                             b = new Blob([byteArray], {
@@ -5818,21 +5803,21 @@ class LibTiMidity {
                         }
                     }
                     if (!b) {
-                        var bb = new Browser.BlobBuilder();
+                        const bb = new Browser.BlobBuilder();
                         bb.append(new Uint8Array(byteArray).buffer); // we need to pass a buffer, and must copy the array to get the right data range
                         b = bb.getBlob();
                     }
-                    var url = Browser.URLObject.createObjectURL(b);
-                    var img = new Image();
+                    const url = Browser.URLObject.createObjectURL(b);
+                    const img = new Image();
                     img.onload = function() {
                         assert(
                             img.complete,
                             'Image ' + name + ' could not be decoded'
                         );
-                        var canvas = document.createElement('canvas');
+                        const canvas = document.createElement('canvas');
                         canvas.width = img.width;
                         canvas.height = img.height;
-                        var ctx = canvas.getContext('2d');
+                        const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0);
                         Module['preloadedImages'][name] = canvas;
                         Browser.URLObject.revokeObjectURL(url);
@@ -5845,7 +5830,7 @@ class LibTiMidity {
                     img.src = url;
                 };
                 Module['preloadPlugins'].push(imagePlugin);
-                var audioPlugin = {};
+                const audioPlugin = {};
                 audioPlugin['canHandle'] = function(name) {
                     return (
                         !Module.noAudioDecoding &&
@@ -5858,7 +5843,7 @@ class LibTiMidity {
                     onload,
                     onerror
                 ) {
-                    var done = false;
+                    let done = false;
                     function finish(audio) {
                         if (done) return;
                         done = true;
@@ -5879,7 +5864,7 @@ class LibTiMidity {
                         } catch (e) {
                             return fail();
                         }
-                        var url = Browser.URLObject.createObjectURL(b); // XXX we never revoke this!
+                        const url = Browser.URLObject.createObjectURL(b); // XXX we never revoke this!
                         var audio = new Audio();
                         audio.addEventListener(
                             'canplaythrough',
@@ -5896,17 +5881,17 @@ class LibTiMidity {
                                     ', trying slower base64 approach'
                             );
                             function encode64(data) {
-                                var BASE =
+                                const BASE =
                                     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-                                var PAD = '=';
-                                var ret = '';
-                                var leftchar = 0;
-                                var leftbits = 0;
-                                for (var i = 0; i < data.length; i++) {
+                                const PAD = '=';
+                                let ret = '';
+                                let leftchar = 0;
+                                let leftbits = 0;
+                                for (let i = 0; i < data.length; i++) {
                                     leftchar = (leftchar << 8) | data[i];
                                     leftbits += 8;
                                     while (leftbits >= 6) {
-                                        var curr =
+                                        const curr =
                                             (leftchar >> (leftbits - 6)) & 0x3f;
                                         leftbits -= 6;
                                         ret += BASE[curr];
@@ -5939,7 +5924,7 @@ class LibTiMidity {
                 };
                 Module['preloadPlugins'].push(audioPlugin);
                 // Canvas event setup
-                var canvas = Module['canvas'];
+                const canvas = Module['canvas'];
                 canvas.requestPointerLock =
                     canvas['requestPointerLock'] ||
                     canvas['mozRequestPointerLock'] ||
@@ -5988,7 +5973,7 @@ class LibTiMidity {
                 }
             },
             createContext: function(canvas, useWebGL, setInModule) {
-                var ctx;
+                let ctx;
                 try {
                     if (useWebGL) {
                         ctx = canvas.getContext('experimental-webgl', {
@@ -6039,7 +6024,7 @@ class LibTiMidity {
                     Browser.lockPointer = true;
                 if (typeof Browser.resizeCanvas === 'undefined')
                     Browser.resizeCanvas = false;
-                var canvas = Module['canvas'];
+                const canvas = Module['canvas'];
                 function fullScreenChange() {
                     Browser.isFullScreen = false;
                     if (
@@ -6193,14 +6178,14 @@ class LibTiMidity {
                 } else {
                     // Otherwise, calculate the movement based on the changes
                     // in the coordinates.
-                    var rect = Module['canvas'].getBoundingClientRect();
-                    var x, y;
+                    const rect = Module['canvas'].getBoundingClientRect();
+                    let x, y;
                     if (
                         event.type == 'touchstart' ||
                         event.type == 'touchend' ||
                         event.type == 'touchmove'
                     ) {
-                        var t = event.touches.item(0);
+                        const t = event.touches.item(0);
                         if (t) {
                             x = t.pageX - (window.scrollX + rect.left);
                             y = t.pageY - (window.scrollY + rect.top);
@@ -6214,8 +6199,8 @@ class LibTiMidity {
                     // the canvas might be CSS-scaled compared to its backbuffer;
                     // SDL-using content will want mouse coordinates in terms
                     // of backbuffer units.
-                    var cw = Module['canvas'].width;
-                    var ch = Module['canvas'].height;
+                    const cw = Module['canvas'].width;
+                    const ch = Module['canvas'].height;
                     x = x * (cw / rect.width);
                     y = y * (ch / rect.height);
                     Browser.mouseMovementX = x - Browser.mouseX;
@@ -6225,7 +6210,7 @@ class LibTiMidity {
                 }
             },
             xhrLoad: function(url, onload, onerror) {
-                var xhr = new XMLHttpRequest();
+                const xhr = new XMLHttpRequest();
                 xhr.open('GET', url, true);
                 xhr.responseType = 'arraybuffer';
                 xhr.onload = function() {
@@ -6267,13 +6252,13 @@ class LibTiMidity {
             },
             resizeListeners: [],
             updateResizeListeners: function() {
-                var canvas = Module['canvas'];
+                const canvas = Module['canvas'];
                 Browser.resizeListeners.forEach(function(listener) {
                     listener(canvas.width, canvas.height);
                 });
             },
             setCanvasSize: function(width, height, noUpdates) {
-                var canvas = Module['canvas'];
+                const canvas = Module['canvas'];
                 canvas.width = width;
                 canvas.height = height;
                 if (!noUpdates) Browser.updateResizeListeners();
@@ -6281,14 +6266,14 @@ class LibTiMidity {
             windowedWidth: 0,
             windowedHeight: 0,
             setFullScreenCanvasSize: function() {
-                var canvas = Module['canvas'];
+                const canvas = Module['canvas'];
                 this.windowedWidth = canvas.width;
                 this.windowedHeight = canvas.height;
                 canvas.width = screen.width;
                 canvas.height = screen.height;
                 // check if SDL is available
                 if (typeof SDL != 'undefined') {
-                    var flags =
+                    let flags =
                         HEAPU32[(SDL.screen + Runtime.QUANTUM_SIZE * 0) >> 2];
                     flags = flags | 0x00800000; // set SDL_FULLSCREEN flag
                     HEAP32[
@@ -6298,12 +6283,12 @@ class LibTiMidity {
                 Browser.updateResizeListeners();
             },
             setWindowedCanvasSize: function() {
-                var canvas = Module['canvas'];
+                const canvas = Module['canvas'];
                 canvas.width = this.windowedWidth;
                 canvas.height = this.windowedHeight;
                 // check if SDL is available
                 if (typeof SDL != 'undefined') {
-                    var flags =
+                    let flags =
                         HEAPU32[(SDL.screen + Runtime.QUANTUM_SIZE * 0) >> 2];
                     flags = flags & ~0x00800000; // clear SDL_FULLSCREEN flag
                     HEAP32[
@@ -6449,114 +6434,106 @@ class LibTiMidity {
 
         var asm = (function(global, env, buffer) {
             'use asm';
-            var a = new global.Int8Array(buffer);
-            var b = new global.Int16Array(buffer);
-            var c = new global.Int32Array(buffer);
-            var d = new global.Uint8Array(buffer);
-            var e = new global.Uint16Array(buffer);
-            var f = new global.Uint32Array(buffer);
-            var g = new global.Float32Array(buffer);
-            var h = new global.Float64Array(buffer);
-            var i = env.STACKTOP | 0;
-            var j = env.STACK_MAX | 0;
-            var k = env.tempDoublePtr | 0;
-            var l = env.ABORT | 0;
-            var m = env._stderr | 0;
-            var n = +env.NaN;
-            var o = +env.Infinity;
-            var p = 0;
-            var q = 0;
-            var r = 0;
-            var s = 0;
-            var t = 0,
-                u = 0,
-                v = 0,
-                w = 0,
-                x = 0.0,
-                y = 0,
-                z = 0,
-                A = 0,
-                B = 0.0;
-            var C = 0;
-            var D = 0;
-            var E = 0;
-            var F = 0;
-            var G = 0;
-            var H = 0;
-            var I = 0;
-            var J = 0;
-            var K = 0;
-            var L = 0;
-            var M = global.Math.floor;
-            var N = global.Math.abs;
-            var O = global.Math.sqrt;
-            var P = global.Math.pow;
-            var Q = global.Math.cos;
-            var R = global.Math.sin;
-            var S = global.Math.tan;
-            var T = global.Math.acos;
-            var U = global.Math.asin;
-            var V = global.Math.atan;
-            var W = global.Math.atan2;
-            var X = global.Math.exp;
-            var Y = global.Math.log;
-            var Z = global.Math.ceil;
-            var _ = global.Math.imul;
-            var $ = env.abort;
-            var aa = env.assert;
-            var ab = env.asmPrintInt;
-            var ac = env.asmPrintFloat;
-            var ad = env.min;
-            var ae = env.invoke_ii;
-            var af = env.invoke_vi;
-            var ag = env.invoke_iiiii;
-            var ah = env.invoke_viii;
-            var ai = env.invoke_v;
-            var aj = env.invoke_iii;
-            var ak = env._strncmp;
-            var al = env._lseek;
-            var am = env._sysconf;
-            var an = env._fread;
-            var ao = env._fclose;
-            var ap = env._strtok_r;
-            var aq = env._abort;
-            var ar = env._fprintf;
-            var as = env._close;
-            var at = env._pread;
-            var au = env._fflush;
-            var av = env._fopen;
-            var aw = env._open;
-            var ax = env._strtol;
-            var ay = env._strtok;
-            var az = env.___setErrNo;
-            var aA = env.__reallyNegative;
-            var aB = env._fseek;
-            var aC = env._send;
-            var aD = env._write;
-            var aE = env._strrchr;
-            var aF = env._sin;
-            var aG = env._printf;
-            var aH = env._strchr;
-            var aI = env._read;
-            var aJ = env._time;
-            var aK = env.__formatString;
-            var aL = env._atoi;
-            var aM = env._recv;
-            var aN = env._pwrite;
-            var aO = env._llvm_pow_f64;
-            var aP = env._fsync;
-            var aQ = env.___errno_location;
-            var aR = env._isspace;
-            var aS = env._sbrk;
-            var aT = env.__parseInt;
-            var aU = env._fwrite;
-            var aV = env._strcmp;
+            let a = new global.Int8Array(buffer);
+            let b = new global.Int16Array(buffer);
+            let c = new global.Int32Array(buffer);
+            let d = new global.Uint8Array(buffer);
+            let e = new global.Uint16Array(buffer);
+            let f = new global.Uint32Array(buffer);
+            let g = new global.Float32Array(buffer);
+            let h = new global.Float64Array(buffer);
+            let i = env.STACKTOP | 0;
+            let j = env.STACK_MAX | 0;
+            let k = env.tempDoublePtr | 0;
+            let l = env.ABORT | 0;
+            let m = env._stderr | 0;
+            let n = +env.NaN;
+            let o = +env.Infinity;
+            let p = 0;
+            let q = 0;
+            let r = 0;
+            let s = 0;
+            let t = 0, u = 0, v = 0, w = 0, x = 0.0, y = 0, z = 0, A = 0, B = 0.0;
+            let C = 0;
+            let D = 0;
+            let E = 0;
+            let F = 0;
+            let G = 0;
+            let H = 0;
+            let I = 0;
+            let J = 0;
+            let K = 0;
+            let L = 0;
+            let M = global.Math.floor;
+            let N = global.Math.abs;
+            let O = global.Math.sqrt;
+            let P = global.Math.pow;
+            let Q = global.Math.cos;
+            let R = global.Math.sin;
+            let S = global.Math.tan;
+            let T = global.Math.acos;
+            let U = global.Math.asin;
+            let V = global.Math.atan;
+            let W = global.Math.atan2;
+            let X = global.Math.exp;
+            let Y = global.Math.log;
+            let Z = global.Math.ceil;
+            let _ = global.Math.imul;
+            let $ = env.abort;
+            let aa = env.assert;
+            let ab = env.asmPrintInt;
+            let ac = env.asmPrintFloat;
+            let ad = env.min;
+            let ae = env.invoke_ii;
+            let af = env.invoke_vi;
+            let ag = env.invoke_iiiii;
+            let ah = env.invoke_viii;
+            let ai = env.invoke_v;
+            let aj = env.invoke_iii;
+            let ak = env._strncmp;
+            let al = env._lseek;
+            const am = env._sysconf;
+            let an = env._fread;
+            let ao = env._fclose;
+            let ap = env._strtok_r;
+            const aq = env._abort;
+            let ar = env._fprintf;
+            let as = env._close;
+            let at = env._pread;
+            let au = env._fflush;
+            let av = env._fopen;
+            let aw = env._open;
+            let ax = env._strtol;
+            let ay = env._strtok;
+            let az = env.___setErrNo;
+            let aA = env.__reallyNegative;
+            let aB = env._fseek;
+            let aC = env._send;
+            let aD = env._write;
+            let aE = env._strrchr;
+            let aF = env._sin;
+            let aG = env._printf;
+            let aH = env._strchr;
+            let aI = env._read;
+            const aJ = env._time;
+            const aK = env.__formatString;
+            const aL = env._atoi;
+            const aM = env._recv;
+            const aN = env._pwrite;
+            const aO = env._llvm_pow_f64;
+            const aP = env._fsync;
+            const aQ = env.___errno_location;
+            const aR = env._isspace;
+            const aS = env._sbrk;
+            const aT = env.__parseInt;
+            const aU = env._fwrite;
+            const aV = env._strcmp;
 
             // EMSCRIPTEN_START_FUNCS
 
             function a0(a) {
                 a = a | 0;
-                var b = 0;
+                let b = 0;
                 b = i;
                 i = (i + a) | 0;
                 i = (i + 7) & -8;
@@ -6638,16 +6615,7 @@ class LibTiMidity {
             function bg() {}
             function bh(b) {
                 b = b | 0;
-                var d = 0,
-                    e = 0,
-                    f = 0,
-                    g = 0,
-                    h = 0,
-                    j = 0,
-                    k = 0,
-                    l = 0,
-                    m = 0,
-                    n = 0;
+                let d = 0, e = 0, f = 0, g = 0, h = 0, j = 0, k = 0, l = 0, m = 0, n = 0;
                 d = i;
                 i = (i + 1024) | 0;
                 e = d | 0;
@@ -6714,15 +6682,13 @@ class LibTiMidity {
             }
             function bi(a) {
                 a = a | 0;
-                var b = 0;
+                let b = 0;
                 b = c$(a) | 0;
                 return b | 0;
             }
             function bj(a) {
                 a = a | 0;
-                var b = 0,
-                    d = 0,
-                    e = 0;
+                let b = 0, d = 0, e = 0;
                 b = a;
                 a = bi(8) | 0;
                 if ((a | 0) == 0) {
@@ -6742,8 +6708,7 @@ class LibTiMidity {
                 }
             }
             function bk() {
-                var a = 0,
-                    b = 0;
+                let a = 0, b = 0;
                 a = c[1664] | 0;
                 while (1) {
                     if ((a | 0) == 0) {
@@ -6767,24 +6732,7 @@ class LibTiMidity {
                 o = o | 0;
                 p = p | 0;
                 q = q | 0;
-                var r = 0,
-                    s = 0,
-                    t = 0,
-                    u = 0,
-                    v = 0,
-                    w = 0,
-                    x = 0,
-                    y = 0,
-                    z = 0,
-                    A = 0,
-                    B = 0,
-                    C = 0,
-                    D = 0,
-                    E = 0,
-                    F = 0,
-                    G = 0,
-                    H = 0,
-                    I = 0;
+                let r = 0, s = 0, t = 0, u = 0, v = 0, w = 0, x = 0, y = 0, z = 0, A = 0, B = 0, C = 0, D = 0, E = 0, F = 0, G = 0, H = 0, I = 0;
                 j = i;
                 i = (i + 1056) | 0;
                 r = j | 0;
@@ -7273,9 +7221,7 @@ class LibTiMidity {
             function bm(a, b) {
                 a = a | 0;
                 b = b | 0;
-                var d = 0,
-                    e = 0,
-                    f = 0;
+                let d = 0, e = 0, f = 0;
                 d = a;
                 a = b;
                 if ((a << 24) >> 24 != 0) {
@@ -7293,7 +7239,7 @@ class LibTiMidity {
             function bn(a, b) {
                 a = a | 0;
                 b = b | 0;
-                var d = 0;
+                let d = 0;
                 d = a;
                 a = (_(c[(d + 13060) >> 2] << 10, b & 255) | 0) << 5;
                 return (
@@ -7314,9 +7260,7 @@ class LibTiMidity {
                 a = a | 0;
                 b = b | 0;
                 d = d | 0;
-                var e = 0,
-                    f = 0,
-                    g = 0;
+                let e = 0, f = 0, g = 0;
                 e = b;
                 if ((e << 24) >> 24 != 0) {
                     f = ~~(
@@ -7335,7 +7279,7 @@ class LibTiMidity {
             function bq(a, b) {
                 a = a | 0;
                 b = b | 0;
-                var d = 0;
+                let d = 0;
                 d = a;
                 a = b;
                 b = (3 - (((a & 255) >> 6) & 3)) | 0;
@@ -7356,8 +7300,7 @@ class LibTiMidity {
                 a = a | 0;
                 c = c | 0;
                 d = d | 0;
-                var e = 0,
-                    f = 0;
+                let e = 0, f = 0;
                 e = a;
                 a = c;
                 c = d;
@@ -7389,9 +7332,7 @@ class LibTiMidity {
             function bu(a, b) {
                 a = a | 0;
                 b = b | 0;
-                var d = 0,
-                    e = 0,
-                    f = 0;
+                let d = 0, e = 0, f = 0;
                 d = a;
                 a = b;
                 do {
@@ -7413,9 +7354,7 @@ class LibTiMidity {
 
             function bv(a) {
                 a = a | 0;
-                var b = 0,
-                    d = 0,
-                    e = 0;
+                let b = 0, d = 0, e = 0;
                 b = a;
                 a = 128;
                 d = 0;
@@ -7439,23 +7378,7 @@ class LibTiMidity {
                 a = a | 0;
                 b = b | 0;
                 d = d | 0;
-                var e = 0,
-                    f = 0,
-                    g = 0,
-                    h = 0,
-                    j = 0,
-                    k = 0,
-                    l = 0,
-                    n = 0,
-                    o = 0,
-                    p = 0,
-                    q = 0,
-                    r = 0,
-                    s = 0,
-                    t = 0,
-                    u = 0,
-                    v = 0,
-                    w = 0;
+                let e = 0, f = 0, g = 0, h = 0, j = 0, k = 0, l = 0, n = 0, o = 0, p = 0, q = 0, r = 0, s = 0, t = 0, u = 0, v = 0, w = 0;
                 e = i;
                 f = a;
                 a = b;
@@ -7696,8 +7619,7 @@ class LibTiMidity {
             }
             function bx(a) {
                 a = a | 0;
-                var b = 0,
-                    d = 0;
+                let b = 0, d = 0;
                 b = a;
                 a = 128;
                 while (1) {
@@ -7719,8 +7641,7 @@ class LibTiMidity {
                 a = a | 0;
                 b = b | 0;
                 d = d | 0;
-                var e = 0,
-                    f = 0;
+                let e = 0, f = 0;
                 e = a;
                 a = d;
                 if ((b | 0) != 0) {
@@ -7747,9 +7668,7 @@ class LibTiMidity {
             function bz(a, b) {
                 a = a | 0;
                 b = b | 0;
-                var d = 0,
-                    e = 0,
-                    f = 0;
+                let d = 0, e = 0, f = 0;
                 d = a;
                 a = bl(d, b, 0, -1, -1, -1, 0, 0, 0) | 0;
                 if ((a | 0) != 0) {
@@ -7767,7 +7686,7 @@ class LibTiMidity {
             }
             function bA(a) {
                 a = a | 0;
-                var b = 0;
+                let b = 0;
                 b = a;
                 if ((b | 0) == 0) {
                     return;
@@ -7792,11 +7711,7 @@ class LibTiMidity {
                 b = b | 0;
                 d = d | 0;
                 e = e | 0;
-                var f = 0,
-                    g = 0,
-                    h = 0,
-                    i = 0,
-                    j = 0;
+                let f = 0, g = 0, h = 0, i = 0, j = 0;
                 f = a;
                 a = b;
                 b = d;
@@ -7907,27 +7822,7 @@ class LibTiMidity {
                 f = f | 0;
                 h = h | 0;
                 i = i | 0;
-                var j = 0,
-                    k = 0,
-                    l = 0,
-                    m = 0,
-                    n = 0,
-                    o = 0,
-                    p = 0,
-                    q = 0,
-                    r = 0,
-                    s = 0,
-                    t = 0,
-                    u = 0,
-                    v = 0,
-                    w = 0,
-                    x = 0,
-                    y = 0,
-                    z = 0,
-                    A = 0.0,
-                    B = 0.0,
-                    C = 0.0,
-                    D = 0.0;
+                let j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0, q = 0, r = 0, s = 0, t = 0, u = 0, v = 0, w = 0, x = 0, y = 0, z = 0, A = 0.0, B = 0.0, C = 0.0, D = 0.0;
                 j = b;
                 b = f;
                 f = h;
@@ -8073,9 +7968,7 @@ class LibTiMidity {
                 a = a | 0;
                 b = b | 0;
                 d = d | 0;
-                var f = 0,
-                    g = 0,
-                    h = 0;
+                let f = 0, g = 0, h = 0;
                 f = a;
                 a = b;
                 b = d;
@@ -8105,9 +7998,7 @@ class LibTiMidity {
             }
             function bE(a) {
                 a = a | 0;
-                var b = 0,
-                    c = 0.0,
-                    d = 0.0;
+                let b = 0, c = 0.0, d = 0.0;
                 b = a;
                 do {
                     if ((b | 0) != -2147483648) {
@@ -8138,7 +8029,7 @@ class LibTiMidity {
                 b = b | 0;
                 d = d | 0;
                 e = +e;
-                var f = 0.0;
+                let f = 0.0;
                 d = a;
                 a = b;
                 f = e;
@@ -8161,10 +8052,7 @@ class LibTiMidity {
             function bI(b, e) {
                 b = b | 0;
                 e = e | 0;
-                var f = 0,
-                    g = 0,
-                    h = 0,
-                    i = 0;
+                let f = 0, g = 0, h = 0, i = 0;
                 f = b;
                 b = e;
                 e = c[(f + 1724 + ((b * 236) | 0) + 220) >> 2] | 0;
@@ -8249,10 +8137,7 @@ class LibTiMidity {
             function bJ(b, e) {
                 b = b | 0;
                 e = e | 0;
-                var f = 0,
-                    i = 0.0,
-                    j = 0,
-                    l = 0.0;
+                let f = 0, i = 0.0, j = 0, l = 0.0;
                 f = b;
                 b = e;
                 i = +g[(f + 1724 + ((b * 236) | 0) + 68) >> 2];
@@ -8367,11 +8252,7 @@ class LibTiMidity {
                 e = e | 0;
                 f = f | 0;
                 g = g | 0;
-                var h = 0,
-                    j = 0,
-                    k = 0,
-                    l = 0,
-                    m = 0;
+                let h = 0, j = 0, k = 0, l = 0, m = 0;
                 h = i;
                 i = (i + 8) | 0;
                 j = h | 0;
@@ -8468,14 +8349,7 @@ class LibTiMidity {
                 e = e | 0;
                 f = f | 0;
                 g = g | 0;
-                var h = 0,
-                    i = 0,
-                    j = 0,
-                    k = 0,
-                    l = 0,
-                    m = 0,
-                    n = 0,
-                    o = 0;
+                let h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0;
                 h = a;
                 a = d;
                 d = e;
@@ -8664,13 +8538,7 @@ class LibTiMidity {
                 e = e | 0;
                 f = f | 0;
                 g = g | 0;
-                var h = 0,
-                    i = 0,
-                    j = 0,
-                    k = 0,
-                    l = 0,
-                    m = 0,
-                    n = 0;
+                let h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0;
                 h = a;
                 a = d;
                 d = e;
@@ -8750,7 +8618,7 @@ class LibTiMidity {
                 e = e | 0;
                 f = f | 0;
                 g = g | 0;
-                var h = 0;
+                let h = 0;
                 h = d;
                 d = e;
                 e = g;
@@ -8776,14 +8644,7 @@ class LibTiMidity {
                 e = e | 0;
                 f = f | 0;
                 g = g | 0;
-                var h = 0,
-                    i = 0,
-                    j = 0,
-                    k = 0,
-                    l = 0,
-                    m = 0,
-                    n = 0,
-                    o = 0;
+                let h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0;
                 h = a;
                 a = d;
                 d = e;
@@ -8874,9 +8735,7 @@ class LibTiMidity {
                 e = e | 0;
                 f = f | 0;
                 g = g | 0;
-                var h = 0,
-                    i = 0,
-                    j = 0;
+                let h = 0, i = 0, j = 0;
                 h = a;
                 a = d;
                 d = e;
@@ -8910,13 +8769,7 @@ class LibTiMidity {
                 e = e | 0;
                 f = f | 0;
                 g = g | 0;
-                var h = 0,
-                    i = 0,
-                    j = 0,
-                    k = 0,
-                    l = 0,
-                    m = 0,
-                    n = 0;
+                let h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0;
                 h = a;
                 a = d;
                 d = e;
@@ -9004,8 +8857,7 @@ class LibTiMidity {
                 e = e | 0;
                 f = f | 0;
                 g = g | 0;
-                var h = 0,
-                    i = 0;
+                let h = 0, i = 0;
                 h = d;
                 d = e;
                 e = g;
@@ -9036,13 +8888,7 @@ class LibTiMidity {
                 e = e | 0;
                 f = f | 0;
                 g = g | 0;
-                var h = 0,
-                    i = 0,
-                    j = 0,
-                    k = 0,
-                    l = 0,
-                    m = 0,
-                    n = 0;
+                let h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0;
                 h = a;
                 a = d;
                 d = e;
@@ -9124,7 +8970,7 @@ class LibTiMidity {
                 e = e | 0;
                 f = f | 0;
                 g = g | 0;
-                var h = 0;
+                let h = 0;
                 h = d;
                 d = e;
                 e = g;
@@ -9148,9 +8994,7 @@ class LibTiMidity {
             function bU(a, b) {
                 a = a | 0;
                 b = b | 0;
-                var d = 0,
-                    e = 0,
-                    f = 0;
+                let d = 0, e = 0, f = 0;
                 d = a;
                 a = b;
                 do {
@@ -9174,10 +9018,7 @@ class LibTiMidity {
             function bV(a, b) {
                 a = a | 0;
                 b = b | 0;
-                var d = 0,
-                    e = 0,
-                    f = 0,
-                    g = 0;
+                let d = 0, e = 0, f = 0, g = 0;
                 d = a;
                 a = b;
                 b = (d + 1724 + ((a * 236) | 0) + 24) | 0;
@@ -9231,8 +9072,7 @@ class LibTiMidity {
             function bW(a, b) {
                 a = a | 0;
                 b = b | 0;
-                var e = 0,
-                    f = 0;
+                let e = 0, f = 0;
                 e = a;
                 a = b;
                 b =
@@ -9286,8 +9126,7 @@ class LibTiMidity {
                 b = b | 0;
                 d = d | 0;
                 e = e | 0;
-                var f = 0,
-                    g = 0;
+                let f = 0, g = 0;
                 f = d;
                 d = e;
                 e = b;
@@ -9317,8 +9156,7 @@ class LibTiMidity {
                 b = b | 0;
                 d = d | 0;
                 e = e | 0;
-                var f = 0,
-                    g = 0;
+                let f = 0, g = 0;
                 f = d;
                 d = e;
                 e = b;
@@ -9348,8 +9186,7 @@ class LibTiMidity {
                 a = a | 0;
                 d = d | 0;
                 e = e | 0;
-                var f = 0,
-                    g = 0;
+                let f = 0, g = 0;
                 f = d;
                 d = e;
                 e = a;
@@ -9379,8 +9216,7 @@ class LibTiMidity {
                 a = a | 0;
                 d = d | 0;
                 e = e | 0;
-                var f = 0,
-                    g = 0;
+                let f = 0, g = 0;
                 f = d;
                 d = e;
                 e = a;
@@ -9410,8 +9246,7 @@ class LibTiMidity {
                 a = a | 0;
                 d = d | 0;
                 e = e | 0;
-                var f = 0,
-                    g = 0;
+                let f = 0, g = 0;
                 f = d;
                 d = e;
                 e = a;
@@ -9445,8 +9280,7 @@ class LibTiMidity {
                 d = d | 0;
                 e = e | 0;
                 f = f | 0;
-                var g = 0,
-                    h = 0;
+                let g = 0, h = 0;
                 g = i;
                 i = (i + 8) | 0;
                 h = g | 0;
@@ -9462,10 +9296,7 @@ class LibTiMidity {
             function b1(b, e) {
                 b = b | 0;
                 e = e | 0;
-                var f = 0,
-                    g = 0,
-                    h = 0,
-                    i = 0;
+                let f = 0, g = 0, h = 0, i = 0;
                 f = b;
                 b = e;
                 e = c[(f + 13052) >> 2] | 0;
@@ -9596,9 +9427,7 @@ class LibTiMidity {
             function b2(b, e) {
                 b = b | 0;
                 e = e | 0;
-                var f = 0,
-                    g = 0,
-                    h = 0;
+                let f = 0, g = 0, h = 0;
                 f = b;
                 b = e;
                 e = c[(f + 13052) >> 2] | 0;
@@ -9656,7 +9485,7 @@ class LibTiMidity {
             }
             function b3(a) {
                 a = a | 0;
-                var b = 0;
+                let b = 0;
                 b = a;
                 c[b >> 2] = 1;
                 b4(b);
@@ -9665,7 +9494,7 @@ class LibTiMidity {
             }
             function b4(a) {
                 a = a | 0;
-                var b = 0;
+                let b = 0;
                 b = a;
                 g[(b + 16) >> 2] = +(c[(b + 20) >> 2] | 0) / 100.0;
                 return;
@@ -9673,7 +9502,7 @@ class LibTiMidity {
             function b5(a, b) {
                 a = a | 0;
                 b = b | 0;
-                var d = 0;
+                let d = 0;
                 d = a;
                 a = b;
                 if ((c[(d + 13088) >> 2] | 0) > (a | 0)) {
@@ -9693,13 +9522,7 @@ class LibTiMidity {
                 e = e | 0;
                 f = f | 0;
                 h = h | 0;
-                var j = 0,
-                    k = 0,
-                    l = 0,
-                    m = 0,
-                    n = 0,
-                    o = 0,
-                    p = 0;
+                let j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0;
                 j = i;
                 i = (i + 8) | 0;
                 k = j | 0;
@@ -10011,10 +9834,7 @@ class LibTiMidity {
             }
             function b7(b) {
                 b = b | 0;
-                var e = 0,
-                    f = 0,
-                    g = 0,
-                    h = 0;
+                let e = 0, f = 0, g = 0, h = 0;
                 e = b;
                 b = c[(e + 13080) >> 2] | 0;
                 f = c[(e + 13052) >> 2] | 0;
@@ -10059,9 +9879,7 @@ class LibTiMidity {
             }
             function b8(a) {
                 a = a | 0;
-                var b = 0,
-                    e = 0,
-                    f = 0;
+                let b = 0, e = 0, f = 0;
                 b = a;
                 a = d[((c[(b + 13080) >> 2] | 0) + 4) | 0] | 0;
                 e = c[(b + 13052) >> 2] | 0;
@@ -10092,9 +9910,7 @@ class LibTiMidity {
             }
             function b9(a) {
                 a = a | 0;
-                var b = 0,
-                    e = 0,
-                    f = 0;
+                let b = 0, e = 0, f = 0;
                 b = a;
                 a = d[((c[(b + 13080) >> 2] | 0) + 4) | 0] | 0;
                 e = c[(b + 13052) >> 2] | 0;
@@ -10131,9 +9947,7 @@ class LibTiMidity {
             }
             function ca(a) {
                 a = a | 0;
-                var b = 0,
-                    e = 0,
-                    f = 0;
+                let b = 0, e = 0, f = 0;
                 b = a;
                 a = c[(b + 13052) >> 2] | 0;
                 e = d[((c[(b + 13080) >> 2] | 0) + 4) | 0] | 0;
@@ -10165,7 +9979,7 @@ class LibTiMidity {
             function cb(a, b) {
                 a = a | 0;
                 b = b | 0;
-                var d = 0;
+                let d = 0;
                 d = a;
                 a = b;
                 c[(d + 1084 + ((a * 40) | 0) + 8) >> 2] = 90;
@@ -10177,9 +9991,7 @@ class LibTiMidity {
             }
             function cc(b) {
                 b = b | 0;
-                var e = 0,
-                    f = 0,
-                    g = 0;
+                let e = 0, f = 0, g = 0;
                 e = b;
                 b = c[(e + 13052) >> 2] | 0;
                 f = d[((c[(e + 13080) >> 2] | 0) + 4) | 0] | 0;
@@ -10218,9 +10030,7 @@ class LibTiMidity {
             }
             function cd(a) {
                 a = a | 0;
-                var b = 0,
-                    e = 0,
-                    f = 0;
+                let b = 0, e = 0, f = 0;
                 b = a;
                 a = c[(b + 13052) >> 2] | 0;
                 e = d[((c[(b + 13080) >> 2] | 0) + 4) | 0] | 0;
@@ -10257,12 +10067,7 @@ class LibTiMidity {
                 a = a | 0;
                 b = b | 0;
                 d = d | 0;
-                var e = 0,
-                    f = 0,
-                    g = 0,
-                    h = 0,
-                    i = 0,
-                    j = 0;
+                let e = 0, f = 0, g = 0, h = 0, i = 0, j = 0;
                 e = a;
                 a = b;
                 b = d;
@@ -10295,9 +10100,7 @@ class LibTiMidity {
             function cf(a, b) {
                 a = a | 0;
                 b = b | 0;
-                var e = 0,
-                    f = 0,
-                    h = 0;
+                let e = 0, f = 0, h = 0;
                 e = a;
                 a = b;
                 b =
@@ -10435,8 +10238,7 @@ class LibTiMidity {
             function cg(a, b) {
                 a = a | 0;
                 b = b | 0;
-                var e = 0,
-                    f = 0;
+                let e = 0, f = 0;
                 e = a;
                 a = b;
                 if (((c[(e + 8) >> 2] & 1) | 0) != 0) {
@@ -10468,8 +10270,7 @@ class LibTiMidity {
             function ci(b, d) {
                 b = b | 0;
                 d = d | 0;
-                var e = 0,
-                    f = 0;
+                let e = 0, f = 0;
                 e = b;
                 b = d;
                 if (
@@ -10496,12 +10297,7 @@ class LibTiMidity {
             function cj(a, b) {
                 a = a | 0;
                 b = b | 0;
-                var e = 0,
-                    f = 0,
-                    i = 0,
-                    j = 0,
-                    l = 0,
-                    m = 0.0;
+                let e = 0, f = 0, i = 0, j = 0, l = 0, m = 0.0;
                 e = a;
                 a = b;
                 b = ((c[(e + 1724 + ((a * 236) | 0) + 20) >> 2] | 0) < 0) | 0;
@@ -10691,7 +10487,7 @@ class LibTiMidity {
             }
             function ck(a) {
                 a = a | 0;
-                var b = 0;
+                let b = 0;
                 b = a;
                 a = 0;
                 while (1) {
@@ -10712,8 +10508,7 @@ class LibTiMidity {
             function cl(a, b) {
                 a = a | 0;
                 b = b | 0;
-                var e = 0,
-                    f = 0;
+                let e = 0, f = 0;
                 e = a;
                 a = b;
                 cm(e);
@@ -10915,7 +10710,7 @@ class LibTiMidity {
             }
             function cm(b) {
                 b = b | 0;
-                var c = 0;
+                let c = 0;
                 c = b;
                 b = 0;
                 while (1) {
@@ -10931,19 +10726,7 @@ class LibTiMidity {
                 b = b | 0;
                 e = e | 0;
                 f = f | 0;
-                var h = 0,
-                    i = 0,
-                    j = 0,
-                    k = 0,
-                    l = 0,
-                    m = 0,
-                    n = 0,
-                    o = 0,
-                    p = 0,
-                    q = 0,
-                    r = 0,
-                    s = 0,
-                    t = 0;
+                let h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0, q = 0, r = 0, s = 0, t = 0;
                 h = b;
                 b = e;
                 e = f;
@@ -11308,11 +11091,7 @@ class LibTiMidity {
                 b = b | 0;
                 d = d | 0;
                 e = e | 0;
-                var f = 0,
-                    g = 0,
-                    h = 0,
-                    i = 0,
-                    j = 0;
+                let f = 0, g = 0, h = 0, i = 0, j = 0;
                 f = a;
                 a = b;
                 b = d;
@@ -11376,13 +11155,7 @@ class LibTiMidity {
             function cp(a, b) {
                 a = a | 0;
                 b = +b;
-                var d = 0,
-                    e = 0,
-                    f = 0.0,
-                    g = 0,
-                    h = 0,
-                    j = 0,
-                    k = 0;
+                let d = 0, e = 0, f = 0.0, g = 0, h = 0, j = 0, k = 0;
                 d = i;
                 e = a;
                 f = b;
@@ -11419,19 +11192,7 @@ class LibTiMidity {
                 e = e | 0;
                 f = f | 0;
                 g = g | 0;
-                var h = 0,
-                    j = 0,
-                    k = 0,
-                    l = 0,
-                    m = 0,
-                    n = 0,
-                    o = 0,
-                    p = 0,
-                    q = 0,
-                    r = 0,
-                    s = 0,
-                    t = 0,
-                    u = 0;
+                let h = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0, q = 0, r = 0, s = 0, t = 0, u = 0;
                 h = i;
                 i = (i + 40) | 0;
                 j = h | 0;
@@ -11601,16 +11362,7 @@ class LibTiMidity {
                 a = a | 0;
                 b = b | 0;
                 d = d | 0;
-                var e = 0,
-                    f = 0,
-                    g = 0,
-                    h = 0,
-                    j = 0,
-                    k = 0,
-                    l = 0,
-                    m = 0,
-                    n = 0,
-                    o = 0;
+                let e = 0, f = 0, g = 0, h = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0;
                 e = i;
                 i = (i + 16) | 0;
                 f = e | 0;
@@ -11704,8 +11456,7 @@ class LibTiMidity {
             }
             function cs(a) {
                 a = a | 0;
-                var b = 0,
-                    d = 0;
+                let b = 0, d = 0;
                 b = a;
                 a = c[(b + 13084) >> 2] | 0;
                 d = a;
@@ -11728,26 +11479,7 @@ class LibTiMidity {
                 e = e | 0;
                 f = f | 0;
                 g = g | 0;
-                var h = 0,
-                    j = 0,
-                    k = 0,
-                    l = 0,
-                    m = 0,
-                    n = 0,
-                    o = 0,
-                    p = 0,
-                    q = 0,
-                    r = 0,
-                    s = 0,
-                    t = 0,
-                    u = 0,
-                    v = 0,
-                    w = 0,
-                    x = 0,
-                    y = 0,
-                    z = 0,
-                    A = 0,
-                    B = 0;
+                let h = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0, q = 0, r = 0, s = 0, t = 0, u = 0, v = 0, w = 0, x = 0, y = 0, z = 0, A = 0, B = 0;
                 h = i;
                 i = (i + 192) | 0;
                 j = h | 0;
@@ -12061,8 +11793,7 @@ class LibTiMidity {
                 a = a | 0;
                 b = b | 0;
                 d = d | 0;
-                var e = 0,
-                    f = 0.0;
+                let e = 0, f = 0.0;
                 e = a;
                 f = (+(b | 0) * +(c[(e + 4) >> 2] | 0) * 0.065536) / +(d | 0);
                 c[(e + 1080) >> 2] = ~~f & 65535;
@@ -12072,22 +11803,7 @@ class LibTiMidity {
             function cv(b, e) {
                 b = b | 0;
                 e = e | 0;
-                var f = 0,
-                    g = 0,
-                    h = 0,
-                    j = 0,
-                    k = 0,
-                    l = 0,
-                    m = 0,
-                    n = 0,
-                    o = 0,
-                    p = 0,
-                    q = 0,
-                    r = 0,
-                    s = 0,
-                    t = 0,
-                    u = 0,
-                    v = 0;
+                let f = 0, g = 0, h = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0, q = 0, r = 0, s = 0, t = 0, u = 0, v = 0;
                 f = i;
                 i = (i + 40) | 0;
                 g = f | 0;
@@ -12430,9 +12146,7 @@ class LibTiMidity {
             }
             function cw(b) {
                 b = b | 0;
-                var c = 0,
-                    d = 0,
-                    e = 0;
+                let c = 0, d = 0, e = 0;
                 c = i;
                 i = (i + 8) | 0;
                 d = c | 0;
@@ -12455,10 +12169,7 @@ class LibTiMidity {
                 e = e | 0;
                 f = f | 0;
                 g = g | 0;
-                var h = 0,
-                    i = 0,
-                    j = 0,
-                    k = 0;
+                let h = 0, i = 0, j = 0, k = 0;
                 h = e;
                 e = f;
                 f = g;
@@ -12504,11 +12215,7 @@ class LibTiMidity {
                 b = b | 0;
                 e = e | 0;
                 f = f | 0;
-                var g = 0,
-                    h = 0,
-                    i = 0,
-                    j = 0,
-                    k = 0;
+                let g = 0, h = 0, i = 0, j = 0, k = 0;
                 g = b;
                 b = e;
                 e = f;
@@ -12595,22 +12302,7 @@ class LibTiMidity {
                 a = a | 0;
                 d = d | 0;
                 e = e | 0;
-                var f = 0,
-                    g = 0,
-                    h = 0,
-                    i = 0,
-                    j = 0,
-                    k = 0,
-                    l = 0,
-                    m = 0,
-                    n = 0,
-                    o = 0,
-                    p = 0,
-                    q = 0,
-                    r = 0,
-                    s = 0,
-                    t = 0,
-                    u = 0;
+                let f = 0, g = 0, h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0, q = 0, r = 0, s = 0, t = 0, u = 0;
                 f = a;
                 a = d;
                 d = e;
@@ -12736,17 +12428,7 @@ class LibTiMidity {
                 a = a | 0;
                 d = d | 0;
                 e = e | 0;
-                var f = 0,
-                    g = 0,
-                    h = 0,
-                    i = 0,
-                    j = 0,
-                    k = 0,
-                    l = 0,
-                    m = 0,
-                    n = 0,
-                    o = 0,
-                    p = 0;
+                let f = 0, g = 0, h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0;
                 f = a;
                 a = d;
                 d = e;
@@ -12814,28 +12496,7 @@ class LibTiMidity {
                 d = d | 0;
                 e = e | 0;
                 f = f | 0;
-                var g = 0,
-                    h = 0,
-                    i = 0,
-                    j = 0,
-                    k = 0,
-                    l = 0,
-                    m = 0,
-                    n = 0,
-                    o = 0,
-                    p = 0,
-                    q = 0,
-                    r = 0,
-                    s = 0,
-                    t = 0,
-                    u = 0,
-                    v = 0,
-                    w = 0,
-                    x = 0,
-                    y = 0,
-                    z = 0,
-                    A = 0,
-                    B = 0;
+                let g = 0, h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0, q = 0, r = 0, s = 0, t = 0, u = 0, v = 0, w = 0, x = 0, y = 0, z = 0, A = 0, B = 0;
                 g = d;
                 d = f;
                 f = (g + 1724 + ((e * 236) | 0)) | 0;
@@ -12925,19 +12586,7 @@ class LibTiMidity {
                 a = a | 0;
                 d = d | 0;
                 e = e | 0;
-                var f = 0,
-                    g = 0,
-                    h = 0,
-                    i = 0,
-                    j = 0,
-                    k = 0,
-                    l = 0,
-                    m = 0,
-                    n = 0,
-                    o = 0,
-                    p = 0,
-                    q = 0,
-                    r = 0;
+                let f = 0, g = 0, h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0, q = 0, r = 0;
                 f = a;
                 a = d;
                 d = e;
@@ -13034,15 +12683,7 @@ class LibTiMidity {
                 a = a | 0;
                 d = d | 0;
                 e = e | 0;
-                var f = 0,
-                    g = 0,
-                    h = 0,
-                    i = 0,
-                    j = 0,
-                    k = 0,
-                    l = 0,
-                    m = 0,
-                    n = 0;
+                let f = 0, g = 0, h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0;
                 f = a;
                 a = d;
                 d = e;
@@ -13097,21 +12738,7 @@ class LibTiMidity {
                 d = d | 0;
                 e = e | 0;
                 f = f | 0;
-                var g = 0,
-                    h = 0,
-                    i = 0,
-                    j = 0,
-                    k = 0,
-                    l = 0,
-                    m = 0,
-                    n = 0,
-                    o = 0,
-                    p = 0,
-                    q = 0,
-                    r = 0,
-                    s = 0,
-                    t = 0,
-                    u = 0;
+                let g = 0, h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0, q = 0, r = 0, s = 0, t = 0, u = 0;
                 g = d;
                 d = f;
                 f = (g + 1724 + ((e * 236) | 0)) | 0;
@@ -13183,50 +12810,7 @@ class LibTiMidity {
             function cF(e, f) {
                 e = e | 0;
                 f = f | 0;
-                var g = 0,
-                    h = 0,
-                    i = 0.0,
-                    j = 0,
-                    k = 0,
-                    l = 0,
-                    m = 0,
-                    n = 0,
-                    o = 0,
-                    p = 0,
-                    q = 0,
-                    r = 0,
-                    s = 0,
-                    t = 0.0,
-                    u = 0,
-                    v = 0,
-                    w = 0,
-                    x = 0,
-                    y = 0,
-                    z = 0,
-                    A = 0.0,
-                    B = 0.0,
-                    C = 0.0,
-                    D = 0,
-                    E = 0,
-                    F = 0,
-                    G = 0,
-                    H = 0,
-                    I = 0,
-                    J = 0.0,
-                    K = 0.0,
-                    L = 0.0,
-                    M = 0,
-                    N = 0,
-                    O = 0,
-                    P = 0,
-                    Q = 0,
-                    R = 0,
-                    S = 0,
-                    T = 0,
-                    U = 0,
-                    V = 0,
-                    W = 0,
-                    X = 0;
+                let g = 0, h = 0, i = 0.0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0, q = 0, r = 0, s = 0, t = 0.0, u = 0, v = 0, w = 0, x = 0, y = 0, z = 0, A = 0.0, B = 0.0, C = 0.0, D = 0, E = 0, F = 0, G = 0, H = 0, I = 0, J = 0.0, K = 0.0, L = 0.0, M = 0, N = 0, O = 0, P = 0, Q = 0, R = 0, S = 0, T = 0, U = 0, V = 0, W = 0, X = 0;
                 g = f;
                 f = c[(g + 88) >> 2] | 0;
                 h = (1056 + (a[(g + 112) | 0] << 2)) | 0;
@@ -13406,13 +12990,7 @@ class LibTiMidity {
                 a = a | 0;
                 b = b | 0;
                 e = e | 0;
-                var f = 0,
-                    g = 0,
-                    i = 0,
-                    j = 0,
-                    l = 0,
-                    m = 0.0,
-                    n = 0.0;
+                let f = 0, g = 0, i = 0, j = 0, l = 0, m = 0.0, n = 0.0;
                 f = a;
                 a = b;
                 b = e;
@@ -13533,8 +13111,7 @@ class LibTiMidity {
             }
             function cH(a) {
                 a = a | 0;
-                var b = 0,
-                    c = 0;
+                let b = 0, c = 0;
                 b = a;
                 do {
                     if ((b | 0) < 16) {
@@ -13560,9 +13137,7 @@ class LibTiMidity {
             }
             function cJ(a) {
                 a = a | 0;
-                var b = 0,
-                    d = 0,
-                    e = 0;
+                let b = 0, d = 0, e = 0;
                 b = a;
                 a = 0;
                 if ((c[(b + 4) >> 2] | 0) == 0) {
@@ -13582,8 +13157,7 @@ class LibTiMidity {
                 b = b | 0;
                 d = d | 0;
                 e = e | 0;
-                var f = 0,
-                    g = 0;
+                let f = 0, g = 0;
                 f = d;
                 d = a;
                 a = e;
@@ -13608,8 +13182,7 @@ class LibTiMidity {
             }
             function cL(a) {
                 a = a | 0;
-                var b = 0,
-                    d = 0;
+                let b = 0, d = 0;
                 b = a;
                 if ((c[(b + 12) >> 2] | 0) == 0) {
                     d = b;
@@ -13624,10 +13197,7 @@ class LibTiMidity {
             function cM(a, b) {
                 a = a | 0;
                 b = b | 0;
-                var d = 0,
-                    e = 0,
-                    f = 0,
-                    g = 0;
+                let d = 0, e = 0, f = 0, g = 0;
                 d = bi(12) | 0;
                 if ((d | 0) == 0) {
                     e = 0;
@@ -13654,9 +13224,7 @@ class LibTiMidity {
             }
             function cN(a) {
                 a = a | 0;
-                var b = 0,
-                    c = 0,
-                    d = 0;
+                let b = 0, c = 0, d = 0;
                 b = av(a | 0, 6544) | 0;
                 if ((b | 0) == 0) {
                     c = 0;
@@ -13673,10 +13241,7 @@ class LibTiMidity {
                 a = a | 0;
                 b = b | 0;
                 d = d | 0;
-                var e = 0,
-                    f = 0,
-                    g = 0,
-                    h = 0;
+                let e = 0, f = 0, g = 0, h = 0;
                 e = a;
                 a = bi(12) | 0;
                 if ((a | 0) == 0) {
@@ -13709,16 +13274,14 @@ class LibTiMidity {
                 b = b | 0;
                 d = d | 0;
                 e = e | 0;
-                var f = 0;
+                let f = 0;
                 f = a;
                 return aY[c[f >> 2] & 7](c[(f + 8) >> 2] | 0, b, d, e) | 0;
             }
             function cQ(a, b) {
                 a = a | 0;
                 b = b | 0;
-                var c = 0,
-                    d = 0,
-                    e = 0;
+                let c = 0, d = 0, e = 0;
                 c = i;
                 i = (i + 1024) | 0;
                 d = c | 0;
@@ -13740,14 +13303,14 @@ class LibTiMidity {
             }
             function cR(a) {
                 a = a | 0;
-                var b = 0;
+                let b = 0;
                 b = a;
                 a = aW[c[(b + 4) >> 2] & 7](c[(b + 8) >> 2] | 0) | 0;
                 c0(b);
                 return a | 0;
             }
             function cS() {
-                var a = 0;
+                let a = 0;
                 c[1676] = bi(516) | 0;
                 c5(c[1676] | 0, 0, 516);
                 a = bi(3584) | 0;
@@ -13762,12 +13325,7 @@ class LibTiMidity {
             }
             function cT(b) {
                 b = b | 0;
-                var d = 0,
-                    e = 0,
-                    f = 0,
-                    g = 0,
-                    h = 0,
-                    j = 0;
+                let d = 0, e = 0, f = 0, g = 0, h = 0, j = 0;
                 d = i;
                 i = (i + 1024) | 0;
                 e = d | 0;
@@ -13818,24 +13376,7 @@ class LibTiMidity {
             }
             function cU(b) {
                 b = b | 0;
-                var d = 0,
-                    e = 0,
-                    f = 0,
-                    g = 0,
-                    h = 0,
-                    j = 0,
-                    k = 0,
-                    l = 0,
-                    n = 0,
-                    o = 0,
-                    p = 0,
-                    q = 0,
-                    r = 0,
-                    s = 0,
-                    t = 0,
-                    u = 0,
-                    v = 0,
-                    w = 0;
+                let d = 0, e = 0, f = 0, g = 0, h = 0, j = 0, k = 0, l = 0, n = 0, o = 0, p = 0, q = 0, r = 0, s = 0, t = 0, u = 0, v = 0, w = 0;
                 d = i;
                 i = (i + 1064) | 0;
                 e = d | 0;
@@ -15450,10 +14991,7 @@ class LibTiMidity {
                 f = f | 0;
                 g = g | 0;
                 h = h | 0;
-                var j = 0,
-                    k = 0,
-                    l = 0,
-                    n = 0;
+                let j = 0, k = 0, l = 0, n = 0;
                 j = i;
                 k = f;
                 f = h;
@@ -15572,7 +15110,7 @@ class LibTiMidity {
             }
             function cY(a) {
                 a = a | 0;
-                var b = 0;
+                let b = 0;
                 b = a;
                 bx(b);
                 a = 0;
@@ -15605,10 +15143,7 @@ class LibTiMidity {
                 return;
             }
             function cZ() {
-                var a = 0,
-                    b = 0,
-                    d = 0,
-                    e = 0;
+                let a = 0, b = 0, d = 0, e = 0;
                 a = 0;
                 while (1) {
                     if ((a | 0) >= 128) {
@@ -15657,11 +15192,7 @@ class LibTiMidity {
                 b = b | 0;
                 c = c | 0;
                 d = d | 0;
-                var e = 0,
-                    f = 0,
-                    g = 0,
-                    h = 0,
-                    i = 0;
+                let e = 0, f = 0, g = 0, h = 0, i = 0;
                 e = b;
                 b = c;
                 c = d;
@@ -15706,91 +15237,7 @@ class LibTiMidity {
             }
             function c$(a) {
                 a = a | 0;
-                var b = 0,
-                    d = 0,
-                    e = 0,
-                    f = 0,
-                    g = 0,
-                    h = 0,
-                    i = 0,
-                    j = 0,
-                    k = 0,
-                    l = 0,
-                    m = 0,
-                    n = 0,
-                    o = 0,
-                    p = 0,
-                    q = 0,
-                    r = 0,
-                    s = 0,
-                    t = 0,
-                    u = 0,
-                    v = 0,
-                    w = 0,
-                    x = 0,
-                    y = 0,
-                    z = 0,
-                    A = 0,
-                    B = 0,
-                    C = 0,
-                    D = 0,
-                    E = 0,
-                    F = 0,
-                    G = 0,
-                    H = 0,
-                    I = 0,
-                    J = 0,
-                    K = 0,
-                    L = 0,
-                    M = 0,
-                    N = 0,
-                    O = 0,
-                    P = 0,
-                    Q = 0,
-                    R = 0,
-                    S = 0,
-                    T = 0,
-                    U = 0,
-                    V = 0,
-                    W = 0,
-                    X = 0,
-                    Y = 0,
-                    Z = 0,
-                    _ = 0,
-                    $ = 0,
-                    aa = 0,
-                    ab = 0,
-                    ac = 0,
-                    ad = 0,
-                    ae = 0,
-                    af = 0,
-                    ag = 0,
-                    ah = 0,
-                    ai = 0,
-                    aj = 0,
-                    ak = 0,
-                    al = 0,
-                    an = 0,
-                    ao = 0,
-                    ap = 0,
-                    ar = 0,
-                    as = 0,
-                    at = 0,
-                    au = 0,
-                    av = 0,
-                    aw = 0,
-                    ax = 0,
-                    ay = 0,
-                    az = 0,
-                    aA = 0,
-                    aB = 0,
-                    aC = 0,
-                    aD = 0,
-                    aE = 0,
-                    aF = 0,
-                    aG = 0,
-                    aH = 0,
-                    aI = 0;
+                let b = 0, d = 0, e = 0, f = 0, g = 0, h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0, q = 0, r = 0, s = 0, t = 0, u = 0, v = 0, w = 0, x = 0, y = 0, z = 0, A = 0, B = 0, C = 0, D = 0, E = 0, F = 0, G = 0, H = 0, I = 0, J = 0, K = 0, L = 0, M = 0, N = 0, O = 0, P = 0, Q = 0, R = 0, S = 0, T = 0, U = 0, V = 0, W = 0, X = 0, Y = 0, Z = 0, _ = 0, $ = 0, aa = 0, ab = 0, ac = 0, ad = 0, ae = 0, af = 0, ag = 0, ah = 0, ai = 0, aj = 0, ak = 0, al = 0, an = 0, ao = 0, ap = 0, ar = 0, as = 0, at = 0, au = 0, av = 0, aw = 0, ax = 0, ay = 0, az = 0, aA = 0, aB = 0, aC = 0, aD = 0, aE = 0, aF = 0, aG = 0, aH = 0, aI = 0;
                 do {
                     if (a >>> 0 < 245) {
                         if (a >>> 0 < 11) {
@@ -17850,45 +17297,7 @@ class LibTiMidity {
             }
             function c0(a) {
                 a = a | 0;
-                var b = 0,
-                    d = 0,
-                    e = 0,
-                    f = 0,
-                    g = 0,
-                    h = 0,
-                    i = 0,
-                    j = 0,
-                    k = 0,
-                    l = 0,
-                    m = 0,
-                    n = 0,
-                    o = 0,
-                    p = 0,
-                    q = 0,
-                    r = 0,
-                    s = 0,
-                    t = 0,
-                    u = 0,
-                    v = 0,
-                    w = 0,
-                    x = 0,
-                    y = 0,
-                    z = 0,
-                    A = 0,
-                    B = 0,
-                    C = 0,
-                    D = 0,
-                    E = 0,
-                    F = 0,
-                    G = 0,
-                    H = 0,
-                    I = 0,
-                    J = 0,
-                    K = 0,
-                    L = 0,
-                    M = 0,
-                    N = 0,
-                    O = 0;
+                let b = 0, d = 0, e = 0, f = 0, g = 0, h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0, q = 0, r = 0, s = 0, t = 0, u = 0, v = 0, w = 0, x = 0, y = 0, z = 0, A = 0, B = 0, C = 0, D = 0, E = 0, F = 0, G = 0, H = 0, I = 0, J = 0, K = 0, L = 0, M = 0, N = 0, O = 0;
                 if ((a | 0) == 0) {
                     return;
                 }
@@ -18449,7 +17858,7 @@ class LibTiMidity {
             }
             function c1(b) {
                 b = b | 0;
-                var c = 0;
+                let c = 0;
                 c = b;
                 while (a[c] | 0) {
                     c = (c + 1) | 0;
@@ -18459,7 +17868,7 @@ class LibTiMidity {
             function c2(b, c) {
                 b = b | 0;
                 c = c | 0;
-                var d = 0;
+                let d = 0;
                 do {
                     a[(b + d) | 0] = a[(c + d) | 0];
                     d = (d + 1) | 0;
@@ -18469,8 +17878,7 @@ class LibTiMidity {
             function c3(b, c) {
                 b = b | 0;
                 c = c | 0;
-                var d = 0,
-                    e = 0;
+                let d = 0, e = 0;
                 d = (b + (c1(b) | 0)) | 0;
                 do {
                     a[(d + e) | 0] = a[(c + e) | 0];
@@ -18482,9 +17890,7 @@ class LibTiMidity {
                 a = a | 0;
                 b = b | 0;
                 c = c | 0;
-                var e = 0,
-                    f = 0,
-                    g = 0;
+                let e = 0, f = 0, g = 0;
                 while ((e | 0) < (c | 0)) {
                     f = d[(a + e) | 0] | 0;
                     g = d[(b + e) | 0] | 0;
@@ -18498,9 +17904,7 @@ class LibTiMidity {
                 b = b | 0;
                 d = d | 0;
                 e = e | 0;
-                var f = 0,
-                    g = 0,
-                    h = 0;
+                let f = 0, g = 0, h = 0;
                 f = (b + e) | 0;
                 if ((e | 0) >= 20) {
                     d = d & 255;
@@ -18528,7 +17932,7 @@ class LibTiMidity {
                 b = b | 0;
                 d = d | 0;
                 e = e | 0;
-                var f = 0;
+                let f = 0;
                 f = b | 0;
                 if ((b & 3) == (d & 3)) {
                     while (b & 3) {
@@ -18557,8 +17961,7 @@ class LibTiMidity {
                 b = b | 0;
                 c = c | 0;
                 d = d | 0;
-                var e = 0,
-                    f = 0;
+                let e = 0, f = 0;
                 while ((e | 0) < (d | 0)) {
                     a[(b + e) | 0] = f ? 0 : a[(c + e) | 0] | 0;
                     f = f ? 1 : (a[(c + e) | 0] | 0) == 0;
@@ -18780,45 +18183,45 @@ class LibTiMidity {
         );
         var _strlen = (Module['_strlen'] = asm['_strlen']);
         var _strcat = (Module['_strcat'] = asm['_strcat']);
-        var _mid_create_options = (Module['_mid_create_options'] =
+        const _mid_create_options = (Module['_mid_create_options'] =
             asm['_mid_create_options']);
-        var _mid_istream_open_mem = (Module['_mid_istream_open_mem'] =
+        const _mid_istream_open_mem = (Module['_mid_istream_open_mem'] =
             asm['_mid_istream_open_mem']);
-        var _mid_istream_open_file = (Module['_mid_istream_open_file'] =
+        const _mid_istream_open_file = (Module['_mid_istream_open_file'] =
             asm['_mid_istream_open_file']);
-        var _mid_song_read_wave = (Module['_mid_song_read_wave'] =
+        const _mid_song_read_wave = (Module['_mid_song_read_wave'] =
             asm['_mid_song_read_wave']);
-        var _mid_exit = (Module['_mid_exit'] = asm['_mid_exit']);
-        var _mid_song_note_on = (Module['_mid_song_note_on'] =
+        const _mid_exit = (Module['_mid_exit'] = asm['_mid_exit']);
+        const _mid_song_note_on = (Module['_mid_song_note_on'] =
             asm['_mid_song_note_on']);
         var _strncpy = (Module['_strncpy'] = asm['_strncpy']);
         var _memset = (Module['_memset'] = asm['_memset']);
         var _memcpy = (Module['_memcpy'] = asm['_memcpy']);
-        var _mid_song_get_missing_instrument = (Module[
+        const _mid_song_get_missing_instrument = (Module[
             '_mid_song_get_missing_instrument'
         ] = asm['_mid_song_get_missing_instrument']);
-        var _mid_istream_close = (Module['_mid_istream_close'] =
+        const _mid_istream_close = (Module['_mid_istream_close'] =
             asm['_mid_istream_close']);
-        var _mid_song_free = (Module['_mid_song_free'] = asm['_mid_song_free']);
-        var _mid_init = (Module['_mid_init'] = asm['_mid_init']);
-        var _mid_song_load = (Module['_mid_song_load'] = asm['_mid_song_load']);
-        var _mid_song_start = (Module['_mid_song_start'] =
+        const _mid_song_free = (Module['_mid_song_free'] = asm['_mid_song_free']);
+        const _mid_init = (Module['_mid_init'] = asm['_mid_init']);
+        const _mid_song_load = (Module['_mid_song_load'] = asm['_mid_song_load']);
+        const _mid_song_start = (Module['_mid_song_start'] =
             asm['_mid_song_start']);
-        var _mid_song_get_num_missing_instruments = (Module[
+        const _mid_song_get_num_missing_instruments = (Module[
             '_mid_song_get_num_missing_instruments'
         ] = asm['_mid_song_get_num_missing_instruments']);
         var _memcmp = (Module['_memcmp'] = asm['_memcmp']);
-        var _free = (Module['_free'] = asm['_free']);
+        const _free = (Module['_free'] = asm['_free']);
         var _malloc = (Module._malloc = asm['_malloc']);
         var _strcpy = (Module['_strcpy'] = asm['_strcpy']);
-        var runPostSets = (Module['runPostSets'] = asm['runPostSets']);
+        const runPostSets = (Module['runPostSets'] = asm['runPostSets']);
 
-        var dynCall_ii = (Module['dynCall_ii'] = asm['dynCall_ii']);
-        var dynCall_vi = (Module['dynCall_vi'] = asm['dynCall_vi']);
-        var dynCall_iiiii = (Module['dynCall_iiiii'] = asm['dynCall_iiiii']);
-        var dynCall_viii = (Module['dynCall_viii'] = asm['dynCall_viii']);
-        var dynCall_v = (Module['dynCall_v'] = asm['dynCall_v']);
-        var dynCall_iii = (Module['dynCall_iii'] = asm['dynCall_iii']);
+        const dynCall_ii = (Module['dynCall_ii'] = asm['dynCall_ii']);
+        const dynCall_vi = (Module['dynCall_vi'] = asm['dynCall_vi']);
+        const dynCall_iiiii = (Module['dynCall_iiiii'] = asm['dynCall_iiiii']);
+        const dynCall_viii = (Module['dynCall_viii'] = asm['dynCall_viii']);
+        const dynCall_v = (Module['dynCall_v'] = asm['dynCall_v']);
+        const dynCall_iii = (Module['dynCall_iii'] = asm['dynCall_iii']);
 
         Runtime.stackAlloc = function(size) {
             return asm['stackAlloc'](size);
@@ -18854,8 +18257,8 @@ class LibTiMidity {
         }
 
         var initialStackTop;
-        var preloadStartTime = null;
-        var calledRun = false;
+        let preloadStartTime = null;
+        let calledRun = false;
         dependenciesFulfilled = function runCaller() {
             // If run has never been called, and we should call run (INVOKE_RUN is true, and Module.noInitialRun is not false)
             if (!calledRun && shouldRunNow) run();
@@ -18878,9 +18281,9 @@ class LibTiMidity {
                 );
             }
             ensureInitRuntime();
-            var argc = args.length + 1;
+            const argc = args.length + 1;
             function pad() {
-                for (var i = 0; i < 4 - 1; i++) {
+                for (let i = 0; i < 4 - 1; i++) {
                     argv.push(0);
                 }
             }
@@ -18902,7 +18305,7 @@ class LibTiMidity {
             argv = allocate(argv, 'i32', ALLOC_NORMAL);
             initialStackTop = STACKTOP;
             try {
-                var ret = Module['_main'](argc, argv, 0);
+                const ret = Module['_main'](argc, argv, 0);
                 // if we're not running an evented main loop, it's time to exit
                 if (!Module['noExitRuntime']) {
                     exit(ret);
