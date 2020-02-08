@@ -1,6 +1,6 @@
 {
     "name": "web-midi-player",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "description": "🎹 Event-driven JavaScript library to enable MIDI playback in the browser.",
     "keywords": [
         "midi",

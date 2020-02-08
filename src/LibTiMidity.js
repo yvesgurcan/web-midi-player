@@ -356,9 +356,13 @@ class LibTiMidity {
         const PAGE_SIZE = 4096;
 
         let HEAP8, HEAPU8, HEAP16, HEAPU16, HEAP32, HEAPU32, HEAPF32, HEAPF64;
-        let STATIC_BASE = 0, STATICTOP = 0;
-        let STACK_BASE = 0, STACKTOP = 0, STACK_MAX = 0; // stack area
-        let DYNAMIC_BASE = 0, DYNAMICTOP = 0; // dynamic area handled by sbrk
+        let STATIC_BASE = 0,
+            STATICTOP = 0;
+        let STACK_BASE = 0,
+            STACKTOP = 0,
+            STACK_MAX = 0; // stack area
+        let DYNAMIC_BASE = 0,
+            DYNAMICTOP = 0; // dynamic area handled by sbrk
 
         assert(
             typeof Int32Array !== 'undefined' &&
@@ -694,7 +698,10 @@ class LibTiMidity {
                 }
                 return ret;
             }
-            let i = 0, type, typeSize, previousType;
+            let i = 0,
+                type,
+                typeSize,
+                previousType;
             while (i < size) {
                 let curr = slab[i];
                 if (typeof curr === 'function') {
@@ -1165,6 +1172,14 @@ class LibTiMidity {
         const runDependencyTracking = {};
         let runDependencyWatcher = null;
         let dependenciesFulfilled = null; // overridden to take different actions when all run dependencies are fulfilled
+
+        /**
+         * @function addRunDependency
+         * @memberof LibTiMidity
+         * @instance
+         * @param id
+         */
+
         function addRunDependency(id) {
             runDependencies++;
             if (Module['monitorRunDependencies']) {
@@ -1177,7 +1192,9 @@ class LibTiMidity {
                 console.warn('warning: run dependency added without ID');
             }
         }
+
         Module['addRunDependency'] = addRunDependency;
+
         function removeRunDependency(id) {
             runDependencies--;
             if (Module['monitorRunDependencies']) {
@@ -1264,7 +1281,8 @@ class LibTiMidity {
                 return parts;
             },
             normalize: function(path) {
-                const isAbsolute = path.charAt(0) === '/', trailingSlash = path.substr(-1) === '/';
+                const isAbsolute = path.charAt(0) === '/',
+                    trailingSlash = path.substr(-1) === '/';
                 // Normalize the path
                 path = PATH.normalizeArray(
                     path.split('/').filter(function(p) {
@@ -1281,7 +1299,9 @@ class LibTiMidity {
                 return (isAbsolute ? '/' : '') + path;
             },
             dirname: function(path) {
-                let result = PATH.splitPath(path), root = result[0], dir = result[1];
+                let result = PATH.splitPath(path),
+                    root = result[0],
+                    dir = result[1];
                 if (!root && !dir) {
                     // No dirname whatsoever
                     return '.';
@@ -1320,7 +1340,8 @@ class LibTiMidity {
                 );
             },
             resolve: function() {
-                let resolvedPath = '', resolvedAbsolute = false;
+                let resolvedPath = '',
+                    resolvedAbsolute = false;
                 for (
                     let i = arguments.length - 1;
                     i >= -1 && !resolvedAbsolute;
@@ -3894,7 +3915,9 @@ class LibTiMidity {
                         'readwrite'
                     );
                     const files = transaction.objectStore(FS.DB_STORE_NAME);
-                    let ok = 0, fail = 0, total = paths.length;
+                    let ok = 0,
+                        fail = 0,
+                        total = paths.length;
                     function finish() {
                         if (fail == 0) onload();
                         else onerror();
@@ -3942,7 +3965,9 @@ class LibTiMidity {
                         return;
                     }
                     const files = transaction.objectStore(FS.DB_STORE_NAME);
-                    let ok = 0, fail = 0, total = paths.length;
+                    let ok = 0,
+                        fail = 0,
+                        total = paths.length;
                     function finish() {
                         if (fail == 0) onload();
                         else onerror();
@@ -6453,7 +6478,15 @@ class LibTiMidity {
             let q = 0;
             let r = 0;
             let s = 0;
-            let t = 0, u = 0, v = 0, w = 0, x = 0.0, y = 0, z = 0, A = 0, B = 0.0;
+            let t = 0,
+                u = 0,
+                v = 0,
+                w = 0,
+                x = 0.0,
+                y = 0,
+                z = 0,
+                A = 0,
+                B = 0.0;
             let C = 0;
             let D = 0;
             let E = 0;
@@ -6615,7 +6648,16 @@ class LibTiMidity {
             function bg() {}
             function bh(b) {
                 b = b | 0;
-                let d = 0, e = 0, f = 0, g = 0, h = 0, j = 0, k = 0, l = 0, m = 0, n = 0;
+                let d = 0,
+                    e = 0,
+                    f = 0,
+                    g = 0,
+                    h = 0,
+                    j = 0,
+                    k = 0,
+                    l = 0,
+                    m = 0,
+                    n = 0;
                 d = i;
                 i = (i + 1024) | 0;
                 e = d | 0;
@@ -6688,7 +6730,9 @@ class LibTiMidity {
             }
             function bj(a) {
                 a = a | 0;
-                let b = 0, d = 0, e = 0;
+                let b = 0,
+                    d = 0,
+                    e = 0;
                 b = a;
                 a = bi(8) | 0;
                 if ((a | 0) == 0) {
@@ -6708,7 +6752,8 @@ class LibTiMidity {
                 }
             }
             function bk() {
-                let a = 0, b = 0;
+                let a = 0,
+                    b = 0;
                 a = c[1664] | 0;
                 while (1) {
                     if ((a | 0) == 0) {
@@ -6732,7 +6777,24 @@ class LibTiMidity {
                 o = o | 0;
                 p = p | 0;
                 q = q | 0;
-                let r = 0, s = 0, t = 0, u = 0, v = 0, w = 0, x = 0, y = 0, z = 0, A = 0, B = 0, C = 0, D = 0, E = 0, F = 0, G = 0, H = 0, I = 0;
+                let r = 0,
+                    s = 0,
+                    t = 0,
+                    u = 0,
+                    v = 0,
+                    w = 0,
+                    x = 0,
+                    y = 0,
+                    z = 0,
+                    A = 0,
+                    B = 0,
+                    C = 0,
+                    D = 0,
+                    E = 0,
+                    F = 0,
+                    G = 0,
+                    H = 0,
+                    I = 0;
                 j = i;
                 i = (i + 1056) | 0;
                 r = j | 0;
@@ -7221,7 +7283,9 @@ class LibTiMidity {
             function bm(a, b) {
                 a = a | 0;
                 b = b | 0;
-                let d = 0, e = 0, f = 0;
+                let d = 0,
+                    e = 0,
+                    f = 0;
                 d = a;
                 a = b;
                 if ((a << 24) >> 24 != 0) {
@@ -7260,7 +7324,9 @@ class LibTiMidity {
                 a = a | 0;
                 b = b | 0;
                 d = d | 0;
-                let e = 0, f = 0, g = 0;
+                let e = 0,
+                    f = 0,
+                    g = 0;
                 e = b;
                 if ((e << 24) >> 24 != 0) {
                     f = ~~(
@@ -7300,7 +7366,8 @@ class LibTiMidity {
                 a = a | 0;
                 c = c | 0;
                 d = d | 0;
-                let e = 0, f = 0;
+                let e = 0,
+                    f = 0;
                 e = a;
                 a = c;
                 c = d;
@@ -7332,7 +7399,9 @@ class LibTiMidity {
             function bu(a, b) {
                 a = a | 0;
                 b = b | 0;
-                let d = 0, e = 0, f = 0;
+                let d = 0,
+                    e = 0,
+                    f = 0;
                 d = a;
                 a = b;
                 do {
@@ -7354,7 +7423,9 @@ class LibTiMidity {
 
             function bv(a) {
                 a = a | 0;
-                let b = 0, d = 0, e = 0;
+                let b = 0,
+                    d = 0,
+                    e = 0;
                 b = a;
                 a = 128;
                 d = 0;
@@ -7378,7 +7449,23 @@ class LibTiMidity {
                 a = a | 0;
                 b = b | 0;
                 d = d | 0;
-                let e = 0, f = 0, g = 0, h = 0, j = 0, k = 0, l = 0, n = 0, o = 0, p = 0, q = 0, r = 0, s = 0, t = 0, u = 0, v = 0, w = 0;
+                let e = 0,
+                    f = 0,
+                    g = 0,
+                    h = 0,
+                    j = 0,
+                    k = 0,
+                    l = 0,
+                    n = 0,
+                    o = 0,
+                    p = 0,
+                    q = 0,
+                    r = 0,
+                    s = 0,
+                    t = 0,
+                    u = 0,
+                    v = 0,
+                    w = 0;
                 e = i;
                 f = a;
                 a = b;
@@ -7619,7 +7706,8 @@ class LibTiMidity {
             }
             function bx(a) {
                 a = a | 0;
-                let b = 0, d = 0;
+                let b = 0,
+                    d = 0;
                 b = a;
                 a = 128;
                 while (1) {
@@ -7641,7 +7729,8 @@ class LibTiMidity {
                 a = a | 0;
                 b = b | 0;
                 d = d | 0;
-                let e = 0, f = 0;
+                let e = 0,
+                    f = 0;
                 e = a;
                 a = d;
                 if ((b | 0) != 0) {
@@ -7668,7 +7757,9 @@ class LibTiMidity {
             function bz(a, b) {
                 a = a | 0;
                 b = b | 0;
-                let d = 0, e = 0, f = 0;
+                let d = 0,
+                    e = 0,
+                    f = 0;
                 d = a;
                 a = bl(d, b, 0, -1, -1, -1, 0, 0, 0) | 0;
                 if ((a | 0) != 0) {
@@ -7711,7 +7802,11 @@ class LibTiMidity {
                 b = b | 0;
                 d = d | 0;
                 e = e | 0;
-                let f = 0, g = 0, h = 0, i = 0, j = 0;
+                let f = 0,
+                    g = 0,
+                    h = 0,
+                    i = 0,
+                    j = 0;
                 f = a;
                 a = b;
                 b = d;
@@ -7822,7 +7917,27 @@ class LibTiMidity {
                 f = f | 0;
                 h = h | 0;
                 i = i | 0;
-                let j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0, q = 0, r = 0, s = 0, t = 0, u = 0, v = 0, w = 0, x = 0, y = 0, z = 0, A = 0.0, B = 0.0, C = 0.0, D = 0.0;
+                let j = 0,
+                    k = 0,
+                    l = 0,
+                    m = 0,
+                    n = 0,
+                    o = 0,
+                    p = 0,
+                    q = 0,
+                    r = 0,
+                    s = 0,
+                    t = 0,
+                    u = 0,
+                    v = 0,
+                    w = 0,
+                    x = 0,
+                    y = 0,
+                    z = 0,
+                    A = 0.0,
+                    B = 0.0,
+                    C = 0.0,
+                    D = 0.0;
                 j = b;
                 b = f;
                 f = h;
@@ -7968,7 +8083,9 @@ class LibTiMidity {
                 a = a | 0;
                 b = b | 0;
                 d = d | 0;
-                let f = 0, g = 0, h = 0;
+                let f = 0,
+                    g = 0,
+                    h = 0;
                 f = a;
                 a = b;
                 b = d;
@@ -7998,7 +8115,9 @@ class LibTiMidity {
             }
             function bE(a) {
                 a = a | 0;
-                let b = 0, c = 0.0, d = 0.0;
+                let b = 0,
+                    c = 0.0,
+                    d = 0.0;
                 b = a;
                 do {
                     if ((b | 0) != -2147483648) {
@@ -8052,7 +8171,10 @@ class LibTiMidity {
             function bI(b, e) {
                 b = b | 0;
                 e = e | 0;
-                let f = 0, g = 0, h = 0, i = 0;
+                let f = 0,
+                    g = 0,
+                    h = 0,
+                    i = 0;
                 f = b;
                 b = e;
                 e = c[(f + 1724 + ((b * 236) | 0) + 220) >> 2] | 0;
@@ -8137,7 +8259,10 @@ class LibTiMidity {
             function bJ(b, e) {
                 b = b | 0;
                 e = e | 0;
-                let f = 0, i = 0.0, j = 0, l = 0.0;
+                let f = 0,
+                    i = 0.0,
+                    j = 0,
+                    l = 0.0;
                 f = b;
                 b = e;
                 i = +g[(f + 1724 + ((b * 236) | 0) + 68) >> 2];
@@ -8252,7 +8377,11 @@ class LibTiMidity {
                 e = e | 0;
                 f = f | 0;
                 g = g | 0;
-                let h = 0, j = 0, k = 0, l = 0, m = 0;
+                let h = 0,
+                    j = 0,
+                    k = 0,
+                    l = 0,
+                    m = 0;
                 h = i;
                 i = (i + 8) | 0;
                 j = h | 0;
@@ -8349,7 +8478,14 @@ class LibTiMidity {
                 e = e | 0;
                 f = f | 0;
                 g = g | 0;
-                let h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0;
+                let h = 0,
+                    i = 0,
+                    j = 0,
+                    k = 0,
+                    l = 0,
+                    m = 0,
+                    n = 0,
+                    o = 0;
                 h = a;
                 a = d;
                 d = e;
@@ -8538,7 +8674,13 @@ class LibTiMidity {
                 e = e | 0;
                 f = f | 0;
                 g = g | 0;
-                let h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0;
+                let h = 0,
+                    i = 0,
+                    j = 0,
+                    k = 0,
+                    l = 0,
+                    m = 0,
+                    n = 0;
                 h = a;
                 a = d;
                 d = e;
@@ -8644,7 +8786,14 @@ class LibTiMidity {
                 e = e | 0;
                 f = f | 0;
                 g = g | 0;
-                let h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0;
+                let h = 0,
+                    i = 0,
+                    j = 0,
+                    k = 0,
+                    l = 0,
+                    m = 0,
+                    n = 0,
+                    o = 0;
                 h = a;
                 a = d;
                 d = e;
@@ -8735,7 +8884,9 @@ class LibTiMidity {
                 e = e | 0;
                 f = f | 0;
                 g = g | 0;
-                let h = 0, i = 0, j = 0;
+                let h = 0,
+                    i = 0,
+                    j = 0;
                 h = a;
                 a = d;
                 d = e;
@@ -8769,7 +8920,13 @@ class LibTiMidity {
                 e = e | 0;
                 f = f | 0;
                 g = g | 0;
-                let h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0;
+                let h = 0,
+                    i = 0,
+                    j = 0,
+                    k = 0,
+                    l = 0,
+                    m = 0,
+                    n = 0;
                 h = a;
                 a = d;
                 d = e;
@@ -8857,7 +9014,8 @@ class LibTiMidity {
                 e = e | 0;
                 f = f | 0;
                 g = g | 0;
-                let h = 0, i = 0;
+                let h = 0,
+                    i = 0;
                 h = d;
                 d = e;
                 e = g;
@@ -8888,7 +9046,13 @@ class LibTiMidity {
                 e = e | 0;
                 f = f | 0;
                 g = g | 0;
-                let h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0;
+                let h = 0,
+                    i = 0,
+                    j = 0,
+                    k = 0,
+                    l = 0,
+                    m = 0,
+                    n = 0;
                 h = a;
                 a = d;
                 d = e;
@@ -8994,7 +9158,9 @@ class LibTiMidity {
             function bU(a, b) {
                 a = a | 0;
                 b = b | 0;
-                let d = 0, e = 0, f = 0;
+                let d = 0,
+                    e = 0,
+                    f = 0;
                 d = a;
                 a = b;
                 do {
@@ -9018,7 +9184,10 @@ class LibTiMidity {
             function bV(a, b) {
                 a = a | 0;
                 b = b | 0;
-                let d = 0, e = 0, f = 0, g = 0;
+                let d = 0,
+                    e = 0,
+                    f = 0,
+                    g = 0;
                 d = a;
                 a = b;
                 b = (d + 1724 + ((a * 236) | 0) + 24) | 0;
@@ -9072,7 +9241,8 @@ class LibTiMidity {
             function bW(a, b) {
                 a = a | 0;
                 b = b | 0;
-                let e = 0, f = 0;
+                let e = 0,
+                    f = 0;
                 e = a;
                 a = b;
                 b =
@@ -9126,7 +9296,8 @@ class LibTiMidity {
                 b = b | 0;
                 d = d | 0;
                 e = e | 0;
-                let f = 0, g = 0;
+                let f = 0,
+                    g = 0;
                 f = d;
                 d = e;
                 e = b;
@@ -9156,7 +9327,8 @@ class LibTiMidity {
                 b = b | 0;
                 d = d | 0;
                 e = e | 0;
-                let f = 0, g = 0;
+                let f = 0,
+                    g = 0;
                 f = d;
                 d = e;
                 e = b;
@@ -9186,7 +9358,8 @@ class LibTiMidity {
                 a = a | 0;
                 d = d | 0;
                 e = e | 0;
-                let f = 0, g = 0;
+                let f = 0,
+                    g = 0;
                 f = d;
                 d = e;
                 e = a;
@@ -9216,7 +9389,8 @@ class LibTiMidity {
                 a = a | 0;
                 d = d | 0;
                 e = e | 0;
-                let f = 0, g = 0;
+                let f = 0,
+                    g = 0;
                 f = d;
                 d = e;
                 e = a;
@@ -9246,7 +9420,8 @@ class LibTiMidity {
                 a = a | 0;
                 d = d | 0;
                 e = e | 0;
-                let f = 0, g = 0;
+                let f = 0,
+                    g = 0;
                 f = d;
                 d = e;
                 e = a;
@@ -9280,7 +9455,8 @@ class LibTiMidity {
                 d = d | 0;
                 e = e | 0;
                 f = f | 0;
-                let g = 0, h = 0;
+                let g = 0,
+                    h = 0;
                 g = i;
                 i = (i + 8) | 0;
                 h = g | 0;
@@ -9296,7 +9472,10 @@ class LibTiMidity {
             function b1(b, e) {
                 b = b | 0;
                 e = e | 0;
-                let f = 0, g = 0, h = 0, i = 0;
+                let f = 0,
+                    g = 0,
+                    h = 0,
+                    i = 0;
                 f = b;
                 b = e;
                 e = c[(f + 13052) >> 2] | 0;
@@ -9427,7 +9606,9 @@ class LibTiMidity {
             function b2(b, e) {
                 b = b | 0;
                 e = e | 0;
-                let f = 0, g = 0, h = 0;
+                let f = 0,
+                    g = 0,
+                    h = 0;
                 f = b;
                 b = e;
                 e = c[(f + 13052) >> 2] | 0;
@@ -9522,7 +9703,13 @@ class LibTiMidity {
                 e = e | 0;
                 f = f | 0;
                 h = h | 0;
-                let j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0;
+                let j = 0,
+                    k = 0,
+                    l = 0,
+                    m = 0,
+                    n = 0,
+                    o = 0,
+                    p = 0;
                 j = i;
                 i = (i + 8) | 0;
                 k = j | 0;
@@ -9834,7 +10021,10 @@ class LibTiMidity {
             }
             function b7(b) {
                 b = b | 0;
-                let e = 0, f = 0, g = 0, h = 0;
+                let e = 0,
+                    f = 0,
+                    g = 0,
+                    h = 0;
                 e = b;
                 b = c[(e + 13080) >> 2] | 0;
                 f = c[(e + 13052) >> 2] | 0;
@@ -9879,7 +10069,9 @@ class LibTiMidity {
             }
             function b8(a) {
                 a = a | 0;
-                let b = 0, e = 0, f = 0;
+                let b = 0,
+                    e = 0,
+                    f = 0;
                 b = a;
                 a = d[((c[(b + 13080) >> 2] | 0) + 4) | 0] | 0;
                 e = c[(b + 13052) >> 2] | 0;
@@ -9910,7 +10102,9 @@ class LibTiMidity {
             }
             function b9(a) {
                 a = a | 0;
-                let b = 0, e = 0, f = 0;
+                let b = 0,
+                    e = 0,
+                    f = 0;
                 b = a;
                 a = d[((c[(b + 13080) >> 2] | 0) + 4) | 0] | 0;
                 e = c[(b + 13052) >> 2] | 0;
@@ -9947,7 +10141,9 @@ class LibTiMidity {
             }
             function ca(a) {
                 a = a | 0;
-                let b = 0, e = 0, f = 0;
+                let b = 0,
+                    e = 0,
+                    f = 0;
                 b = a;
                 a = c[(b + 13052) >> 2] | 0;
                 e = d[((c[(b + 13080) >> 2] | 0) + 4) | 0] | 0;
@@ -9991,7 +10187,9 @@ class LibTiMidity {
             }
             function cc(b) {
                 b = b | 0;
-                let e = 0, f = 0, g = 0;
+                let e = 0,
+                    f = 0,
+                    g = 0;
                 e = b;
                 b = c[(e + 13052) >> 2] | 0;
                 f = d[((c[(e + 13080) >> 2] | 0) + 4) | 0] | 0;
@@ -10030,7 +10228,9 @@ class LibTiMidity {
             }
             function cd(a) {
                 a = a | 0;
-                let b = 0, e = 0, f = 0;
+                let b = 0,
+                    e = 0,
+                    f = 0;
                 b = a;
                 a = c[(b + 13052) >> 2] | 0;
                 e = d[((c[(b + 13080) >> 2] | 0) + 4) | 0] | 0;
@@ -10067,7 +10267,12 @@ class LibTiMidity {
                 a = a | 0;
                 b = b | 0;
                 d = d | 0;
-                let e = 0, f = 0, g = 0, h = 0, i = 0, j = 0;
+                let e = 0,
+                    f = 0,
+                    g = 0,
+                    h = 0,
+                    i = 0,
+                    j = 0;
                 e = a;
                 a = b;
                 b = d;
@@ -10100,7 +10305,9 @@ class LibTiMidity {
             function cf(a, b) {
                 a = a | 0;
                 b = b | 0;
-                let e = 0, f = 0, h = 0;
+                let e = 0,
+                    f = 0,
+                    h = 0;
                 e = a;
                 a = b;
                 b =
@@ -10238,7 +10445,8 @@ class LibTiMidity {
             function cg(a, b) {
                 a = a | 0;
                 b = b | 0;
-                let e = 0, f = 0;
+                let e = 0,
+                    f = 0;
                 e = a;
                 a = b;
                 if (((c[(e + 8) >> 2] & 1) | 0) != 0) {
@@ -10270,7 +10478,8 @@ class LibTiMidity {
             function ci(b, d) {
                 b = b | 0;
                 d = d | 0;
-                let e = 0, f = 0;
+                let e = 0,
+                    f = 0;
                 e = b;
                 b = d;
                 if (
@@ -10297,7 +10506,12 @@ class LibTiMidity {
             function cj(a, b) {
                 a = a | 0;
                 b = b | 0;
-                let e = 0, f = 0, i = 0, j = 0, l = 0, m = 0.0;
+                let e = 0,
+                    f = 0,
+                    i = 0,
+                    j = 0,
+                    l = 0,
+                    m = 0.0;
                 e = a;
                 a = b;
                 b = ((c[(e + 1724 + ((a * 236) | 0) + 20) >> 2] | 0) < 0) | 0;
@@ -10508,7 +10722,8 @@ class LibTiMidity {
             function cl(a, b) {
                 a = a | 0;
                 b = b | 0;
-                let e = 0, f = 0;
+                let e = 0,
+                    f = 0;
                 e = a;
                 a = b;
                 cm(e);
@@ -10726,7 +10941,19 @@ class LibTiMidity {
                 b = b | 0;
                 e = e | 0;
                 f = f | 0;
-                let h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0, q = 0, r = 0, s = 0, t = 0;
+                let h = 0,
+                    i = 0,
+                    j = 0,
+                    k = 0,
+                    l = 0,
+                    m = 0,
+                    n = 0,
+                    o = 0,
+                    p = 0,
+                    q = 0,
+                    r = 0,
+                    s = 0,
+                    t = 0;
                 h = b;
                 b = e;
                 e = f;
@@ -11091,7 +11318,11 @@ class LibTiMidity {
                 b = b | 0;
                 d = d | 0;
                 e = e | 0;
-                let f = 0, g = 0, h = 0, i = 0, j = 0;
+                let f = 0,
+                    g = 0,
+                    h = 0,
+                    i = 0,
+                    j = 0;
                 f = a;
                 a = b;
                 b = d;
@@ -11155,7 +11386,13 @@ class LibTiMidity {
             function cp(a, b) {
                 a = a | 0;
                 b = +b;
-                let d = 0, e = 0, f = 0.0, g = 0, h = 0, j = 0, k = 0;
+                let d = 0,
+                    e = 0,
+                    f = 0.0,
+                    g = 0,
+                    h = 0,
+                    j = 0,
+                    k = 0;
                 d = i;
                 e = a;
                 f = b;
@@ -11192,7 +11429,19 @@ class LibTiMidity {
                 e = e | 0;
                 f = f | 0;
                 g = g | 0;
-                let h = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0, q = 0, r = 0, s = 0, t = 0, u = 0;
+                let h = 0,
+                    j = 0,
+                    k = 0,
+                    l = 0,
+                    m = 0,
+                    n = 0,
+                    o = 0,
+                    p = 0,
+                    q = 0,
+                    r = 0,
+                    s = 0,
+                    t = 0,
+                    u = 0;
                 h = i;
                 i = (i + 40) | 0;
                 j = h | 0;
@@ -11362,7 +11611,16 @@ class LibTiMidity {
                 a = a | 0;
                 b = b | 0;
                 d = d | 0;
-                let e = 0, f = 0, g = 0, h = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0;
+                let e = 0,
+                    f = 0,
+                    g = 0,
+                    h = 0,
+                    j = 0,
+                    k = 0,
+                    l = 0,
+                    m = 0,
+                    n = 0,
+                    o = 0;
                 e = i;
                 i = (i + 16) | 0;
                 f = e | 0;
@@ -11456,7 +11714,8 @@ class LibTiMidity {
             }
             function cs(a) {
                 a = a | 0;
-                let b = 0, d = 0;
+                let b = 0,
+                    d = 0;
                 b = a;
                 a = c[(b + 13084) >> 2] | 0;
                 d = a;
@@ -11479,7 +11738,26 @@ class LibTiMidity {
                 e = e | 0;
                 f = f | 0;
                 g = g | 0;
-                let h = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0, q = 0, r = 0, s = 0, t = 0, u = 0, v = 0, w = 0, x = 0, y = 0, z = 0, A = 0, B = 0;
+                let h = 0,
+                    j = 0,
+                    k = 0,
+                    l = 0,
+                    m = 0,
+                    n = 0,
+                    o = 0,
+                    p = 0,
+                    q = 0,
+                    r = 0,
+                    s = 0,
+                    t = 0,
+                    u = 0,
+                    v = 0,
+                    w = 0,
+                    x = 0,
+                    y = 0,
+                    z = 0,
+                    A = 0,
+                    B = 0;
                 h = i;
                 i = (i + 192) | 0;
                 j = h | 0;
@@ -11793,7 +12071,8 @@ class LibTiMidity {
                 a = a | 0;
                 b = b | 0;
                 d = d | 0;
-                let e = 0, f = 0.0;
+                let e = 0,
+                    f = 0.0;
                 e = a;
                 f = (+(b | 0) * +(c[(e + 4) >> 2] | 0) * 0.065536) / +(d | 0);
                 c[(e + 1080) >> 2] = ~~f & 65535;
@@ -11803,7 +12082,22 @@ class LibTiMidity {
             function cv(b, e) {
                 b = b | 0;
                 e = e | 0;
-                let f = 0, g = 0, h = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0, q = 0, r = 0, s = 0, t = 0, u = 0, v = 0;
+                let f = 0,
+                    g = 0,
+                    h = 0,
+                    j = 0,
+                    k = 0,
+                    l = 0,
+                    m = 0,
+                    n = 0,
+                    o = 0,
+                    p = 0,
+                    q = 0,
+                    r = 0,
+                    s = 0,
+                    t = 0,
+                    u = 0,
+                    v = 0;
                 f = i;
                 i = (i + 40) | 0;
                 g = f | 0;
@@ -12146,7 +12440,9 @@ class LibTiMidity {
             }
             function cw(b) {
                 b = b | 0;
-                let c = 0, d = 0, e = 0;
+                let c = 0,
+                    d = 0,
+                    e = 0;
                 c = i;
                 i = (i + 8) | 0;
                 d = c | 0;
@@ -12169,7 +12465,10 @@ class LibTiMidity {
                 e = e | 0;
                 f = f | 0;
                 g = g | 0;
-                let h = 0, i = 0, j = 0, k = 0;
+                let h = 0,
+                    i = 0,
+                    j = 0,
+                    k = 0;
                 h = e;
                 e = f;
                 f = g;
@@ -12215,7 +12514,11 @@ class LibTiMidity {
                 b = b | 0;
                 e = e | 0;
                 f = f | 0;
-                let g = 0, h = 0, i = 0, j = 0, k = 0;
+                let g = 0,
+                    h = 0,
+                    i = 0,
+                    j = 0,
+                    k = 0;
                 g = b;
                 b = e;
                 e = f;
@@ -12302,7 +12605,22 @@ class LibTiMidity {
                 a = a | 0;
                 d = d | 0;
                 e = e | 0;
-                let f = 0, g = 0, h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0, q = 0, r = 0, s = 0, t = 0, u = 0;
+                let f = 0,
+                    g = 0,
+                    h = 0,
+                    i = 0,
+                    j = 0,
+                    k = 0,
+                    l = 0,
+                    m = 0,
+                    n = 0,
+                    o = 0,
+                    p = 0,
+                    q = 0,
+                    r = 0,
+                    s = 0,
+                    t = 0,
+                    u = 0;
                 f = a;
                 a = d;
                 d = e;
@@ -12428,7 +12746,17 @@ class LibTiMidity {
                 a = a | 0;
                 d = d | 0;
                 e = e | 0;
-                let f = 0, g = 0, h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0;
+                let f = 0,
+                    g = 0,
+                    h = 0,
+                    i = 0,
+                    j = 0,
+                    k = 0,
+                    l = 0,
+                    m = 0,
+                    n = 0,
+                    o = 0,
+                    p = 0;
                 f = a;
                 a = d;
                 d = e;
@@ -12496,7 +12824,28 @@ class LibTiMidity {
                 d = d | 0;
                 e = e | 0;
                 f = f | 0;
-                let g = 0, h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0, q = 0, r = 0, s = 0, t = 0, u = 0, v = 0, w = 0, x = 0, y = 0, z = 0, A = 0, B = 0;
+                let g = 0,
+                    h = 0,
+                    i = 0,
+                    j = 0,
+                    k = 0,
+                    l = 0,
+                    m = 0,
+                    n = 0,
+                    o = 0,
+                    p = 0,
+                    q = 0,
+                    r = 0,
+                    s = 0,
+                    t = 0,
+                    u = 0,
+                    v = 0,
+                    w = 0,
+                    x = 0,
+                    y = 0,
+                    z = 0,
+                    A = 0,
+                    B = 0;
                 g = d;
                 d = f;
                 f = (g + 1724 + ((e * 236) | 0)) | 0;
@@ -12586,7 +12935,19 @@ class LibTiMidity {
                 a = a | 0;
                 d = d | 0;
                 e = e | 0;
-                let f = 0, g = 0, h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0, q = 0, r = 0;
+                let f = 0,
+                    g = 0,
+                    h = 0,
+                    i = 0,
+                    j = 0,
+                    k = 0,
+                    l = 0,
+                    m = 0,
+                    n = 0,
+                    o = 0,
+                    p = 0,
+                    q = 0,
+                    r = 0;
                 f = a;
                 a = d;
                 d = e;
@@ -12683,7 +13044,15 @@ class LibTiMidity {
                 a = a | 0;
                 d = d | 0;
                 e = e | 0;
-                let f = 0, g = 0, h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0;
+                let f = 0,
+                    g = 0,
+                    h = 0,
+                    i = 0,
+                    j = 0,
+                    k = 0,
+                    l = 0,
+                    m = 0,
+                    n = 0;
                 f = a;
                 a = d;
                 d = e;
@@ -12738,7 +13107,21 @@ class LibTiMidity {
                 d = d | 0;
                 e = e | 0;
                 f = f | 0;
-                let g = 0, h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0, q = 0, r = 0, s = 0, t = 0, u = 0;
+                let g = 0,
+                    h = 0,
+                    i = 0,
+                    j = 0,
+                    k = 0,
+                    l = 0,
+                    m = 0,
+                    n = 0,
+                    o = 0,
+                    p = 0,
+                    q = 0,
+                    r = 0,
+                    s = 0,
+                    t = 0,
+                    u = 0;
                 g = d;
                 d = f;
                 f = (g + 1724 + ((e * 236) | 0)) | 0;
@@ -12810,7 +13193,50 @@ class LibTiMidity {
             function cF(e, f) {
                 e = e | 0;
                 f = f | 0;
-                let g = 0, h = 0, i = 0.0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0, q = 0, r = 0, s = 0, t = 0.0, u = 0, v = 0, w = 0, x = 0, y = 0, z = 0, A = 0.0, B = 0.0, C = 0.0, D = 0, E = 0, F = 0, G = 0, H = 0, I = 0, J = 0.0, K = 0.0, L = 0.0, M = 0, N = 0, O = 0, P = 0, Q = 0, R = 0, S = 0, T = 0, U = 0, V = 0, W = 0, X = 0;
+                let g = 0,
+                    h = 0,
+                    i = 0.0,
+                    j = 0,
+                    k = 0,
+                    l = 0,
+                    m = 0,
+                    n = 0,
+                    o = 0,
+                    p = 0,
+                    q = 0,
+                    r = 0,
+                    s = 0,
+                    t = 0.0,
+                    u = 0,
+                    v = 0,
+                    w = 0,
+                    x = 0,
+                    y = 0,
+                    z = 0,
+                    A = 0.0,
+                    B = 0.0,
+                    C = 0.0,
+                    D = 0,
+                    E = 0,
+                    F = 0,
+                    G = 0,
+                    H = 0,
+                    I = 0,
+                    J = 0.0,
+                    K = 0.0,
+                    L = 0.0,
+                    M = 0,
+                    N = 0,
+                    O = 0,
+                    P = 0,
+                    Q = 0,
+                    R = 0,
+                    S = 0,
+                    T = 0,
+                    U = 0,
+                    V = 0,
+                    W = 0,
+                    X = 0;
                 g = f;
                 f = c[(g + 88) >> 2] | 0;
                 h = (1056 + (a[(g + 112) | 0] << 2)) | 0;
@@ -12990,7 +13416,13 @@ class LibTiMidity {
                 a = a | 0;
                 b = b | 0;
                 e = e | 0;
-                let f = 0, g = 0, i = 0, j = 0, l = 0, m = 0.0, n = 0.0;
+                let f = 0,
+                    g = 0,
+                    i = 0,
+                    j = 0,
+                    l = 0,
+                    m = 0.0,
+                    n = 0.0;
                 f = a;
                 a = b;
                 b = e;
@@ -13111,7 +13543,8 @@ class LibTiMidity {
             }
             function cH(a) {
                 a = a | 0;
-                let b = 0, c = 0;
+                let b = 0,
+                    c = 0;
                 b = a;
                 do {
                     if ((b | 0) < 16) {
@@ -13137,7 +13570,9 @@ class LibTiMidity {
             }
             function cJ(a) {
                 a = a | 0;
-                let b = 0, d = 0, e = 0;
+                let b = 0,
+                    d = 0,
+                    e = 0;
                 b = a;
                 a = 0;
                 if ((c[(b + 4) >> 2] | 0) == 0) {
@@ -13157,7 +13592,8 @@ class LibTiMidity {
                 b = b | 0;
                 d = d | 0;
                 e = e | 0;
-                let f = 0, g = 0;
+                let f = 0,
+                    g = 0;
                 f = d;
                 d = a;
                 a = e;
@@ -13182,7 +13618,8 @@ class LibTiMidity {
             }
             function cL(a) {
                 a = a | 0;
-                let b = 0, d = 0;
+                let b = 0,
+                    d = 0;
                 b = a;
                 if ((c[(b + 12) >> 2] | 0) == 0) {
                     d = b;
@@ -13197,7 +13634,10 @@ class LibTiMidity {
             function cM(a, b) {
                 a = a | 0;
                 b = b | 0;
-                let d = 0, e = 0, f = 0, g = 0;
+                let d = 0,
+                    e = 0,
+                    f = 0,
+                    g = 0;
                 d = bi(12) | 0;
                 if ((d | 0) == 0) {
                     e = 0;
@@ -13224,7 +13664,9 @@ class LibTiMidity {
             }
             function cN(a) {
                 a = a | 0;
-                let b = 0, c = 0, d = 0;
+                let b = 0,
+                    c = 0,
+                    d = 0;
                 b = av(a | 0, 6544) | 0;
                 if ((b | 0) == 0) {
                     c = 0;
@@ -13241,7 +13683,10 @@ class LibTiMidity {
                 a = a | 0;
                 b = b | 0;
                 d = d | 0;
-                let e = 0, f = 0, g = 0, h = 0;
+                let e = 0,
+                    f = 0,
+                    g = 0,
+                    h = 0;
                 e = a;
                 a = bi(12) | 0;
                 if ((a | 0) == 0) {
@@ -13281,7 +13726,9 @@ class LibTiMidity {
             function cQ(a, b) {
                 a = a | 0;
                 b = b | 0;
-                let c = 0, d = 0, e = 0;
+                let c = 0,
+                    d = 0,
+                    e = 0;
                 c = i;
                 i = (i + 1024) | 0;
                 d = c | 0;
@@ -13325,7 +13772,12 @@ class LibTiMidity {
             }
             function cT(b) {
                 b = b | 0;
-                let d = 0, e = 0, f = 0, g = 0, h = 0, j = 0;
+                let d = 0,
+                    e = 0,
+                    f = 0,
+                    g = 0,
+                    h = 0,
+                    j = 0;
                 d = i;
                 i = (i + 1024) | 0;
                 e = d | 0;
@@ -13376,7 +13828,24 @@ class LibTiMidity {
             }
             function cU(b) {
                 b = b | 0;
-                let d = 0, e = 0, f = 0, g = 0, h = 0, j = 0, k = 0, l = 0, n = 0, o = 0, p = 0, q = 0, r = 0, s = 0, t = 0, u = 0, v = 0, w = 0;
+                let d = 0,
+                    e = 0,
+                    f = 0,
+                    g = 0,
+                    h = 0,
+                    j = 0,
+                    k = 0,
+                    l = 0,
+                    n = 0,
+                    o = 0,
+                    p = 0,
+                    q = 0,
+                    r = 0,
+                    s = 0,
+                    t = 0,
+                    u = 0,
+                    v = 0,
+                    w = 0;
                 d = i;
                 i = (i + 1064) | 0;
                 e = d | 0;
@@ -14991,7 +15460,10 @@ class LibTiMidity {
                 f = f | 0;
                 g = g | 0;
                 h = h | 0;
-                let j = 0, k = 0, l = 0, n = 0;
+                let j = 0,
+                    k = 0,
+                    l = 0,
+                    n = 0;
                 j = i;
                 k = f;
                 f = h;
@@ -15143,7 +15615,10 @@ class LibTiMidity {
                 return;
             }
             function cZ() {
-                let a = 0, b = 0, d = 0, e = 0;
+                let a = 0,
+                    b = 0,
+                    d = 0,
+                    e = 0;
                 a = 0;
                 while (1) {
                     if ((a | 0) >= 128) {
@@ -15192,7 +15667,11 @@ class LibTiMidity {
                 b = b | 0;
                 c = c | 0;
                 d = d | 0;
-                let e = 0, f = 0, g = 0, h = 0, i = 0;
+                let e = 0,
+                    f = 0,
+                    g = 0,
+                    h = 0,
+                    i = 0;
                 e = b;
                 b = c;
                 c = d;
@@ -15237,7 +15716,91 @@ class LibTiMidity {
             }
             function c$(a) {
                 a = a | 0;
-                let b = 0, d = 0, e = 0, f = 0, g = 0, h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0, q = 0, r = 0, s = 0, t = 0, u = 0, v = 0, w = 0, x = 0, y = 0, z = 0, A = 0, B = 0, C = 0, D = 0, E = 0, F = 0, G = 0, H = 0, I = 0, J = 0, K = 0, L = 0, M = 0, N = 0, O = 0, P = 0, Q = 0, R = 0, S = 0, T = 0, U = 0, V = 0, W = 0, X = 0, Y = 0, Z = 0, _ = 0, $ = 0, aa = 0, ab = 0, ac = 0, ad = 0, ae = 0, af = 0, ag = 0, ah = 0, ai = 0, aj = 0, ak = 0, al = 0, an = 0, ao = 0, ap = 0, ar = 0, as = 0, at = 0, au = 0, av = 0, aw = 0, ax = 0, ay = 0, az = 0, aA = 0, aB = 0, aC = 0, aD = 0, aE = 0, aF = 0, aG = 0, aH = 0, aI = 0;
+                let b = 0,
+                    d = 0,
+                    e = 0,
+                    f = 0,
+                    g = 0,
+                    h = 0,
+                    i = 0,
+                    j = 0,
+                    k = 0,
+                    l = 0,
+                    m = 0,
+                    n = 0,
+                    o = 0,
+                    p = 0,
+                    q = 0,
+                    r = 0,
+                    s = 0,
+                    t = 0,
+                    u = 0,
+                    v = 0,
+                    w = 0,
+                    x = 0,
+                    y = 0,
+                    z = 0,
+                    A = 0,
+                    B = 0,
+                    C = 0,
+                    D = 0,
+                    E = 0,
+                    F = 0,
+                    G = 0,
+                    H = 0,
+                    I = 0,
+                    J = 0,
+                    K = 0,
+                    L = 0,
+                    M = 0,
+                    N = 0,
+                    O = 0,
+                    P = 0,
+                    Q = 0,
+                    R = 0,
+                    S = 0,
+                    T = 0,
+                    U = 0,
+                    V = 0,
+                    W = 0,
+                    X = 0,
+                    Y = 0,
+                    Z = 0,
+                    _ = 0,
+                    $ = 0,
+                    aa = 0,
+                    ab = 0,
+                    ac = 0,
+                    ad = 0,
+                    ae = 0,
+                    af = 0,
+                    ag = 0,
+                    ah = 0,
+                    ai = 0,
+                    aj = 0,
+                    ak = 0,
+                    al = 0,
+                    an = 0,
+                    ao = 0,
+                    ap = 0,
+                    ar = 0,
+                    as = 0,
+                    at = 0,
+                    au = 0,
+                    av = 0,
+                    aw = 0,
+                    ax = 0,
+                    ay = 0,
+                    az = 0,
+                    aA = 0,
+                    aB = 0,
+                    aC = 0,
+                    aD = 0,
+                    aE = 0,
+                    aF = 0,
+                    aG = 0,
+                    aH = 0,
+                    aI = 0;
                 do {
                     if (a >>> 0 < 245) {
                         if (a >>> 0 < 11) {
@@ -17297,7 +17860,45 @@ class LibTiMidity {
             }
             function c0(a) {
                 a = a | 0;
-                let b = 0, d = 0, e = 0, f = 0, g = 0, h = 0, i = 0, j = 0, k = 0, l = 0, m = 0, n = 0, o = 0, p = 0, q = 0, r = 0, s = 0, t = 0, u = 0, v = 0, w = 0, x = 0, y = 0, z = 0, A = 0, B = 0, C = 0, D = 0, E = 0, F = 0, G = 0, H = 0, I = 0, J = 0, K = 0, L = 0, M = 0, N = 0, O = 0;
+                let b = 0,
+                    d = 0,
+                    e = 0,
+                    f = 0,
+                    g = 0,
+                    h = 0,
+                    i = 0,
+                    j = 0,
+                    k = 0,
+                    l = 0,
+                    m = 0,
+                    n = 0,
+                    o = 0,
+                    p = 0,
+                    q = 0,
+                    r = 0,
+                    s = 0,
+                    t = 0,
+                    u = 0,
+                    v = 0,
+                    w = 0,
+                    x = 0,
+                    y = 0,
+                    z = 0,
+                    A = 0,
+                    B = 0,
+                    C = 0,
+                    D = 0,
+                    E = 0,
+                    F = 0,
+                    G = 0,
+                    H = 0,
+                    I = 0,
+                    J = 0,
+                    K = 0,
+                    L = 0,
+                    M = 0,
+                    N = 0,
+                    O = 0;
                 if ((a | 0) == 0) {
                     return;
                 }
@@ -17878,7 +18479,8 @@ class LibTiMidity {
             function c3(b, c) {
                 b = b | 0;
                 c = c | 0;
-                let d = 0, e = 0;
+                let d = 0,
+                    e = 0;
                 d = (b + (c1(b) | 0)) | 0;
                 do {
                     a[(d + e) | 0] = a[(c + e) | 0];
@@ -17890,7 +18492,9 @@ class LibTiMidity {
                 a = a | 0;
                 b = b | 0;
                 c = c | 0;
-                let e = 0, f = 0, g = 0;
+                let e = 0,
+                    f = 0,
+                    g = 0;
                 while ((e | 0) < (c | 0)) {
                     f = d[(a + e) | 0] | 0;
                     g = d[(b + e) | 0] | 0;
@@ -17904,7 +18508,9 @@ class LibTiMidity {
                 b = b | 0;
                 d = d | 0;
                 e = e | 0;
-                let f = 0, g = 0, h = 0;
+                let f = 0,
+                    g = 0,
+                    h = 0;
                 f = (b + e) | 0;
                 if ((e | 0) >= 20) {
                     d = d & 255;
@@ -17961,7 +18567,8 @@ class LibTiMidity {
                 b = b | 0;
                 c = c | 0;
                 d = d | 0;
-                let e = 0, f = 0;
+                let e = 0,
+                    f = 0;
                 while ((e | 0) < (d | 0)) {
                     a[(b + e) | 0] = f ? 0 : a[(c + e) | 0] | 0;
                     f = f ? 1 : (a[(c + e) | 0] | 0) == 0;
@@ -18202,9 +18809,11 @@ class LibTiMidity {
         ] = asm['_mid_song_get_missing_instrument']);
         const _mid_istream_close = (Module['_mid_istream_close'] =
             asm['_mid_istream_close']);
-        const _mid_song_free = (Module['_mid_song_free'] = asm['_mid_song_free']);
+        const _mid_song_free = (Module['_mid_song_free'] =
+            asm['_mid_song_free']);
         const _mid_init = (Module['_mid_init'] = asm['_mid_init']);
-        const _mid_song_load = (Module['_mid_song_load'] = asm['_mid_song_load']);
+        const _mid_song_load = (Module['_mid_song_load'] =
+            asm['_mid_song_load']);
         const _mid_song_start = (Module['_mid_song_start'] =
             asm['_mid_song_start']);
         const _mid_song_get_num_missing_instruments = (Module[
