@@ -1,6 +1,6 @@
 {
     "name": "web-midi-player",
-    "version": "1.2.2",
+    "version": "1.2.3",
     "description": "🎹 Event-driven JavaScript library to enable MIDI playback in the browser.",
     "keywords": [
         "midi",
@@ -42,8 +42,8 @@
         "lint:check": "prettier --check **/*.js",
         "test": "jest",
         "test:init": "jest --init",
-        "docs": "documentation build src/MidiPlayer.js -f html -o doc --config documentation.yml",
-        "docs:watch": "documentation serve --watch src/MidiPlayer.js --config documentation.yml",
+        "docs": "documentation build src/MidiPlayer.js -f html -o doc --config documentation.yml --theme ./doc/theme",
+        "docs:watch": "documentation serve --watch src/MidiPlayer.js --config documentation.yml --theme ./doc/theme",
         "upgrade:patch": "npm version patch",
         "upgrade:minor": "npm version minor",
         "upgrade:major": "npm version major",
@@ -61,6 +61,7 @@
         "babel-loader": "^8.0.5",
         "clean-webpack-plugin": "^3.0.0",
         "documentation": "^12.1.4",
+        "documentation-theme-light": "^1.1.1",
         "file-loader": "^5.0.2",
         "html-webpack-plugin": "^3.2.0",
         "jest": "^25.1.0",
