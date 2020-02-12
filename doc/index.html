@@ -1,4093 +1,4155 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset='utf-8'>
-  <title>web-midi-player 1.2.2 | Documentation</title>
-  <meta name='description' content='🎹 Event-driven JavaScript library to enable MIDI playback in the browser.'>
-  <meta name='viewport' content='width=device-width,initial-scale=1'>
-  <link href='assets/bass.css' rel='stylesheet'>
-  <link href='assets/style.css' rel='stylesheet'>
-  <link href='assets/github.css' rel='stylesheet'>
-  <link href='assets/split.css' rel='stylesheet'>
-</head>
-<body class='documentation m0'>
-    <div class='flex'>
-      <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
-        <div class='py1 px2'>
-          <h3 class='mb0 no-anchor'>web-midi-player</h3>
-          <div class='mb1'><code>1.2.2</code></div>
-          <input
-            placeholder='Filter'
-            id='filter-input'
-            class='col12 block input'
-            type='text' />
-          <div id='toc'>
-            <ul class='list-reset h5 py1-ul'>
-              
-                
-                <li><a
-                  href='#midiplayer'
-                  class=" toggle-sibling">
-                  MidiPlayer
-                  <span class='icon'>▸</span>
-                </a>
-                
-                <div class='toggle-target display-none'>
-                  
-                  
-                    <ul class='list-reset py1-ul pl1'>
-                      <li class='h5'><span>Instance members</span></li>
-                      
-                      <li><a
-                        href='#midiplayerplay'
-                        class='regular pre-open'>
-                        #play
-                      </a></li>
-                      
-                      <li><a
-                        href='#midiplayerpause'
-                        class='regular pre-open'>
-                        #pause
-                      </a></li>
-                      
-                      <li><a
-                        href='#midiplayerresume'
-                        class='regular pre-open'>
-                        #resume
-                      </a></li>
-                      
-                      <li><a
-                        href='#midiplayerstop'
-                        class='regular pre-open'>
-                        #stop
-                      </a></li>
-                      
-                      <li><a
-                        href='#midiplayeremitevent'
-                        class='regular pre-open'>
-                        #emitEvent
-                      </a></li>
-                      
-                    </ul>
-                  
-                  
-                  
-                </div>
-                
-                </li>
-              
-                
-                <li><a
-                  href='#libtimidity'
-                  class=" toggle-sibling">
-                  LibTiMidity
-                  <span class='icon'>▸</span>
-                </a>
-                
-                <div class='toggle-target display-none'>
-                  
-                  
-                    <ul class='list-reset py1-ul pl1'>
-                      <li class='h5'><span>Instance members</span></li>
-                      
-                      <li><a
-                        href='#libtimidityalignmemorypage'
-                        class='regular pre-open'>
-                        #alignMemoryPage
-                      </a></li>
-                      
-                      <li><a
-                        href='#libtimidityexit'
-                        class='regular pre-open'>
-                        #exit
-                      </a></li>
-                      
-                      <li><a
-                        href='#libtimidityabort'
-                        class='regular pre-open'>
-                        #abort
-                      </a></li>
-                      
-                      <li><a
-                        href='#libtimidityassert'
-                        class='regular pre-open'>
-                        #assert
-                      </a></li>
-                      
-                      <li><a
-                        href='#libtimiditycall'
-                        class='regular pre-open'>
-                        #call
-                      </a></li>
-                      
-                      <li><a
-                        href='#libtimiditysetvalue'
-                        class='regular pre-open'>
-                        #setValue
-                      </a></li>
-                      
-                      <li><a
-                        href='#libtimiditygetvalue'
-                        class='regular pre-open'>
-                        #getValue
-                      </a></li>
-                      
-                      <li><a
-                        href='#libtimidityallocate'
-                        class='regular pre-open'>
-                        #allocate
-                      </a></li>
-                      
-                      <li><a
-                        href='#libtimiditypointer_stringify'
-                        class='regular pre-open'>
-                        #Pointer_stringify
-                      </a></li>
-                      
-                      <li><a
-                        href='#libtimidityutf16tostring'
-                        class='regular pre-open'>
-                        #UTF16ToString
-                      </a></li>
-                      
-                      <li><a
-                        href='#libtimiditystringtoutf16'
-                        class='regular pre-open'>
-                        #stringToUTF16
-                      </a></li>
-                      
-                      <li><a
-                        href='#libtimidityutf32tostring'
-                        class='regular pre-open'>
-                        #UTF32ToString
-                      </a></li>
-                      
-                      <li><a
-                        href='#libtimiditystringtoutf32'
-                        class='regular pre-open'>
-                        #stringToUTF32
-                      </a></li>
-                      
-                      <li><a
-                        href='#libtimiditycallruntimecallbacks'
-                        class='regular pre-open'>
-                        #callRuntimeCallbacks
-                      </a></li>
-                      
-                      <li><a
-                        href='#libtimidityaddonprerun'
-                        class='regular pre-open'>
-                        #addOnPreRun
-                      </a></li>
-                      
-                      <li><a
-                        href='#libtimidityaddoninit'
-                        class='regular pre-open'>
-                        #addOnInit
-                      </a></li>
-                      
-                      <li><a
-                        href='#libtimidityaddonpremain'
-                        class='regular pre-open'>
-                        #addOnPreMain
-                      </a></li>
-                      
-                      <li><a
-                        href='#libtimidityaddonexit'
-                        class='regular pre-open'>
-                        #addOnExit
-                      </a></li>
-                      
-                      <li><a
-                        href='#libtimidityaddonpostrun'
-                        class='regular pre-open'>
-                        #addOnPostRun
-                      </a></li>
-                      
-                      <li><a
-                        href='#libtimidityintarrayfromstring'
-                        class='regular pre-open'>
-                        #intArrayFromString
-                      </a></li>
-                      
-                      <li><a
-                        href='#libtimidityintarraytostring'
-                        class='regular pre-open'>
-                        #intArrayToString
-                      </a></li>
-                      
-                      <li><a
-                        href='#libtimiditywritestringtomemory'
-                        class='regular pre-open'>
-                        #writeStringToMemory
-                      </a></li>
-                      
-                      <li><a
-                        href='#libtimiditywritearraytomemory'
-                        class='regular pre-open'>
-                        #writeArrayToMemory
-                      </a></li>
-                      
-                      <li><a
-                        href='#libtimiditywriteasciitomemory'
-                        class='regular pre-open'>
-                        #writeAsciiToMemory
-                      </a></li>
-                      
-                      <li><a
-                        href='#libtimidityaddrundependency'
-                        class='regular pre-open'>
-                        #addRunDependency
-                      </a></li>
-                      
-                      <li><a
-                        href='#libtimiditycreatepath'
-                        class='regular pre-open'>
-                        #createPath
-                      </a></li>
-                      
-                      <li><a
-                        href='#libtimiditycreatefile'
-                        class='regular pre-open'>
-                        #createFile
-                      </a></li>
-                      
-                      <li><a
-                        href='#libtimiditycreatedatafile'
-                        class='regular pre-open'>
-                        #createDataFile
-                      </a></li>
-                      
-                      <li><a
-                        href='#libtimidityloadpatchfromurl'
-                        class='regular pre-open'>
-                        #loadPatchFromUrl
-                      </a></li>
-                      
-                      <li><a
-                        href='#libtimidityinit'
-                        class='regular pre-open'>
-                        #init
-                      </a></li>
-                      
-                    </ul>
-                  
-                  
-                  
-                </div>
-                
-                </li>
-              
-                
-                <li><a
-                  href='#eventhandler'
-                  class=" toggle-sibling">
-                  EventHandler
-                  <span class='icon'>▸</span>
-                </a>
-                
-                <div class='toggle-target display-none'>
-                  
-                  
-                    <ul class='list-reset py1-ul pl1'>
-                      <li class='h5'><span>Instance members</span></li>
-                      
-                      <li><a
-                        href='#eventhandleremitinit'
-                        class='regular pre-open'>
-                        #emitInit
-                      </a></li>
-                      
-                      <li><a
-                        href='#eventhandleremitloadfile'
-                        class='regular pre-open'>
-                        #emitLoadFile
-                      </a></li>
-                      
-                      <li><a
-                        href='#eventhandleremitloadpatch'
-                        class='regular pre-open'>
-                        #emitLoadPatch
-                      </a></li>
-                      
-                      <li><a
-                        href='#eventhandleremitplay'
-                        class='regular pre-open'>
-                        #emitPlay
-                      </a></li>
-                      
-                      <li><a
-                        href='#eventhandleremitpause'
-                        class='regular pre-open'>
-                        #emitPause
-                      </a></li>
-                      
-                      <li><a
-                        href='#eventhandleremitresume'
-                        class='regular pre-open'>
-                        #emitResume
-                      </a></li>
-                      
-                      <li><a
-                        href='#eventhandleremitstop'
-                        class='regular pre-open'>
-                        #emitStop
-                      </a></li>
-                      
-                      <li><a
-                        href='#eventhandleremitend'
-                        class='regular pre-open'>
-                        #emitEnd
-                      </a></li>
-                      
-                      <li><a
-                        href='#eventhandleremiterror'
-                        class='regular pre-open'>
-                        #emitError
-                      </a></li>
-                      
-                      <li><a
-                        href='#eventhandleremitevent'
-                        class='regular pre-open'>
-                        #emitEvent
-                      </a></li>
-                      
-                    </ul>
-                  
-                  
-                  
-                </div>
-                
-                </li>
-              
-            </ul>
-          </div>
-          <div class='mt1 h6 quiet'>
-            <a href='https://documentation.js.org/reading-documentation.html'>Need help reading this?</a>
-          </div>
-        </div>
-      </div>
-      <div id='split-right' class='relative overflow-auto height-viewport-100'>
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="utf-8" />
+        <title>
+            web-midi-player 1.2.3 |
+            Documentation
+        </title>
         
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
+        <meta name='description' content='🎹 Event-driven JavaScript library to enable MIDI playback in the browser.'>
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <link href="assets/styles.css" rel="stylesheet" />
+    </head>
 
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='midiplayer'>
-      MidiPlayer
+    <body class="documentation">
+        <div class="px2">
+            <div class="clearfix md-flex lg-flex flex-stretch mxn2">
+                <div class="documentation-sidebar relative top-0 bottom-0 right-0 px2 py2 col-3 md-show">
+                    <div
+                        class="documentation-sidebar-content font-smaller fixed col-3 top-0 bottom-0 left-0 overflow-auto fill-light dark-link">
+                        <div class="px2">
+                            <h3 class="mb0 no-anchor project-name">
+                                <code>web-midi-player</code>
+                            </h3>
+                            <div class="mb1">
+                                <code>1.2.3</code>
+                                |
+                                <a href="https://midi.yvesgurcan.com">README</a>
+                            </div>
+                            <input placeholder="Search" id="filter-input" class="col12 block input" type="text" />
+                            <div id="toc">
+                                  
+                                <a href="#midiplayer"
+                                    class="regular block toggle-sibling">
+                                    <code>MidiPlayer</code>
+                                    <span class="icon">▾</span>
+                                </a>
+                                 
+                                <div class="toggle-target">
+                                      
+                                    <a href="#midiplayerplay" class="button-indent regular block">
+                                        <code>#play</code>
+                                    </a>
+                                    
+                                    <a href="#midiplayerpause" class="button-indent regular block">
+                                        <code>#pause</code>
+                                    </a>
+                                    
+                                    <a href="#midiplayerresume" class="button-indent regular block">
+                                        <code>#resume</code>
+                                    </a>
+                                    
+                                    <a href="#midiplayerstop" class="button-indent regular block">
+                                        <code>#stop</code>
+                                    </a>
+                                    
+                                    <a href="#midiplayeremitevent" class="button-indent regular block">
+                                        <code>#emitEvent</code>
+                                    </a>
+                                       
+                                </div>
+                                   
+                                <a href="#libtimidity"
+                                    class="regular block toggle-sibling">
+                                    <code>LibTiMidity</code>
+                                    <span class="icon">▾</span>
+                                </a>
+                                 
+                                <div class="toggle-target">
+                                      
+                                    <a href="#libtimidityalignmemorypage" class="button-indent regular block">
+                                        <code>#alignMemoryPage</code>
+                                    </a>
+                                    
+                                    <a href="#libtimidityexit" class="button-indent regular block">
+                                        <code>#exit</code>
+                                    </a>
+                                    
+                                    <a href="#libtimidityabort" class="button-indent regular block">
+                                        <code>#abort</code>
+                                    </a>
+                                    
+                                    <a href="#libtimidityassert" class="button-indent regular block">
+                                        <code>#assert</code>
+                                    </a>
+                                    
+                                    <a href="#libtimiditycall" class="button-indent regular block">
+                                        <code>#call</code>
+                                    </a>
+                                    
+                                    <a href="#libtimiditysetvalue" class="button-indent regular block">
+                                        <code>#setValue</code>
+                                    </a>
+                                    
+                                    <a href="#libtimiditygetvalue" class="button-indent regular block">
+                                        <code>#getValue</code>
+                                    </a>
+                                    
+                                    <a href="#libtimidityallocate" class="button-indent regular block">
+                                        <code>#allocate</code>
+                                    </a>
+                                    
+                                    <a href="#libtimiditypointer_stringify" class="button-indent regular block">
+                                        <code>#Pointer_stringify</code>
+                                    </a>
+                                    
+                                    <a href="#libtimidityutf16tostring" class="button-indent regular block">
+                                        <code>#UTF16ToString</code>
+                                    </a>
+                                    
+                                    <a href="#libtimiditystringtoutf16" class="button-indent regular block">
+                                        <code>#stringToUTF16</code>
+                                    </a>
+                                    
+                                    <a href="#libtimidityutf32tostring" class="button-indent regular block">
+                                        <code>#UTF32ToString</code>
+                                    </a>
+                                    
+                                    <a href="#libtimiditystringtoutf32" class="button-indent regular block">
+                                        <code>#stringToUTF32</code>
+                                    </a>
+                                    
+                                    <a href="#libtimiditycallruntimecallbacks" class="button-indent regular block">
+                                        <code>#callRuntimeCallbacks</code>
+                                    </a>
+                                    
+                                    <a href="#libtimidityaddonprerun" class="button-indent regular block">
+                                        <code>#addOnPreRun</code>
+                                    </a>
+                                    
+                                    <a href="#libtimidityaddoninit" class="button-indent regular block">
+                                        <code>#addOnInit</code>
+                                    </a>
+                                    
+                                    <a href="#libtimidityaddonpremain" class="button-indent regular block">
+                                        <code>#addOnPreMain</code>
+                                    </a>
+                                    
+                                    <a href="#libtimidityaddonexit" class="button-indent regular block">
+                                        <code>#addOnExit</code>
+                                    </a>
+                                    
+                                    <a href="#libtimidityaddonpostrun" class="button-indent regular block">
+                                        <code>#addOnPostRun</code>
+                                    </a>
+                                    
+                                    <a href="#libtimidityintarrayfromstring" class="button-indent regular block">
+                                        <code>#intArrayFromString</code>
+                                    </a>
+                                    
+                                    <a href="#libtimidityintarraytostring" class="button-indent regular block">
+                                        <code>#intArrayToString</code>
+                                    </a>
+                                    
+                                    <a href="#libtimiditywritestringtomemory" class="button-indent regular block">
+                                        <code>#writeStringToMemory</code>
+                                    </a>
+                                    
+                                    <a href="#libtimiditywritearraytomemory" class="button-indent regular block">
+                                        <code>#writeArrayToMemory</code>
+                                    </a>
+                                    
+                                    <a href="#libtimiditywriteasciitomemory" class="button-indent regular block">
+                                        <code>#writeAsciiToMemory</code>
+                                    </a>
+                                    
+                                    <a href="#libtimidityaddrundependency" class="button-indent regular block">
+                                        <code>#addRunDependency</code>
+                                    </a>
+                                    
+                                    <a href="#libtimiditycreatepath" class="button-indent regular block">
+                                        <code>#createPath</code>
+                                    </a>
+                                    
+                                    <a href="#libtimiditycreatefile" class="button-indent regular block">
+                                        <code>#createFile</code>
+                                    </a>
+                                    
+                                    <a href="#libtimiditycreatedatafile" class="button-indent regular block">
+                                        <code>#createDataFile</code>
+                                    </a>
+                                    
+                                    <a href="#libtimidityloadpatchfromurl" class="button-indent regular block">
+                                        <code>#loadPatchFromUrl</code>
+                                    </a>
+                                    
+                                    <a href="#libtimidityinit" class="button-indent regular block">
+                                        <code>#init</code>
+                                    </a>
+                                       
+                                </div>
+                                   
+                                <a href="#eventhandler"
+                                    class="regular block toggle-sibling">
+                                    <code>EventHandler</code>
+                                    <span class="icon">▾</span>
+                                </a>
+                                 
+                                <div class="toggle-target">
+                                      
+                                    <a href="#eventhandleremitinit" class="button-indent regular block">
+                                        <code>#emitInit</code>
+                                    </a>
+                                    
+                                    <a href="#eventhandleremitloadfile" class="button-indent regular block">
+                                        <code>#emitLoadFile</code>
+                                    </a>
+                                    
+                                    <a href="#eventhandleremitloadpatch" class="button-indent regular block">
+                                        <code>#emitLoadPatch</code>
+                                    </a>
+                                    
+                                    <a href="#eventhandleremitplay" class="button-indent regular block">
+                                        <code>#emitPlay</code>
+                                    </a>
+                                    
+                                    <a href="#eventhandleremitpause" class="button-indent regular block">
+                                        <code>#emitPause</code>
+                                    </a>
+                                    
+                                    <a href="#eventhandleremitresume" class="button-indent regular block">
+                                        <code>#emitResume</code>
+                                    </a>
+                                    
+                                    <a href="#eventhandleremitstop" class="button-indent regular block">
+                                        <code>#emitStop</code>
+                                    </a>
+                                    
+                                    <a href="#eventhandleremitend" class="button-indent regular block">
+                                        <code>#emitEnd</code>
+                                    </a>
+                                    
+                                    <a href="#eventhandleremiterror" class="button-indent regular block">
+                                        <code>#emitError</code>
+                                    </a>
+                                    
+                                    <a href="#eventhandleremitevent" class="button-indent regular block">
+                                        <code>#emitEvent</code>
+                                    </a>
+                                       
+                                </div>
+                                 
+                            </div>
+                            <div id="sidebar-footer"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="sm-col-12 md-col-9 lg-col-9 flex flex-column">
+                    <div class="flex-auto full-width">
+                          <section id='midiplayer' class='mt2 mb2 px3 py1 keyline-top'>
+
+    <div class='right py2'>
+        
+        
+    </div>
+
+    <h3 class='regular'>
+        <a class='black' href='#midiplayer'>
+            <code>
+				MidiPlayer<span class='gray'>(configuration?)</span>
+			</code>
+        </a>
     </h3>
+
     
     
-  </div>
-  
 
-  
-    <div class='pre p1 fill-light mt0'>new MidiPlayer(configuration: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>?): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>configuration</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>?)</code>
-	    
-          </div>
-          
-          <table class='mt1 mb2 fixed-table h5 col-12'>
-            <colgroup>
-              <col width='30%' />
-              <col width='70%' />
-            </colgroup>
-            <thead>
-              <tr class='bold fill-light'>
-                <th>Name</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody class='mt1'>
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>configuration.eventLogger</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">function</a></code>
-  
-    (default <code>undefined</code>)
-  </td>
-  <td class='break-word'><span>The function that receives event payloads.
-</span></td>
-</tr>
-
-
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>configuration.logging</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
-  
-    (default <code>false</code>)
-  </td>
-  <td class='break-word'><span>Turns ON or OFF logging to the console.
-</span></td>
-</tr>
-
-
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>configuration.patchUrl</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
-  
-    (default <code>https://cdn.jsdelivr.net/npm/midi-instrument-patches@latest/</code>)
-  </td>
-  <td class='break-word'><span>The public path where MIDI instrument patches can be found.
-</span></td>
-</tr>
-
-
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>configuration.audioContext</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></code>
-  
-    (default <code>undefined</code>)
-  </td>
-  <td class='break-word'><span>An instance of the Web Audio API AudioContext interface.
-</span></td>
-</tr>
-
-
-              
-            </tbody>
-          </table>
-          
-        </div>
-      
-    </div>
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Properties</div>
-    <div>
-      
-        <div class='space-bottom0'>
-          <span class='code bold'>playerId</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-          : ID of this instance of Midi Player.
-
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <span class='code bold'>context</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</code>
-          : The AudioContext instance.
-
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <span class='code bold'>eventLogger</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">function</a>)</code>
-          : The function that is called to emit events.
-
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <span class='code bold'>logging</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>)</code>
-          : Whether console logging is ON or OFF.
-
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <span class='code bold'>midiFileArray</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer">arrayBuffer</a>)</code>
-          : A typed array that represents the content of the MIDI.
-
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <span class='code bold'>midiFileBuffer</span> <code class='quiet'>(any)</code>
-          : The buffer with the MIDI data.
-
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <span class='code bold'>patchUrl</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-          : The URL used to load MIDI instrument patches.
-
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <span class='code bold'>source</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</code>
-          : The source that plays the audio signal.
-
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <span class='code bold'>startTime</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
-          : The time when MIDI playback started.
-
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <span class='code bold'>stream</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
-          : The MIDI stream.
-
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <span class='code bold'>waveBuffer</span> <code class='quiet'>(any)</code>
-          : The buffer with the MIDI data converted to WAV.
-
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <span class='code bold'>isFirstInstance</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>)</code>
-          : Whether this is the first instance of the Midi Player or not.
-
-          
-        </div>
-      
-    </div>
-  
-
-  
     
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></code>:
-        A 
+    
+    
+    
+    
+    
+
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>configuration</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>?
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+  <td class='col-2 strong'>configuration.eventLogger</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">function</a>
+    
+      (default <code>undefined</code>)
+    
+  </td>
+  <td class='col-8'>The function that receives event payloads.
+</td>
+</tr>
+
+
+        
+        <tr>
+  <td class='col-2 strong'>configuration.logging</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>
+    
+      (default <code>false</code>)
+    
+  </td>
+  <td class='col-8'>Turns ON or OFF logging to the console.
+</td>
+</tr>
+
+
+        
+        <tr>
+  <td class='col-2 strong'>configuration.patchUrl</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+    
+      (default <code>https://cdn.jsdelivr.net/npm/midi-instrument-patches@latest/</code>)
+    
+  </td>
+  <td class='col-8'>The public path where MIDI instrument patches can be found.
+</td>
+</tr>
+
+
+        
+        <tr>
+  <td class='col-2 strong'>configuration.audioContext</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>
+    
+      (default <code>undefined</code>)
+    
+  </td>
+  <td class='col-8'>An instance of the Web Audio API AudioContext interface.
+</td>
+</tr>
+
+
+        
+        
+        
+    </table>
+    
+
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-2 small caps quiet'>property</th>
+            <th class='col-2 small caps quiet'>type</th>
+            <th class='col-8 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-2 strong'>playerId</td>
+            <td class='col-2 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+                
+            </td>
+            <td class='col-8'>: ID of this instance of Midi Player.
+</td>
+        </tr>
+
+        
+        
+        <tr>
+            <td class='col-2 strong'>context</td>
+            <td class='col-2 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>
+                
+            </td>
+            <td class='col-8'>: The AudioContext instance.
+</td>
+        </tr>
+
+        
+        
+        <tr>
+            <td class='col-2 strong'>eventLogger</td>
+            <td class='col-2 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">function</a>
+                
+            </td>
+            <td class='col-8'>: The function that is called to emit events.
+</td>
+        </tr>
+
+        
+        
+        <tr>
+            <td class='col-2 strong'>logging</td>
+            <td class='col-2 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>
+                
+            </td>
+            <td class='col-8'>: Whether console logging is ON or OFF.
+</td>
+        </tr>
+
+        
+        
+        <tr>
+            <td class='col-2 strong'>midiFileArray</td>
+            <td class='col-2 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer">arrayBuffer</a>
+                
+            </td>
+            <td class='col-8'>: A typed array that represents the content of the MIDI.
+</td>
+        </tr>
+
+        
+        
+        <tr>
+            <td class='col-2 strong'>midiFileBuffer</td>
+            <td class='col-2 quiet'>
+                any
+                
+            </td>
+            <td class='col-8'>: The buffer with the MIDI data.
+</td>
+        </tr>
+
+        
+        
+        <tr>
+            <td class='col-2 strong'>patchUrl</td>
+            <td class='col-2 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+                
+            </td>
+            <td class='col-8'>: The URL used to load MIDI instrument patches.
+</td>
+        </tr>
+
+        
+        
+        <tr>
+            <td class='col-2 strong'>source</td>
+            <td class='col-2 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>
+                
+            </td>
+            <td class='col-8'>: The source that plays the audio signal.
+</td>
+        </tr>
+
+        
+        
+        <tr>
+            <td class='col-2 strong'>startTime</td>
+            <td class='col-2 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+                
+            </td>
+            <td class='col-8'>: The time when MIDI playback started.
+</td>
+        </tr>
+
+        
+        
+        <tr>
+            <td class='col-2 strong'>stream</td>
+            <td class='col-2 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+                
+            </td>
+            <td class='col-8'>: The MIDI stream.
+</td>
+        </tr>
+
+        
+        
+        <tr>
+            <td class='col-2 strong'>waveBuffer</td>
+            <td class='col-2 quiet'>
+                any
+                
+            </td>
+            <td class='col-8'>: The buffer with the MIDI data converted to WAV.
+</td>
+        </tr>
+
+        
+        
+        <tr>
+            <td class='col-2 strong'>isFirstInstance</td>
+            <td class='col-2 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>
+                
+            </td>
+            <td class='col-8'>: Whether this is the first instance of the Midi Player or not.
+</td>
+        </tr>
+
+        
+        
+    </table>
+    
+
+    
+    
+    <h4 class='caps quiet mb1 mt3'>Returns</h4>
+    <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></code>
+    :
+    <span class='force-inline'>A 
 <code>MidiPlayer</code>
  instance.
-
-      
+</span>
     
-  
-
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Example</div>
     
-      
-      <pre class='p1 overflow-auto round fill-light'><span class="hljs-keyword">import</span> MidiPlayer <span class="hljs-keyword">from</span> <span class="hljs-string">'web-midi-player'</span>;
+    
+
+    
+
+    
+    <h4 class='caps quiet mb1 mt3'>Examples</h4>
+    
+    
+    <pre class='p1 overflow-auto round fill-light'><code><span class="hljs-keyword">import</span> MidiPlayer <span class="hljs-keyword">from</span> <span class="hljs-string">'web-midi-player'</span>;
 
 <span class="hljs-keyword">const</span> eventLogger = <span class="hljs-function">(<span class="hljs-params">payload</span>) =&gt;</span> {
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Received event:'</span>, payload.event)
 }
 
-<span class="hljs-keyword">const</span> midiPlayer = <span class="hljs-keyword">new</span> MidiPlayer({ eventLogger, <span class="hljs-attr">logging</span>: <span class="hljs-literal">true</span> });</pre>
+<span class="hljs-keyword">const</span> midiPlayer = <span class="hljs-keyword">new</span> MidiPlayer({ eventLogger, <span class="hljs-attr">logging</span>: <span class="hljs-literal">true</span> });</code></pre>
     
-  
+    
 
-  
+    
 
+    
+    <h4 class='caps quiet mb2 mt3'>Instance Members</h4>
+    <div class="section-indent">
   
-    <div class='py1 quiet mt1 prose-big'>Instance Members</div>
-    <div class="clearfix">
-  
-    <div class='border-bottom' id='midiplayerplay'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>play(input)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
+    <section id='midiplayerplay' class='mt2 mb2 px3 py1 keyline-top'>
 
-  
+    <div class='right py2'>
+        
+        
+    </div>
 
-  <p>Starts playback of MIDI input.</p>
+    <h3 class='regular'>
+        <a class='black' href='#midiplayerplay'>
+            <code>
+				play<span class='gray'>(input)</span>
+			</code>
+        </a>
+    </h3>
+
+    <p>Starts playback of MIDI input.</p>
 <p>Please note that you can not use <code>input.arrayBuffer</code> and <code>input.url</code> concurrently.</p>
 
-    <div class='pre p1 fill-light mt0'>play(input: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>input</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>
-            = <code>{}</code>)</code>
-	    
-          </div>
-          
-          <table class='mt1 mb2 fixed-table h5 col-12'>
-            <colgroup>
-              <col width='30%' />
-              <col width='70%' />
-            </colgroup>
-            <thead>
-              <tr class='bold fill-light'>
-                <th>Name</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody class='mt1'>
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>input.arrayBuffer</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer">arrayBuffer</a>?</code>
-  </td>
-  <td class='break-word'><span>An array buffer containing MIDI data to play.
-</span></td>
-</tr>
-
-
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>input.url</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?</code>
-  </td>
-  <td class='break-word'><span>The URL where the MIDI file to play is located.
-</span></td>
-</tr>
-
-
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>input.name</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?</code>
-  </td>
-  <td class='break-word'><span>A human-friendly name for the song.
-</span></td>
-</tr>
-
-
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>input.audioContext</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>?</code>
-  </td>
-  <td class='break-word'><span>An instance of the Web Audio API AudioContext interface.
-</span></td>
-</tr>
-
-
-              
-            </tbody>
-          </table>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
     
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>:
-        Whether playback was successfully initiated or not.
 
-      
     
-  
-
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Example</div>
     
-      
-      <pre class='p1 overflow-auto round fill-light'><span class="hljs-keyword">const</span> name1 = <span class="hljs-string">'My MIDI file from URL'</span>;
+    
+    
+    
+    
+
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>input</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>
+                
+                = <code>{}</code>
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+  <td class='col-2 strong'>input.arrayBuffer</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer">arrayBuffer</a>?
+    
+  </td>
+  <td class='col-8'>An array buffer containing MIDI data to play.
+</td>
+</tr>
+
+
+        
+        <tr>
+  <td class='col-2 strong'>input.url</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?
+    
+  </td>
+  <td class='col-8'>The URL where the MIDI file to play is located.
+</td>
+</tr>
+
+
+        
+        <tr>
+  <td class='col-2 strong'>input.name</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?
+    
+  </td>
+  <td class='col-8'>A human-friendly name for the song.
+</td>
+</tr>
+
+
+        
+        <tr>
+  <td class='col-2 strong'>input.audioContext</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>?
+    
+  </td>
+  <td class='col-8'>An instance of the Web Audio API AudioContext interface.
+</td>
+</tr>
+
+
+        
+        
+        
+    </table>
+    
+
+    
+
+    
+    
+    <h4 class='caps quiet mb1 mt3'>Returns</h4>
+    <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+    :
+    <span class='force-inline'>Whether playback was successfully initiated or not.
+</span>
+    
+    
+    
+
+    
+
+    
+    <h4 class='caps quiet mb1 mt3'>Examples</h4>
+    
+    
+    <pre class='p1 overflow-auto round fill-light'><code><span class="hljs-keyword">const</span> name1 = <span class="hljs-string">'My MIDI file from URL'</span>;
 <span class="hljs-keyword">const</span> url = <span class="hljs-string">'media/file.midi'</span>;
 midiPlayer.play({ url, <span class="hljs-attr">name</span>: name1 });
 
 <span class="hljs-keyword">const</span> name2 = <span class="hljs-string">'My MIDI file from ArrayBuffer'</span>;
 <span class="hljs-keyword">const</span> arrayBuffer = <span class="hljs-keyword">new</span> <span class="hljs-built_in">ArrayBuffer</span>();
-midiPlayer.play({ arrayBuffer, <span class="hljs-attr">name</span>: name2 });</pre>
+midiPlayer.play({ arrayBuffer, <span class="hljs-attr">name</span>: name2 });</code></pre>
     
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 </section>
+  
+    <section id='midiplayerpause' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='midiplayerpause'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>pause()</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#midiplayerpause'>
+            <code>
+				pause<span class='gray'>()</span>
+			</code>
+        </a>
+    </h3>
 
-  <p>Pauses playback of MIDI input.</p>
+    <p>Pauses playback of MIDI input.</p>
 
-    <div class='pre p1 fill-light mt0'>pause(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-
-  
-
-  
     
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>:
-        Whether playback was successfully paused or not.
 
-      
     
-  
-
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Example</div>
     
-      
-      <pre class='p1 overflow-auto round fill-light'>midiPlayer.pause();</pre>
     
-  
+    
+    
+    
 
-  
+    
 
-  
+    
 
-  
+    
+    
+    <h4 class='caps quiet mb1 mt3'>Returns</h4>
+    <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+    :
+    <span class='force-inline'>Whether playback was successfully paused or not.
+</span>
+    
+    
+    
 
-  
+    
+
+    
+    <h4 class='caps quiet mb1 mt3'>Examples</h4>
+    
+    
+    <pre class='p1 overflow-auto round fill-light'><code>midiPlayer.pause();</code></pre>
+    
+    
+
+    
+
+    
+
+    
+
+    
 </section>
+  
+    <section id='midiplayerresume' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='midiplayerresume'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>resume()</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#midiplayerresume'>
+            <code>
+				resume<span class='gray'>()</span>
+			</code>
+        </a>
+    </h3>
 
-  <p>Resumes playback of MIDI input.</p>
+    <p>Resumes playback of MIDI input.</p>
 
-    <div class='pre p1 fill-light mt0'>resume(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-
-  
-
-  
     
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>:
-        Whether playback was successfully ressumed or not.
 
-      
     
-  
-
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Example</div>
     
-      
-      <pre class='p1 overflow-auto round fill-light'>midiPlayer.resume();</pre>
     
-  
+    
+    
+    
 
-  
+    
 
-  
+    
 
-  
+    
+    
+    <h4 class='caps quiet mb1 mt3'>Returns</h4>
+    <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+    :
+    <span class='force-inline'>Whether playback was successfully ressumed or not.
+</span>
+    
+    
+    
 
-  
+    
+
+    
+    <h4 class='caps quiet mb1 mt3'>Examples</h4>
+    
+    
+    <pre class='p1 overflow-auto round fill-light'><code>midiPlayer.resume();</code></pre>
+    
+    
+
+    
+
+    
+
+    
+
+    
 </section>
+  
+    <section id='midiplayerstop' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='midiplayerstop'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>stop()</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#midiplayerstop'>
+            <code>
+				stop<span class='gray'>()</span>
+			</code>
+        </a>
+    </h3>
 
-  <p>Stops playback of MIDI input.</p>
+    <p>Stops playback of MIDI input.</p>
 
-    <div class='pre p1 fill-light mt0'>stop(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-
-  
-
-  
     
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>:
-        Whether playback was successfully stopped or not.
 
-      
     
-  
-
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Example</div>
     
-      
-      <pre class='p1 overflow-auto round fill-light'>midiPlayer.stop();</pre>
     
-  
+    
+    
+    
 
-  
+    
 
-  
+    
 
-  
+    
+    
+    <h4 class='caps quiet mb1 mt3'>Returns</h4>
+    <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+    :
+    <span class='force-inline'>Whether playback was successfully stopped or not.
+</span>
+    
+    
+    
 
-  
+    
+
+    
+    <h4 class='caps quiet mb1 mt3'>Examples</h4>
+    
+    
+    <pre class='p1 overflow-auto round fill-light'><code>midiPlayer.stop();</code></pre>
+    
+    
+
+    
+
+    
+
+    
+
+    
 </section>
+  
+    <section id='midiplayeremitevent' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='midiplayeremitevent'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>emitEvent(payload)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#midiplayeremitevent'>
+            <code>
+				emitEvent<span class='gray'>(payload)</span>
+			</code>
+        </a>
+    </h3>
 
-  <p>Send custom payloads to the event logger.</p>
+    <p>Send custom payloads to the event logger.</p>
 
-    <div class='pre p1 fill-light mt0'>emitEvent(payload: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</div>
-  
-  
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>payload</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</code>
-	    
-          </div>
-          
-          <table class='mt1 mb2 fixed-table h5 col-12'>
-            <colgroup>
-              <col width='30%' />
-              <col width='70%' />
-            </colgroup>
-            <thead>
-              <tr class='bold fill-light'>
-                <th>Name</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody class='mt1'>
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>payload.event</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?</code>
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>payload</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+  <td class='col-2 strong'>payload.event</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?
+    
   </td>
-  <td class='break-word'><span>The name of the event.
-</span></td>
+  <td class='col-8'>The name of the event.
+</td>
 </tr>
 
 
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>payload.message</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?</code>
+        
+        <tr>
+  <td class='col-2 strong'>payload.message</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?
+    
   </td>
-  <td class='break-word'><span>A message that described the event.
-</span></td>
+  <td class='col-8'>A message that described the event.
+</td>
 </tr>
 
 
-              
-            </tbody>
-          </table>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Example</div>
+        
+        
+        
+    </table>
     
-      
-      <pre class='p1 overflow-auto round fill-light'><span class="hljs-keyword">const</span> event = <span class="hljs-string">'MIDI_CUSTOM_EVENT'</span>;
+
+    
+
+    
+
+    
+
+    
+    <h4 class='caps quiet mb1 mt3'>Examples</h4>
+    
+    
+    <pre class='p1 overflow-auto round fill-light'><code><span class="hljs-keyword">const</span> event = <span class="hljs-string">'MIDI_CUSTOM_EVENT'</span>;
 <span class="hljs-keyword">const</span> message = <span class="hljs-string">'Something happened.'</span>;
-midiPlayer.emitEvent({ event, message });</pre>
+midiPlayer.emitEvent({ event, message });</code></pre>
     
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 </section>
-
-      </div>
-    </div>
   
 </div>
 
-  
+    
 
-  
+    
 
-  
-</section>
+    
+</section>    <section id='libtimidity' class='mt2 mb2 px3 py1 keyline-top'>
 
-          
+    <div class='right py2'>
         
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
+        
+    </div>
 
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='libtimidity'>
-      LibTiMidity
+    <h3 class='regular'>
+        <a class='black' href='#libtimidity'>
+            <code>
+				LibTiMidity<span class='gray'>()</span>
+			</code>
+        </a>
     </h3>
+
     
     
-  </div>
-  
 
-  
-    <div class='pre p1 fill-light mt0'>new LibTiMidity()</div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Instance Members</div>
-    <div class="clearfix">
-  
-    <div class='border-bottom' id='libtimidityalignmemorypage'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>alignMemoryPage(x)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-
-  
-    <div class='pre p1 fill-light mt0'>alignMemoryPage(x: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a>)</div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>x</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a>)</code>
-	    
-          </div>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-      </div>
-    </div>
-  
-    <div class='border-bottom' id='libtimidityexit'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>exit(status)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-
-  <p>Exits the script.</p>
-
-    <div class='pre p1 fill-light mt0'>exit(status: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>status</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    The message to display.
-
-          </div>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-      </div>
-    </div>
-  
-    <div class='border-bottom' id='libtimidityabort'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>abort(text)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-
-  <p>Throws an error that aborts the execution of the script.</p>
-
-    <div class='pre p1 fill-light mt0'>abort(text: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>text</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    The message to display.
-
-          </div>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-      </div>
-    </div>
-  
-    <div class='border-bottom' id='libtimidityassert'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>assert(condition, text)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-
-  <p>Aborts the execution of the script if assertion fails.</p>
-
-    <div class='pre p1 fill-light mt0'>assert(condition: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>, text: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>condition</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>)</code>
-	    The assertion to test.
-
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>text</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    The message to display if the assertion fails.
-
-          </div>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-      </div>
-    </div>
-  
-    <div class='border-bottom' id='libtimiditycall'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>call(ident, returnType, argTypes, args)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-
-  <p>A wrapper to call functions.</p>
-
-    <div class='pre p1 fill-light mt0'>call(ident: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, returnType: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, argTypes: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>, args: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>): any</div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>ident</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    The name of the function to call.
-
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>returnType</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    The return type of the function, one of the JS types 'number', 'string' or 'array' (use 'number' for any C pointer, and 'array' for JavaScript arrays and typed arrays; note that arrays are 8-bit).
-
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>argTypes</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>)</code>
-	    An array of the types of arguments for the function (if there are no arguments, this can be ommitted). Types are as in returnType, except that 'array' is not possible (there is no way for us to know the length of the array)
-
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>args</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>)</code>
-	    An array of the arguments to the function, as native JS values (as in returnType). Note that string arguments will be stored on the stack (the JS string will become a C string on the stack).
-
-          </div>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
     
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>any</code>:
-        Native JS value (as in returnType)
-
-      
     
-  
+    
+    
+    
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
+    
+
+    
+    <h4 class='caps quiet mb2 mt3'>Instance Members</h4>
+    <div class="section-indent">
   
+    <section id='libtimidityalignmemorypage' class='mt2 mb2 px3 py1 keyline-top'>
+
+    <div class='right py2'>
+        
+        
+    </div>
+
+    <h3 class='regular'>
+        <a class='black' href='#libtimidityalignmemorypage'>
+            <code>
+				alignMemoryPage<span class='gray'>(x)</span>
+			</code>
+        </a>
+    </h3>
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>x</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a>
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </section>
+  
+    <section id='libtimidityexit' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='libtimiditysetvalue'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>setValue(ptr, value, type)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#libtimidityexit'>
+            <code>
+				exit<span class='gray'>(status)</span>
+			</code>
+        </a>
+    </h3>
 
-  <p>Dynamically sets a value in memory at runtime. Only does <em>aligned</em> writes. This is a lower-level operation.</p>
+    <p>Exits the script.</p>
 
-    <div class='pre p1 fill-light mt0'>setValue(ptr: any, value: any, type: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</div>
-  
-  
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>ptr</span> <code class='quiet'>(any)</code>
-	    Pointer.
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>status</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+                
+            </td>
+            <td class='col-6'>The message to display.
+</td>
+        </tr>
+        
+        
+    </table>
+    
 
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>value</span> <code class='quiet'>(any)</code>
-	    
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>type</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    LLVM type ('i8', , 'i16', 'i32', 'i64', 'float', 'double')
+    
 
-          </div>
-          
-        </div>
-      
-    </div>
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
-
-  
-
-  
+    
 </section>
+  
+    <section id='libtimidityabort' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='libtimiditygetvalue'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>getValue(ptr, type)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#libtimidityabort'>
+            <code>
+				abort<span class='gray'>(text)</span>
+			</code>
+        </a>
+    </h3>
 
-  <p>Dynamically gets a value in memory at runtime. Only does <em>aligned</em> reads. This is a lower-level operation.</p>
+    <p>Throws an error that aborts the execution of the script.</p>
 
-    <div class='pre p1 fill-light mt0'>getValue(ptr: any, type: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</div>
-  
-  
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>ptr</span> <code class='quiet'>(any)</code>
-	    Pointer.
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>text</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+                
+            </td>
+            <td class='col-6'>The message to display.
+</td>
+        </tr>
+        
+        
+    </table>
+    
 
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>type</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    LLVM type ('i8', , 'i16', 'i32', 'i64', 'float', 'double')
+    
 
-          </div>
-          
-        </div>
-      
-    </div>
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
-
-  
-
-  
+    
 </section>
+  
+    <section id='libtimidityassert' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='libtimidityallocate'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>allocate(slab, types, allocator)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#libtimidityassert'>
+            <code>
+				assert<span class='gray'>(condition, text)</span>
+			</code>
+        </a>
+    </h3>
 
-  <p>This is for internal use. Optimized for multiple syntaxes to save space in generated code. You should allocate memory using _malloc(), initialize it with setValue(), and so forth.</p>
+    <p>Aborts the execution of the script if assertion fails.</p>
 
-    <div class='pre p1 fill-light mt0'>allocate(slab: any, types: any, allocator: any)</div>
-  
-  
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>condition</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>
+                
+            </td>
+            <td class='col-6'>The assertion to test.
+</td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>text</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+                
+            </td>
+            <td class='col-6'>The message to display if the assertion fails.
+</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</section>
   
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>slab</span> <code class='quiet'>(any)</code>
-	    An array of data or a number. If a number, then the size of the block to allocate in 
+    <section id='libtimiditycall' class='mt2 mb2 px3 py1 keyline-top'>
+
+    <div class='right py2'>
+        
+        
+    </div>
+
+    <h3 class='regular'>
+        <a class='black' href='#libtimiditycall'>
+            <code>
+				call<span class='gray'>(ident, returnType, argTypes, args)</span>
+			</code>
+        </a>
+    </h3>
+
+    <p>A wrapper to call functions.</p>
+
+    
+
+    
+    
+    
+    
+    
+    
+
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>ident</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+                
+            </td>
+            <td class='col-6'>The name of the function to call.
+</td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>returnType</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+                
+            </td>
+            <td class='col-6'>The return type of the function, one of the JS types 'number', 'string' or 'array' (use 'number' for any C pointer, and 'array' for JavaScript arrays and typed arrays; note that arrays are 8-bit).
+</td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>argTypes</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>
+                
+            </td>
+            <td class='col-6'>An array of the types of arguments for the function (if there are no arguments, this can be ommitted). Types are as in returnType, except that 'array' is not possible (there is no way for us to know the length of the array)
+</td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>args</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>
+                
+            </td>
+            <td class='col-6'>An array of the arguments to the function, as native JS values (as in returnType). Note that string arguments will be stored on the stack (the JS string will become a C string on the stack).
+</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+    
+    <h4 class='caps quiet mb1 mt3'>Returns</h4>
+    <code>any</code>
+    :
+    <span class='force-inline'>Native JS value (as in returnType)
+</span>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</section>
+  
+    <section id='libtimiditysetvalue' class='mt2 mb2 px3 py1 keyline-top'>
+
+    <div class='right py2'>
+        
+        
+    </div>
+
+    <h3 class='regular'>
+        <a class='black' href='#libtimiditysetvalue'>
+            <code>
+				setValue<span class='gray'>(ptr, value, type)</span>
+			</code>
+        </a>
+    </h3>
+
+    <p>Dynamically sets a value in memory at runtime. Only does <em>aligned</em> writes. This is a lower-level operation.</p>
+
+    
+
+    
+    
+    
+    
+    
+    
+
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>ptr</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'>Pointer.
+</td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>value</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>type</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+                
+            </td>
+            <td class='col-6'>LLVM type ('i8', , 'i16', 'i32', 'i64', 'float', 'double')
+</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</section>
+  
+    <section id='libtimiditygetvalue' class='mt2 mb2 px3 py1 keyline-top'>
+
+    <div class='right py2'>
+        
+        
+    </div>
+
+    <h3 class='regular'>
+        <a class='black' href='#libtimiditygetvalue'>
+            <code>
+				getValue<span class='gray'>(ptr, type)</span>
+			</code>
+        </a>
+    </h3>
+
+    <p>Dynamically gets a value in memory at runtime. Only does <em>aligned</em> reads. This is a lower-level operation.</p>
+
+    
+
+    
+    
+    
+    
+    
+    
+
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>ptr</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'>Pointer.
+</td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>type</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+                
+            </td>
+            <td class='col-6'>LLVM type ('i8', , 'i16', 'i32', 'i64', 'float', 'double')
+</td>
+        </tr>
+        
+        
+    </table>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</section>
+  
+    <section id='libtimidityallocate' class='mt2 mb2 px3 py1 keyline-top'>
+
+    <div class='right py2'>
+        
+        
+    </div>
+
+    <h3 class='regular'>
+        <a class='black' href='#libtimidityallocate'>
+            <code>
+				allocate<span class='gray'>(slab, types, allocator)</span>
+			</code>
+        </a>
+    </h3>
+
+    <p>This is for internal use. Optimized for multiple syntaxes to save space in generated code. You should allocate memory using _malloc(), initialize it with setValue(), and so forth.</p>
+
+    
+
+    
+    
+    
+    
+    
+    
+
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>slab</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'>An array of data or a number. If a number, then the size of the block to allocate in 
 <em>bytes</em>
  (note that this is sometimes confusing: the next parameter does not affect this).
+</td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>types</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'>Either an array of types, one for each byte (or 0 if no type at that position), or a single type which is used for the entire block. This only matters if there is initial data. If slab is a number, then this does not matter at all and is ignored.
+</td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>allocator</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'>How to allocate memory, see ALLOC_*
+</td>
+        </tr>
+        
+        
+    </table>
+    
 
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>types</span> <code class='quiet'>(any)</code>
-	    Either an array of types, one for each byte (or 0 if no type at that position), or a single type which is used for the entire block. This only matters if there is initial data. If slab is a number, then this does not matter at all and is ignored.
+    
 
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>allocator</span> <code class='quiet'>(any)</code>
-	    How to allocate memory, see ALLOC_*
+    
 
-          </div>
-          
-        </div>
-      
-    </div>
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
-
-  
-
-  
-
-  
+    
 </section>
+  
+    <section id='libtimiditypointer_stringify' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='libtimiditypointer_stringify'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>Pointer_stringify(ptr, length?)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#libtimiditypointer_stringify'>
+            <code>
+				Pointer_stringify<span class='gray'>(ptr, length?)</span>
+			</code>
+        </a>
+    </h3>
 
-  
-    <div class='pre p1 fill-light mt0'>Pointer_stringify(ptr: any, length: any?)</div>
-  
-  
+    
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>ptr</span> <code class='quiet'>(any)</code>
-	    Pointer.
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>ptr</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'>Pointer.
+</td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>length</code></td>
+            <td class='col-3 quiet'>
+                any?
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+    </table>
+    
 
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>length</span> <code class='quiet'>(any?)</code>
-	    
-          </div>
-          
-        </div>
-      
-    </div>
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
-
-  
+    
 </section>
+  
+    <section id='libtimidityutf16tostring' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='libtimidityutf16tostring'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>UTF16ToString(ptr)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#libtimidityutf16tostring'>
+            <code>
+				UTF16ToString<span class='gray'>(ptr)</span>
+			</code>
+        </a>
+    </h3>
 
-  
-    <div class='pre p1 fill-light mt0'>UTF16ToString(ptr: any)</div>
-  
-  
+    
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>ptr</span> <code class='quiet'>(any)</code>
-	    Pointer to a null-terminated UTF16LE-encoded string in the emscripten HEAP.
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>ptr</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'>Pointer to a null-terminated UTF16LE-encoded string in the emscripten HEAP.
+</td>
+        </tr>
+        
+        
+    </table>
+    
 
-          </div>
-          
-        </div>
-      
-    </div>
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
-
-  
+    
 </section>
+  
+    <section id='libtimiditystringtoutf16' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='libtimiditystringtoutf16'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>stringToUTF16(str, outPtr)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#libtimiditystringtoutf16'>
+            <code>
+				stringToUTF16<span class='gray'>(str, outPtr)</span>
+			</code>
+        </a>
+    </h3>
 
-  <p>Copies a JavaScript string to the emscripten HEAP. The copy is null-terminated and encoded in UTF16LE form. The copy will require at most (str.length<em>2+1)</em>2 bytes of space in the HEAP.</p>
+    <p>Copies a JavaScript string to the emscripten HEAP. The copy is null-terminated and encoded in UTF16LE form. The copy will require at most (str.length<em>2+1)</em>2 bytes of space in the HEAP.</p>
 
-    <div class='pre p1 fill-light mt0'>stringToUTF16(str: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, outPtr: any)</div>
-  
-  
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>str</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    JavaScript string.
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>str</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+                
+            </td>
+            <td class='col-6'>JavaScript string.
+</td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>outPtr</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'>HEAP address (pointer).
+</td>
+        </tr>
+        
+        
+    </table>
+    
 
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>outPtr</span> <code class='quiet'>(any)</code>
-	    HEAP address (pointer).
+    
 
-          </div>
-          
-        </div>
-      
-    </div>
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
-
-  
-
-  
+    
 </section>
+  
+    <section id='libtimidityutf32tostring' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='libtimidityutf32tostring'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>UTF32ToString(ptr)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#libtimidityutf32tostring'>
+            <code>
+				UTF32ToString<span class='gray'>(ptr)</span>
+			</code>
+        </a>
+    </h3>
 
-  
-    <div class='pre p1 fill-light mt0'>UTF32ToString(ptr: any)</div>
-  
-  
+    
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>ptr</span> <code class='quiet'>(any)</code>
-	    Pointer to a null-terminated UTF32LE-encoded string in the emscripten HEAP.
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>ptr</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'>Pointer to a null-terminated UTF32LE-encoded string in the emscripten HEAP.
+</td>
+        </tr>
+        
+        
+    </table>
+    
 
-          </div>
-          
-        </div>
-      
-    </div>
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
-
-  
+    
 </section>
+  
+    <section id='libtimiditystringtoutf32' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='libtimiditystringtoutf32'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>stringToUTF32(str, outPtr)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#libtimiditystringtoutf32'>
+            <code>
+				stringToUTF32<span class='gray'>(str, outPtr)</span>
+			</code>
+        </a>
+    </h3>
 
-  <p>Copies a JavaScript string to the emscripten HEAP. The copy is null-terminated and encoded in UTF32LE form. The copy will require at most (str.length+1)*4 bytes of space in the HEAP.</p>
+    <p>Copies a JavaScript string to the emscripten HEAP. The copy is null-terminated and encoded in UTF32LE form. The copy will require at most (str.length+1)*4 bytes of space in the HEAP.</p>
 
-    <div class='pre p1 fill-light mt0'>stringToUTF32(str: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, outPtr: any)</div>
-  
-  
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>str</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    JavaScript string.
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>str</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+                
+            </td>
+            <td class='col-6'>JavaScript string.
+</td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>outPtr</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'>HEAP address (pointer).
+</td>
+        </tr>
+        
+        
+    </table>
+    
 
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>outPtr</span> <code class='quiet'>(any)</code>
-	    HEAP address (pointer).
+    
 
-          </div>
-          
-        </div>
-      
-    </div>
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
-
-  
-
-  
+    
 </section>
+  
+    <section id='libtimiditycallruntimecallbacks' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='libtimiditycallruntimecallbacks'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>callRuntimeCallbacks(callbacks)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#libtimiditycallruntimecallbacks'>
+            <code>
+				callRuntimeCallbacks<span class='gray'>(callbacks)</span>
+			</code>
+        </a>
+    </h3>
 
-  
-    <div class='pre p1 fill-light mt0'>callRuntimeCallbacks(callbacks: any)</div>
-  
-  
+    
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>callbacks</span> <code class='quiet'>(any)</code>
-	    
-          </div>
-          
-        </div>
-      
-    </div>
-  
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>callbacks</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+    </table>
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 </section>
+  
+    <section id='libtimidityaddonprerun' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='libtimidityaddonprerun'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>addOnPreRun(cb)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#libtimidityaddonprerun'>
+            <code>
+				addOnPreRun<span class='gray'>(cb)</span>
+			</code>
+        </a>
+    </h3>
 
-  
-    <div class='pre p1 fill-light mt0'>addOnPreRun(cb: any)</div>
-  
-  
+    
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>cb</span> <code class='quiet'>(any)</code>
-	    Callback.
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>cb</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'>Callback.
+</td>
+        </tr>
+        
+        
+    </table>
+    
 
-          </div>
-          
-        </div>
-      
-    </div>
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
-
-  
+    
 </section>
+  
+    <section id='libtimidityaddoninit' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='libtimidityaddoninit'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>addOnInit(cb)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#libtimidityaddoninit'>
+            <code>
+				addOnInit<span class='gray'>(cb)</span>
+			</code>
+        </a>
+    </h3>
 
-  
-    <div class='pre p1 fill-light mt0'>addOnInit(cb: any)</div>
-  
-  
+    
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>cb</span> <code class='quiet'>(any)</code>
-	    Callback.
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>cb</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'>Callback.
+</td>
+        </tr>
+        
+        
+    </table>
+    
 
-          </div>
-          
-        </div>
-      
-    </div>
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
-
-  
+    
 </section>
+  
+    <section id='libtimidityaddonpremain' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='libtimidityaddonpremain'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>addOnPreMain(cb)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#libtimidityaddonpremain'>
+            <code>
+				addOnPreMain<span class='gray'>(cb)</span>
+			</code>
+        </a>
+    </h3>
 
-  
-    <div class='pre p1 fill-light mt0'>addOnPreMain(cb: any)</div>
-  
-  
+    
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>cb</span> <code class='quiet'>(any)</code>
-	    Callback.
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>cb</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'>Callback.
+</td>
+        </tr>
+        
+        
+    </table>
+    
 
-          </div>
-          
-        </div>
-      
-    </div>
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
-
-  
+    
 </section>
+  
+    <section id='libtimidityaddonexit' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='libtimidityaddonexit'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>addOnExit(cb)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#libtimidityaddonexit'>
+            <code>
+				addOnExit<span class='gray'>(cb)</span>
+			</code>
+        </a>
+    </h3>
 
-  
-    <div class='pre p1 fill-light mt0'>addOnExit(cb: any)</div>
-  
-  
+    
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>cb</span> <code class='quiet'>(any)</code>
-	    Callback.
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>cb</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'>Callback.
+</td>
+        </tr>
+        
+        
+    </table>
+    
 
-          </div>
-          
-        </div>
-      
-    </div>
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
-
-  
+    
 </section>
+  
+    <section id='libtimidityaddonpostrun' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='libtimidityaddonpostrun'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>addOnPostRun(cb)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#libtimidityaddonpostrun'>
+            <code>
+				addOnPostRun<span class='gray'>(cb)</span>
+			</code>
+        </a>
+    </h3>
 
-  
-    <div class='pre p1 fill-light mt0'>addOnPostRun(cb: any)</div>
-  
-  
+    
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>cb</span> <code class='quiet'>(any)</code>
-	    Callback.
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>cb</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'>Callback.
+</td>
+        </tr>
+        
+        
+    </table>
+    
 
-          </div>
-          
-        </div>
-      
-    </div>
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
-
-  
+    
 </section>
+  
+    <section id='libtimidityintarrayfromstring' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='libtimidityintarrayfromstring'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>intArrayFromString(stringy, dontAddNull, length)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#libtimidityintarrayfromstring'>
+            <code>
+				intArrayFromString<span class='gray'>(stringy, dontAddNull, length)</span>
+			</code>
+        </a>
+    </h3>
 
-  
-    <div class='pre p1 fill-light mt0'>intArrayFromString(stringy: any, dontAddNull: any, length: any)</div>
-  
-  
+    
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>stringy</span> <code class='quiet'>(any)</code>
-	    
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>dontAddNull</span> <code class='quiet'>(any)</code>
-	    
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>length</span> <code class='quiet'>(any)</code>
-	    
-          </div>
-          
-        </div>
-      
-    </div>
-  
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>stringy</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>dontAddNull</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>length</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+    </table>
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 </section>
+  
+    <section id='libtimidityintarraytostring' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='libtimidityintarraytostring'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>intArrayToString(array)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#libtimidityintarraytostring'>
+            <code>
+				intArrayToString<span class='gray'>(array)</span>
+			</code>
+        </a>
+    </h3>
 
-  
-    <div class='pre p1 fill-light mt0'>intArrayToString(array: any)</div>
-  
-  
+    
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>array</span> <code class='quiet'>(any)</code>
-	    
-          </div>
-          
-        </div>
-      
-    </div>
-  
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>array</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+    </table>
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 </section>
+  
+    <section id='libtimiditywritestringtomemory' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='libtimiditywritestringtomemory'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>writeStringToMemory(string, buffer, dontAddNull)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#libtimiditywritestringtomemory'>
+            <code>
+				writeStringToMemory<span class='gray'>(string, buffer, dontAddNull)</span>
+			</code>
+        </a>
+    </h3>
 
-  
-    <div class='pre p1 fill-light mt0'>writeStringToMemory(string: any, buffer: any, dontAddNull: any)</div>
-  
-  
+    
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>string</span> <code class='quiet'>(any)</code>
-	    
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>buffer</span> <code class='quiet'>(any)</code>
-	    
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>dontAddNull</span> <code class='quiet'>(any)</code>
-	    
-          </div>
-          
-        </div>
-      
-    </div>
-  
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>string</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>buffer</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>dontAddNull</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+    </table>
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 </section>
+  
+    <section id='libtimiditywritearraytomemory' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='libtimiditywritearraytomemory'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>writeArrayToMemory(array, buffer)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#libtimiditywritearraytomemory'>
+            <code>
+				writeArrayToMemory<span class='gray'>(array, buffer)</span>
+			</code>
+        </a>
+    </h3>
 
-  
-    <div class='pre p1 fill-light mt0'>writeArrayToMemory(array: any, buffer: any)</div>
-  
-  
+    
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>array</span> <code class='quiet'>(any)</code>
-	    
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>buffer</span> <code class='quiet'>(any)</code>
-	    
-          </div>
-          
-        </div>
-      
-    </div>
-  
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>array</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>buffer</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+    </table>
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 </section>
+  
+    <section id='libtimiditywriteasciitomemory' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='libtimiditywriteasciitomemory'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>writeAsciiToMemory(str, buffer, dontAddNull)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#libtimiditywriteasciitomemory'>
+            <code>
+				writeAsciiToMemory<span class='gray'>(str, buffer, dontAddNull)</span>
+			</code>
+        </a>
+    </h3>
 
-  
-    <div class='pre p1 fill-light mt0'>writeAsciiToMemory(str: any, buffer: any, dontAddNull: any)</div>
-  
-  
+    
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>str</span> <code class='quiet'>(any)</code>
-	    
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>buffer</span> <code class='quiet'>(any)</code>
-	    
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>dontAddNull</span> <code class='quiet'>(any)</code>
-	    
-          </div>
-          
-        </div>
-      
-    </div>
-  
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>str</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>buffer</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>dontAddNull</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+    </table>
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 </section>
+  
+    <section id='libtimidityaddrundependency' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='libtimidityaddrundependency'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>addRunDependency(id)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#libtimidityaddrundependency'>
+            <code>
+				addRunDependency<span class='gray'>(id)</span>
+			</code>
+        </a>
+    </h3>
 
-  
-    <div class='pre p1 fill-light mt0'>addRunDependency(id: any)</div>
-  
-  
+    
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>id</span> <code class='quiet'>(any)</code>
-	    
-          </div>
-          
-        </div>
-      
-    </div>
-  
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>id</code></td>
+            <td class='col-3 quiet'>
+                any
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+    </table>
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 </section>
+  
+    <section id='libtimiditycreatepath' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='libtimiditycreatepath'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>createPath(parent, path, throwError)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#libtimiditycreatepath'>
+            <code>
+				createPath<span class='gray'>(parent, path, throwError)</span>
+			</code>
+        </a>
+    </h3>
 
-  <p>Creates a directory.</p>
+    <p>Creates a directory.</p>
 
-    <div class='pre p1 fill-light mt0'>createPath(parent: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, path: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, throwError: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>)</div>
-  
-  
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>parent</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    The parent folder.
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>parent</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+                
+            </td>
+            <td class='col-6'>The parent folder.
+</td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>path</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+                
+            </td>
+            <td class='col-6'>The path to create.
+</td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>throwError</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>
+                
+                = <code>true</code>
+            </td>
+            <td class='col-6'>If directory creation failed, throw an error.
+</td>
+        </tr>
+        
+        
+    </table>
+    
 
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>path</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    The path to create.
+    
 
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>throwError</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>
-            = <code>true</code>)</code>
-	    If directory creation failed, throw an error.
+    
 
-          </div>
-          
-        </div>
-      
-    </div>
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
-
-  
-
-  
-
-  
+    
 </section>
+  
+    <section id='libtimiditycreatefile' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='libtimiditycreatefile'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>createFile(parent, name, canRead, canWrite)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#libtimiditycreatefile'>
+            <code>
+				createFile<span class='gray'>(parent, name, canRead, canWrite)</span>
+			</code>
+        </a>
+    </h3>
 
-  <p>Creates a file.</p>
+    <p>Creates a file.</p>
 
-    <div class='pre p1 fill-light mt0'>createFile(parent: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, name: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, canRead: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>, canWrite: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>)</div>
-  
-  
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>parent</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    The parent folder.
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>parent</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+                
+            </td>
+            <td class='col-6'>The parent folder.
+</td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>name</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+                
+            </td>
+            <td class='col-6'>The path to create.
+</td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>canRead</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>canWrite</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+    </table>
+    
 
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>name</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    The path to create.
+    
 
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>canRead</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>)</code>
-	    
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>canWrite</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>)</code>
-	    
-          </div>
-          
-        </div>
-      
-    </div>
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
-
-  
-
-  
+    
 </section>
+  
+    <section id='libtimiditycreatedatafile' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='libtimiditycreatedatafile'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>createDataFile(parent, name, data, canRead, canWrite, canOwn?, throwError)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#libtimiditycreatedatafile'>
+            <code>
+				createDataFile<span class='gray'>(parent, name, data, canRead, canWrite, canOwn?, throwError)</span>
+			</code>
+        </a>
+    </h3>
 
-  <p>Creates a data file and writes data to it.</p>
+    <p>Creates a data file and writes data to it.</p>
 
-    <div class='pre p1 fill-light mt0'>createDataFile(parent: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, name: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, data: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>, canRead: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>, canWrite: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>, canOwn: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?, throwError: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>)</div>
-  
-  
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>parent</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>name</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>data</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>)</code>
-	    
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>canRead</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>)</code>
-	    
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>canWrite</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>)</code>
-	    
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>canOwn</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?)</code>
-	    
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>throwError</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>
-            = <code>true</code>)</code>
-	    If file creation failed, throw an error.
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>parent</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>name</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>data</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>canRead</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>canWrite</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>canOwn</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>throwError</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>
+                
+                = <code>true</code>
+            </td>
+            <td class='col-6'>If file creation failed, throw an error.
+</td>
+        </tr>
+        
+        
+    </table>
+    
 
-          </div>
-          
-        </div>
-      
-    </div>
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
-
-  
+    
 </section>
+  
+    <section id='libtimidityloadpatchfromurl' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='libtimidityloadpatchfromurl'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>loadPatchFromUrl(baseUrl, filename)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#libtimidityloadpatchfromurl'>
+            <code>
+				loadPatchFromUrl<span class='gray'>(baseUrl, filename)</span>
+			</code>
+        </a>
+    </h3>
 
-  <p>Creates a file in the patch directory and writes the instrument data to it.</p>
+    <p>Creates a file in the patch directory and writes the instrument data to it.</p>
 
-    <div class='pre p1 fill-light mt0'>loadPatchFromUrl(baseUrl: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, filename: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</div>
-  
-  
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>baseUrl</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    The public URL where all patches can be found as a group.
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>baseUrl</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+                
+            </td>
+            <td class='col-6'>The public URL where all patches can be found as a group.
+</td>
+        </tr>
+        
+        
+        <tr>
+            <td class='col-3 strong'><code>filename</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+                
+            </td>
+            <td class='col-6'>The name of the instrument patch to load (including subfolder for drums).
+</td>
+        </tr>
+        
+        
+    </table>
+    
 
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>filename</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    The name of the instrument patch to load (including subfolder for drums).
+    
 
-          </div>
-          
-        </div>
-      
-    </div>
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
-
-  
-
-  
+    
 </section>
+  
+    <section id='libtimidityinit' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='libtimidityinit'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>init(throwError)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#libtimidityinit'>
+            <code>
+				init<span class='gray'>(throwError)</span>
+			</code>
+        </a>
+    </h3>
 
-  <p>Initializes the library.</p>
+    <p>Initializes the library.</p>
 
-    <div class='pre p1 fill-light mt0'>init(throwError: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>)</div>
-  
-  
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>throwError</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>
-            = <code>true</code>)</code>
-	    Throw an error if file/folder creation failed.
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>throwError</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>
+                
+                = <code>true</code>
+            </td>
+            <td class='col-6'>Throw an error if file/folder creation failed.
+</td>
+        </tr>
+        
+        
+    </table>
+    
 
-          </div>
-          
-        </div>
-      
-    </div>
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
-
-  
+    
 </section>
-
-      </div>
-    </div>
   
 </div>
 
-  
+    
 
-  
+    
 
-  
-</section>
+    
+</section>    <section id='eventhandler' class='mt2 mb2 px3 py1 keyline-top'>
 
-          
+    <div class='right py2'>
         
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='eventhandler'>
-      EventHandler
-    </h3>
-    
-    
-  </div>
-  
-
-  
-    <div class='pre p1 fill-light mt0'>new EventHandler(configuration: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>?): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>configuration</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>?)</code>
-	    
-          </div>
-          
-          <table class='mt1 mb2 fixed-table h5 col-12'>
-            <colgroup>
-              <col width='30%' />
-              <col width='70%' />
-            </colgroup>
-            <thead>
-              <tr class='bold fill-light'>
-                <th>Name</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody class='mt1'>
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>configuration.playerId</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
-  
-    (default <code>undefined</code>)
-  </td>
-  <td class='break-word'><span>The ID of the Midi Player that sends events.
-</span></td>
-</tr>
-
-
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>configuration.eventLogger</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">function</a></code>
-  
-    (default <code>undefined</code>)
-  </td>
-  <td class='break-word'><span>The function that receives event payloads.
-</span></td>
-</tr>
-
-
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>configuration.logging</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
-  
-    (default <code>false</code>)
-  </td>
-  <td class='break-word'><span>Turns ON or OFF logging to the console.
-</span></td>
-</tr>
-
-
-              
-            </tbody>
-          </table>
-          
-        </div>
-      
+        
     </div>
-  
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#eventhandler'>
+            <code>
+				EventHandler<span class='gray'>(configuration?)</span>
+			</code>
+        </a>
+    </h3>
 
-  
     
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></code>:
-        An 
+    
+
+    
+    
+    
+    
+    
+    
+
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>configuration</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>?
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+  <td class='col-2 strong'>configuration.playerId</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+    
+      (default <code>undefined</code>)
+    
+  </td>
+  <td class='col-8'>The ID of the Midi Player that sends events.
+</td>
+</tr>
+
+
+        
+        <tr>
+  <td class='col-2 strong'>configuration.eventLogger</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">function</a>
+    
+      (default <code>undefined</code>)
+    
+  </td>
+  <td class='col-8'>The function that receives event payloads.
+</td>
+</tr>
+
+
+        
+        <tr>
+  <td class='col-2 strong'>configuration.logging</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>
+    
+      (default <code>false</code>)
+    
+  </td>
+  <td class='col-8'>Turns ON or OFF logging to the console.
+</td>
+</tr>
+
+
+        
+        
+        
+    </table>
+    
+
+    
+
+    
+    
+    <h4 class='caps quiet mb1 mt3'>Returns</h4>
+    <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></code>
+    :
+    <span class='force-inline'>An 
 <code>EventHandler</code>
  instance.
-
-      
+</span>
     
-  
+    
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
+    
+    <h4 class='caps quiet mb2 mt3'>Instance Members</h4>
+    <div class="section-indent">
   
-    <div class='py1 quiet mt1 prose-big'>Instance Members</div>
-    <div class="clearfix">
-  
-    <div class='border-bottom' id='eventhandleremitinit'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>emitInit()</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
+    <section id='eventhandleremitinit' class='mt2 mb2 px3 py1 keyline-top'>
 
-  
-
-  <p>Emits an event that indicates that the MIDI player is initialized.</p>
-
-    <div class='pre p1 fill-light mt0'>emitInit()</div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='eventhandleremitloadfile'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>emitLoadFile(payload)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#eventhandleremitinit'>
+            <code>
+				emitInit<span class='gray'>()</span>
+			</code>
+        </a>
+    </h3>
 
-  <p>Emits an event that indicates that a MIDI file is being loaded.</p>
+    <p>Emits an event that indicates that the MIDI player is initialized.</p>
 
-    <div class='pre p1 fill-light mt0'>emitLoadFile(payload: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</div>
-  
-  
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</section>
   
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>payload</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</code>
-	    
-          </div>
-          
-          <table class='mt1 mb2 fixed-table h5 col-12'>
-            <colgroup>
-              <col width='30%' />
-              <col width='70%' />
-            </colgroup>
-            <thead>
-              <tr class='bold fill-light'>
-                <th>Name</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody class='mt1'>
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>payload.message</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?</code>
-  
-    (default <code>&#39;Loading MIDI file...&#39;</code>)
+    <section id='eventhandleremitloadfile' class='mt2 mb2 px3 py1 keyline-top'>
+
+    <div class='right py2'>
+        
+        
+    </div>
+
+    <h3 class='regular'>
+        <a class='black' href='#eventhandleremitloadfile'>
+            <code>
+				emitLoadFile<span class='gray'>(payload)</span>
+			</code>
+        </a>
+    </h3>
+
+    <p>Emits an event that indicates that a MIDI file is being loaded.</p>
+
+    
+
+    
+    
+    
+    
+    
+    
+
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>payload</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+  <td class='col-2 strong'>payload.message</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?
+    
+      (default <code>&#39;Loading MIDI file...&#39;</code>)
+    
   </td>
-  <td class='break-word'><span>A message about the MIDI file being loaded.
-</span></td>
+  <td class='col-8'>A message about the MIDI file being loaded.
+</td>
 </tr>
 
 
-              
-            </tbody>
-          </table>
-          
-        </div>
-      
-    </div>
-  
+        
+        
+        
+    </table>
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 </section>
+  
+    <section id='eventhandleremitloadpatch' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='eventhandleremitloadpatch'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>emitLoadPatch(payload)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#eventhandleremitloadpatch'>
+            <code>
+				emitLoadPatch<span class='gray'>(payload)</span>
+			</code>
+        </a>
+    </h3>
 
-  <p>Emits an event that indicates that a MIDI instrument patch is being loaded.</p>
+    <p>Emits an event that indicates that a MIDI instrument patch is being loaded.</p>
 
-    <div class='pre p1 fill-light mt0'>emitLoadPatch(payload: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</div>
-  
-  
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>payload</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</code>
-	    
-          </div>
-          
-          <table class='mt1 mb2 fixed-table h5 col-12'>
-            <colgroup>
-              <col width='30%' />
-              <col width='70%' />
-            </colgroup>
-            <thead>
-              <tr class='bold fill-light'>
-                <th>Name</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody class='mt1'>
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>payload.message</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?</code>
-  
-    (default <code>&#39;Loading instrument patch...&#39;</code>)
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>payload</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+  <td class='col-2 strong'>payload.message</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?
+    
+      (default <code>&#39;Loading instrument patch...&#39;</code>)
+    
   </td>
-  <td class='break-word'><span>A message about the instrument patch being loaded.
-</span></td>
+  <td class='col-8'>A message about the instrument patch being loaded.
+</td>
 </tr>
 
 
-              
-            </tbody>
-          </table>
-          
-        </div>
-      
-    </div>
-  
+        
+        
+        
+    </table>
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 </section>
+  
+    <section id='eventhandleremitplay' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='eventhandleremitplay'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>emitPlay(payload)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#eventhandleremitplay'>
+            <code>
+				emitPlay<span class='gray'>(payload)</span>
+			</code>
+        </a>
+    </h3>
 
-  <p>Emits an event that indicates that the MIDI player currently playing a MIDI file.</p>
+    <p>Emits an event that indicates that the MIDI player currently playing a MIDI file.</p>
 
-    <div class='pre p1 fill-light mt0'>emitPlay(payload: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</div>
-  
-  
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>payload</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</code>
-	    
-          </div>
-          
-          <table class='mt1 mb2 fixed-table h5 col-12'>
-            <colgroup>
-              <col width='30%' />
-              <col width='70%' />
-            </colgroup>
-            <thead>
-              <tr class='bold fill-light'>
-                <th>Name</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody class='mt1'>
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>payload.time</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?</code>
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>payload</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+  <td class='col-2 strong'>payload.time</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?
+    
   </td>
-  <td class='break-word'><span>The playback position.
-</span></td>
+  <td class='col-8'>The playback position.
+</td>
 </tr>
 
 
-              
-            </tbody>
-          </table>
-          
-        </div>
-      
-    </div>
-  
+        
+        
+        
+    </table>
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 </section>
+  
+    <section id='eventhandleremitpause' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='eventhandleremitpause'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>emitPause(payload)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#eventhandleremitpause'>
+            <code>
+				emitPause<span class='gray'>(payload)</span>
+			</code>
+        </a>
+    </h3>
 
-  <p>Emits an event that indicates that the MIDI player has paused the playback of a file.</p>
+    <p>Emits an event that indicates that the MIDI player has paused the playback of a file.</p>
 
-    <div class='pre p1 fill-light mt0'>emitPause(payload: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</div>
-  
-  
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>payload</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</code>
-	    
-          </div>
-          
-          <table class='mt1 mb2 fixed-table h5 col-12'>
-            <colgroup>
-              <col width='30%' />
-              <col width='70%' />
-            </colgroup>
-            <thead>
-              <tr class='bold fill-light'>
-                <th>Name</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody class='mt1'>
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>payload.time</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?</code>
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>payload</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+  <td class='col-2 strong'>payload.time</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?
+    
   </td>
-  <td class='break-word'><span>The playback position.
-</span></td>
+  <td class='col-8'>The playback position.
+</td>
 </tr>
 
 
-              
-            </tbody>
-          </table>
-          
-        </div>
-      
-    </div>
-  
+        
+        
+        
+    </table>
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 </section>
+  
+    <section id='eventhandleremitresume' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='eventhandleremitresume'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>emitResume(payload)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#eventhandleremitresume'>
+            <code>
+				emitResume<span class='gray'>(payload)</span>
+			</code>
+        </a>
+    </h3>
 
-  <p>Emits an event that indicates that the MIDI player has resumed the playback of a file.</p>
+    <p>Emits an event that indicates that the MIDI player has resumed the playback of a file.</p>
 
-    <div class='pre p1 fill-light mt0'>emitResume(payload: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</div>
-  
-  
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>payload</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</code>
-	    
-          </div>
-          
-          <table class='mt1 mb2 fixed-table h5 col-12'>
-            <colgroup>
-              <col width='30%' />
-              <col width='70%' />
-            </colgroup>
-            <thead>
-              <tr class='bold fill-light'>
-                <th>Name</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody class='mt1'>
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>payload.time</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?</code>
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>payload</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+  <td class='col-2 strong'>payload.time</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?
+    
   </td>
-  <td class='break-word'><span>The playback position.
-</span></td>
+  <td class='col-8'>The playback position.
+</td>
 </tr>
 
 
-              
-            </tbody>
-          </table>
-          
-        </div>
-      
-    </div>
-  
+        
+        
+        
+    </table>
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 </section>
+  
+    <section id='eventhandleremitstop' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='eventhandleremitstop'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>emitStop()</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#eventhandleremitstop'>
+            <code>
+				emitStop<span class='gray'>()</span>
+			</code>
+        </a>
+    </h3>
 
-  <p>Emits an event that indicates that the MIDI player has stopped the playback of a file.</p>
+    <p>Emits an event that indicates that the MIDI player has stopped the playback of a file.</p>
 
-    <div class='pre p1 fill-light mt0'>emitStop()</div>
-  
-  
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 </section>
+  
+    <section id='eventhandleremitend' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='eventhandleremitend'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>emitEnd(payload)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#eventhandleremitend'>
+            <code>
+				emitEnd<span class='gray'>(payload)</span>
+			</code>
+        </a>
+    </h3>
 
-  <p>Emits an event that indicates that the MIDI player has reached the end of a file.</p>
+    <p>Emits an event that indicates that the MIDI player has reached the end of a file.</p>
 
-    <div class='pre p1 fill-light mt0'>emitEnd(payload: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</div>
-  
-  
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>payload</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</code>
-	    
-          </div>
-          
-          <table class='mt1 mb2 fixed-table h5 col-12'>
-            <colgroup>
-              <col width='30%' />
-              <col width='70%' />
-            </colgroup>
-            <thead>
-              <tr class='bold fill-light'>
-                <th>Name</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody class='mt1'>
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>payload.time</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?</code>
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>payload</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+  <td class='col-2 strong'>payload.time</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?
+    
   </td>
-  <td class='break-word'><span>The playback position.
-</span></td>
+  <td class='col-8'>The playback position.
+</td>
 </tr>
 
 
-              
-            </tbody>
-          </table>
-          
-        </div>
-      
-    </div>
-  
+        
+        
+        
+    </table>
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 </section>
+  
+    <section id='eventhandleremiterror' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='eventhandleremiterror'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>emitError(payload)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#eventhandleremiterror'>
+            <code>
+				emitError<span class='gray'>(payload)</span>
+			</code>
+        </a>
+    </h3>
 
-  <p>Emits an event that indicates that an error prevented the MIDI player to continue.</p>
+    <p>Emits an event that indicates that an error prevented the MIDI player to continue.</p>
 
-    <div class='pre p1 fill-light mt0'>emitError(payload: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</div>
-  
-  
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>payload</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</code>
-	    
-          </div>
-          
-          <table class='mt1 mb2 fixed-table h5 col-12'>
-            <colgroup>
-              <col width='30%' />
-              <col width='70%' />
-            </colgroup>
-            <thead>
-              <tr class='bold fill-light'>
-                <th>Name</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody class='mt1'>
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>payload.message</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?</code>
-  
-    (default <code>&#39;An error occurred.&#39;</code>)
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>payload</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+  <td class='col-2 strong'>payload.message</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?
+    
+      (default <code>&#39;An error occurred.&#39;</code>)
+    
   </td>
-  <td class='break-word'><span>A message that indicates that an error occurred.
-</span></td>
+  <td class='col-8'>A message that indicates that an error occurred.
+</td>
 </tr>
 
 
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>payload.error</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?</code>
-  
-    (default <code>&#39;&#39;</code>)
+        
+        <tr>
+  <td class='col-2 strong'>payload.error</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?
+    
+      (default <code>&#39;&#39;</code>)
+    
   </td>
-  <td class='break-word'><span>A message that describes the details of the error.
-</span></td>
+  <td class='col-8'>A message that describes the details of the error.
+</td>
 </tr>
 
 
-              
-            </tbody>
-          </table>
-          
-        </div>
-      
-    </div>
-  
+        
+        
+        
+    </table>
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 </section>
+  
+    <section id='eventhandleremitevent' class='mt2 mb2 px3 py1 keyline-top'>
 
-      </div>
+    <div class='right py2'>
+        
+        
     </div>
-  
-    <div class='border-bottom' id='eventhandleremitevent'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>emitEvent(payload)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
 
-  
+    <h3 class='regular'>
+        <a class='black' href='#eventhandleremitevent'>
+            <code>
+				emitEvent<span class='gray'>(payload)</span>
+			</code>
+        </a>
+    </h3>
 
-  <p>Send payloads to the event logger.</p>
+    <p>Send payloads to the event logger.</p>
 
-    <div class='pre p1 fill-light mt0'>emitEvent(payload: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</div>
-  
-  
+    
 
-  
-  
-  
-  
-  
-  
+    
+    
+    
+    
+    
+    
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>payload</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</code>
-	    
-          </div>
-          
-          <table class='mt1 mb2 fixed-table h5 col-12'>
-            <colgroup>
-              <col width='30%' />
-              <col width='70%' />
-            </colgroup>
-            <thead>
-              <tr class='bold fill-light'>
-                <th>Name</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody class='mt1'>
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>payload.event</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?</code>
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>payload</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+  <td class='col-2 strong'>payload.event</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?
+    
   </td>
-  <td class='break-word'><span>The name of the event.
-</span></td>
+  <td class='col-8'>The name of the event.
+</td>
 </tr>
 
 
-              
-                <tr>
-  <td class='break-word'><span class='code bold'>payload.message</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?</code>
+        
+        <tr>
+  <td class='col-2 strong'>payload.message</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?
+    
   </td>
-  <td class='break-word'><span>A message that describes the event.
-</span></td>
+  <td class='col-8'>A message that describes the event.
+</td>
 </tr>
 
 
-              
-            </tbody>
-          </table>
-          
-        </div>
-      
-    </div>
-  
+        
+        
+        
+    </table>
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 
-  
+    
 </section>
-
-      </div>
-    </div>
   
 </div>
 
-  
+    
 
-  
+    
 
-  
-</section>
+    
+</section>  
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="assets/scripts.min.js"></script>
+    </body>
 
-          
-        
-      </div>
-    </div>
-  <script src='assets/anchor.js'></script>
-  <script src='assets/split.js'></script>
-  <script src='assets/site.js'></script>
-</body>
 </html>
