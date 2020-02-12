@@ -69,7 +69,7 @@
         "prettier": "^1.16.4",
         "tls": "0.0.1",
         "uuid": "^3.3.3",
-        "webpack": "^4.29.6",
+        "webpack": "^4.41.6",
         "webpack-cli": "^3.2.3",
         "webpack-dev-server": "^3.10.3"
     },
