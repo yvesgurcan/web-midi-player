@@ -7,17 +7,6 @@ import {
     MAX_I16
 } from './constants';
 
-import {
-    MIDI_ERROR,
-    MIDI_LOAD_FILE,
-    MIDI_LOAD_PATCH,
-    MIDI_PLAY,
-    MIDI_PAUSE,
-    MIDI_RESUME,
-    MIDI_STOP,
-    MIDI_END
-} from './events';
-
 import LibTiMidity from './LibTiMidity';
 import EventHandler from './EventHandler';
 
@@ -32,6 +21,7 @@ export default class MidiPlayer {
      * @param {string} [configuration.patchUrl = https://cdn.jsdelivr.net/npm/midi-instrument-patches@latest/] The public path where MIDI instrument patches can be found.
      * @param {object} [configuration.audioContext = undefined] An instance of the Web Audio API AudioContext interface.
      * @property {string} playerId ID of this instance of Midi Player.
+     * @property {boolean} useAudioContext Whether the instance should use AudioContext.
      * @property {object} context The AudioContext instance.
      * @property {function} eventLogger The function that is called to emit events.
      * @property {boolean} logging Whether console logging is ON or OFF.
@@ -60,6 +50,9 @@ export default class MidiPlayer {
         patchUrl = MIDI_DEFAULT_PATCH_URL,
         audioContext
     } = {}) {
+        // TODO: Whether the AudioContext should be used or not should be determined programatically.
+        this.useAudioContext = false;
+
         try {
             const playerId = uuid();
             this.playerId = playerId;
@@ -70,6 +63,13 @@ export default class MidiPlayer {
             });
         } catch (error) {
             console.error('Fatal error. Could not initialize event handler.');
+            return;
+        }
+
+        if (!this.useAudioContext && audioContext) {
+            this.eventHandler.emitError({
+                message: 'Browser does not support AudioContext.'
+            });
             return;
         }
 
@@ -93,7 +93,7 @@ export default class MidiPlayer {
             this.eventHandler.emitInit();
         } catch (error) {
             this.eventHandler.emitError({
-                message: 'Could not initialize AudioContext.',
+                message: 'Could not initialize instance of MidiPlayer.',
                 error
             });
         }
@@ -173,7 +173,16 @@ export default class MidiPlayer {
             }
         }
 
-        this.context = audioContext || new AudioContext();
+        try {
+            this.context = audioContext || new AudioContext();
+        } catch (error) {
+            this.eventHandler.emitError({
+                message: `Could not set AudioContext.`,
+                error
+            });
+            return;
+        }
+
         return this.loadSong({ arrayBuffer: data });
     }
 
