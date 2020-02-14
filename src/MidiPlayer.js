@@ -21,8 +21,8 @@ export default class MidiPlayer {
      * @param {string} [configuration.patchUrl = https://cdn.jsdelivr.net/npm/midi-instrument-patches@latest/] The public path where MIDI instrument patches can be found.
      * @param {object} [configuration.audioContext = undefined] An instance of the Web Audio API AudioContext interface.
      * @property {string} playerId ID of this instance of Midi Player.
-     * @property {boolean} useAudioContext Whether the instance should use AudioContext.
      * @property {object} context The AudioContext instance.
+     * @property {Number} sampleRate The sample rate of the AudioContext.
      * @property {function} eventLogger The function that is called to emit events.
      * @property {boolean} logging Whether console logging is ON or OFF.
      * @property {arrayBuffer} midiFileArray A typed array that represents the content of the MIDI.
@@ -47,12 +47,8 @@ export default class MidiPlayer {
     constructor({
         eventLogger = undefined,
         logging = false,
-        patchUrl = MIDI_DEFAULT_PATCH_URL,
-        audioContext
+        patchUrl = MIDI_DEFAULT_PATCH_URL
     } = {}) {
-        // TODO: Whether the AudioContext should be used or not should be determined programatically.
-        this.useAudioContext = false;
-
         try {
             const playerId = uuid();
             this.playerId = playerId;
@@ -66,22 +62,11 @@ export default class MidiPlayer {
             return;
         }
 
-        if (!this.useAudioContext && audioContext) {
-            this.eventHandler.emitError({
-                message: 'Browser does not support AudioContext.'
-            });
-            return;
-        }
-
         try {
             this.eventLogger = eventLogger;
             this.logging = logging;
             this.patchUrl = patchUrl;
             this.startTime = 0;
-
-            if (audioContext) {
-                this.context = audioContext;
-            }
 
             LibTiMidity.init(isFirstInstance);
 
@@ -99,6 +84,10 @@ export default class MidiPlayer {
         }
     }
 
+    /**
+     * Formats the name of a MIDI for display purposes.
+     * @return {boolean}
+     */
     static formatMidiName(name) {
         return name ? ` '${name}'` : '';
     }
@@ -124,6 +113,22 @@ export default class MidiPlayer {
      */
     async play({ arrayBuffer, url, name, audioContext } = {}) {
         this.stop();
+
+        try {
+            // AudioContext must be fired close to the touch/click event initiated by the user to work in Safari
+            this.context =
+                audioContext ||
+                new (window.AudioContext || window.webkitAudioContext)();
+            this.sampleRate = this.context.sampleRate;
+            let gainNode = this.context.createGain();
+            gainNode.gain.value = 1; // volume
+        } catch (error) {
+            this.eventHandler.emitError({
+                message: `Could not set AudioContext.`,
+                error
+            });
+            return;
+        }
 
         if (!arrayBuffer && !url) {
             this.eventHandler.emitError({
@@ -173,16 +178,6 @@ export default class MidiPlayer {
             }
         }
 
-        try {
-            this.context = audioContext || new AudioContext();
-        } catch (error) {
-            this.eventHandler.emitError({
-                message: `Could not set AudioContext.`,
-                error
-            });
-            return;
-        }
-
         return this.loadSong({ arrayBuffer: data });
     }
 
@@ -212,7 +207,7 @@ export default class MidiPlayer {
                 'number',
                 ['number', 'number', 'number', 'number'],
                 [
-                    this.context.sampleRate,
+                    this.sampleRate,
                     MIDI_AUDIO_S16LSB,
                     1,
                     MIDI_AUDIO_BUFFER_SIZE * 2
@@ -256,9 +251,6 @@ export default class MidiPlayer {
                 ['number'],
                 [this.stream]
             );
-
-            this.initPlayback();
-            return true;
         } catch (error) {
             this.eventHandler.emitError({
                 message: 'Could not load song.',
@@ -266,6 +258,9 @@ export default class MidiPlayer {
             });
             return false;
         }
+
+        this.initPlayback();
+        return true;
     }
 
     getInstrumentPatches = async () => {
@@ -308,13 +303,21 @@ export default class MidiPlayer {
     initPlayback = () => {
         LibTiMidity.call('mid_song_start', 'void', ['number'], [this.song]);
 
-        this.connectSource();
-        this.waveBuffer = LibTiMidity._malloc(MIDI_AUDIO_BUFFER_SIZE * 2);
+        try {
+            this.connectSource();
+            this.waveBuffer = LibTiMidity._malloc(MIDI_AUDIO_BUFFER_SIZE * 2);
+            let gainNode = this.context.createGain();
+            gainNode.gain.value = 1;
+            this.startTime = this.context.currentTime;
+        } catch (error) {
+            this.eventHandler.emitError({
+                message: 'Could not initialize playback.',
+                error
+            });
+            return;
+        }
 
-        let gainNode = this.context.createGain();
-        gainNode.gain.value = 1;
-
-        this.startTime = this.context.currentTime;
+        this.context.resume();
         this.eventHandler.emitPlay({ time: 0 });
     };
 
@@ -434,6 +437,7 @@ export default class MidiPlayer {
     stop() {
         try {
             if (this.source) {
+                this.context.close();
                 this.disconnectSource();
 
                 // free libtimitdiy ressources
