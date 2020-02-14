@@ -387,8 +387,11 @@ export default class MidiPlayer {
      */
     pause() {
         try {
-            this.context.suspend();
-            const time = this.context.currentTime - this.startTime;
+            let time = 0;
+            if (this.context) {
+                this.context.suspend();
+                time = this.context.currentTime - this.startTime;
+            }
             this.eventHandler.emitPause({ time });
             return true;
         } catch (error) {
@@ -410,12 +413,14 @@ export default class MidiPlayer {
      */
     resume() {
         try {
-            this.context.resume();
-            const time = this.context.currentTime - this.startTime;
+            let time = 0;
+            if (this.context) {
+                this.context.resume();
+                time = this.context.currentTime - this.startTime;
+            }
             this.eventHandler.emitResume({
                 time
             });
-
             return true;
         } catch (error) {
             this.eventHandler.emitError({
