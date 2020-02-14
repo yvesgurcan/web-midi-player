@@ -306,8 +306,6 @@ export default class MidiPlayer {
         try {
             this.connectSource();
             this.waveBuffer = LibTiMidity._malloc(MIDI_AUDIO_BUFFER_SIZE * 2);
-            let gainNode = this.context.createGain();
-            gainNode.gain.value = 1;
             this.startTime = this.context.currentTime;
         } catch (error) {
             this.eventHandler.emitError({
