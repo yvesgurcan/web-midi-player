@@ -316,7 +316,7 @@ export default class MidiPlayer {
             return;
         }
 
-        this.context.resume();
+        this.startTime = this.context.currentTime;
         this.eventHandler.emitPlay({ time: 0 });
     };
 
