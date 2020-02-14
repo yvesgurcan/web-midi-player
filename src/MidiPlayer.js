@@ -85,7 +85,7 @@ export default class MidiPlayer {
 
     /**
      * Formats the name of a MIDI for display purposes.
-     * @return {boolean}
+     * @return {String}
      */
     static formatMidiName(name) {
         return name ? ` '${name}'` : '';
