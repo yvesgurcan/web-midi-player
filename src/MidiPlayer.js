@@ -426,20 +426,8 @@ export default class MidiPlayer {
         try {
             if (this.source) {
                 this.disconnectSource();
-
-                // free libtimitdiy ressources
-                LibTiMidity._free(this.waveBuffer);
-                LibTiMidity._free(this.midiFileBuffer);
-
-                LibTiMidity.call(
-                    'mid_song_free',
-                    'void',
-                    ['number'],
-                    [this.song]
-                );
-
+                this.freeMemory();
                 LibTiMidity.call('mid_exit', 'void', [], []);
-
                 this.song = 0;
             }
 
@@ -458,11 +446,17 @@ export default class MidiPlayer {
         }
     }
 
+    freeMemory() {
+        LibTiMidity._free(this.waveBuffer);
+        LibTiMidity._free(this.midiFileBuffer);
+        LibTiMidity.call('mid_song_free', 'void', ['number'], [this.song]);
+    }
+
     // terminate playback
-    disconnectSource = () => {
+    disconnectSource() {
         this.source.disconnect();
         this.source = null;
-    };
+    }
 
     /**
      * Send custom payloads to the event logger.
