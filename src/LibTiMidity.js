@@ -233,15 +233,6 @@ class LibTiMidity {
                     return Module['dynCall_' + sig].call(null, ptr);
                 }
             },
-            functionPointers: [],
-            warnOnce: function(text) {
-                if (!Runtime.warnOnce.shown) Runtime.warnOnce.shown = {};
-                if (!Runtime.warnOnce.shown[text]) {
-                    Runtime.warnOnce.shown[text] = 1;
-                    console.warn(text);
-                }
-            },
-            funcWrappers: {},
             UTF8Processor: function() {
                 const buffer = [];
                 let needed = 0;
@@ -1195,6 +1186,13 @@ class LibTiMidity {
 
         Module['addRunDependency'] = addRunDependency;
 
+        /**
+         * @function removeRunDependency
+         * @memberof LibTiMidity
+         * @instance
+         * @param id
+         */
+
         function removeRunDependency(id) {
             runDependencies--;
             if (Module['monitorRunDependencies']) {
@@ -1218,9 +1216,9 @@ class LibTiMidity {
                 }
             }
         }
+
         Module['removeRunDependency'] = removeRunDependency;
-        Module['preloadedImages'] = {}; // maps url to image data
-        Module['preloadedAudios'] = {}; // maps url to audio data
+
         const memoryInitializer = null;
         // === Body ===
         STATIC_BASE = 8;
@@ -1485,7 +1483,7 @@ class LibTiMidity {
                             typeof window != 'undefined' &&
                             typeof window.prompt == 'function'
                         ) {
-                            // Browser.
+                            // browser
                             result = window.prompt('Input: '); // returns null on cancel
                             if (result !== null) {
                                 result += '\n';
@@ -1528,12 +1526,12 @@ class LibTiMidity {
             CONTENT_OWNING: 1,
             CONTENT_FLEXIBLE: 2,
             CONTENT_FIXED: 3,
-            mount: function(mount) {
+            mount: function() {
                 return MEMFS.createNode(null, '/', 16384 | 0o777, 0);
             },
             createNode: function(parent, name, mode, dev) {
                 if (FS.isBlkdev(mode) || FS.isFIFO(mode)) {
-                    // no supported
+                    // not supported
                     throw new FS.ErrnoError(ERRNO_CODES.EPERM);
                 }
                 const node = FS.createNode(parent, name, mode, dev);
@@ -1619,8 +1617,7 @@ class LibTiMidity {
                     attr.atime = new Date(node.timestamp);
                     attr.mtime = new Date(node.timestamp);
                     attr.ctime = new Date(node.timestamp);
-                    // NOTE: In our implementation, st_blocks = Math.ceil(st_size/st_blksize),
-                    //       but this is not required by the standard.
+                    // NOTE: In our implementation, st_blocks = Math.ceil(st_size/st_blksize), but this is not required by the standard.
                     attr.blksize = 4096;
                     attr.blocks = Math.ceil(attr.size / attr.blksize);
                     return attr;
@@ -1642,7 +1639,7 @@ class LibTiMidity {
                                 contents.push(0);
                     }
                 },
-                lookup: function(parent, name) {
+                lookup: function() {
                     throw new FS.ErrnoError(ERRNO_CODES.ENOENT);
                 },
                 mknod: function(parent, name, mode, dev) {
@@ -1710,7 +1707,7 @@ class LibTiMidity {
                     const size = Math.min(contents.length - position, length);
                     assert(size >= 0);
                     if (size > 8 && contents.subarray) {
-                        // non-trivial, and typed array
+                        // non-trivial and typed array
                         buffer.set(
                             contents.subarray(position, position + size),
                             offset
@@ -1788,15 +1785,7 @@ class LibTiMidity {
                     const limit = offset + length;
                     while (limit > contents.length) contents.push(0);
                 },
-                mmap: function(
-                    stream,
-                    buffer,
-                    offset,
-                    length,
-                    position,
-                    prot,
-                    flags
-                ) {
+                mmap: function(stream, buffer, length, position, flags) {
                     if (!FS.isFile(stream.node.mode)) {
                         throw new FS.ErrnoError(ERRNO_CODES.ENODEV);
                     }
@@ -1843,482 +1832,10 @@ class LibTiMidity {
                 }
             }
         };
-        const IDBFS = {
-            dbs: {},
-            indexedDB: function() {
-                return (
-                    window.indexedDB ||
-                    window.mozIndexedDB ||
-                    window.webkitIndexedDB ||
-                    window.msIndexedDB
-                );
-            },
-            DB_VERSION: 20,
-            DB_STORE_NAME: 'FILE_DATA',
-            mount: function() {
-                return MEMFS.mount.apply(null, arguments);
-            },
-            syncfs: function(mount, populate, callback) {
-                IDBFS.getLocalSet(mount, function(err, local) {
-                    if (err) return callback(err);
-                    IDBFS.getRemoteSet(mount, function(err, remote) {
-                        if (err) return callback(err);
-                        const src = populate ? remote : local;
-                        const dst = populate ? local : remote;
-                        IDBFS.reconcile(src, dst, callback);
-                    });
-                });
-            },
-            reconcile: function(src, dst, callback) {
-                let total = 0;
-                const create = {};
-                for (var key in src.files) {
-                    if (!src.files.hasOwnProperty(key)) continue;
-                    var e = src.files[key];
-                    var e2 = dst.files[key];
-                    if (!e2 || e.timestamp > e2.timestamp) {
-                        create[key] = e;
-                        total++;
-                    }
-                }
-                const remove = {};
-                for (var key in dst.files) {
-                    if (!dst.files.hasOwnProperty(key)) continue;
-                    var e = dst.files[key];
-                    var e2 = src.files[key];
-                    if (!e2) {
-                        remove[key] = e;
-                        total++;
-                    }
-                }
-                if (!total) {
-                    // early out
-                    return callback(null);
-                }
-                let completed = 0;
-                const done = function(err) {
-                    if (err) return callback(err);
-                    if (++completed >= total) {
-                        return callback(null);
-                    }
-                };
-                // create a single transaction to handle and IDB reads / writes we'll need to do
-                const db = src.type === 'remote' ? src.db : dst.db;
-                const transaction = db.transaction(
-                    [IDBFS.DB_STORE_NAME],
-                    'readwrite'
-                );
-                transaction.onerror = function() {
-                    callback(this.error);
-                };
-                const store = transaction.objectStore(IDBFS.DB_STORE_NAME);
-                for (var path in create) {
-                    if (!create.hasOwnProperty(path)) continue;
-                    var entry = create[path];
-                    if (dst.type === 'local') {
-                        // save file to local
-                        try {
-                            if (FS.isDir(entry.mode)) {
-                                FS.mkdir(path, entry.mode);
-                            } else if (FS.isFile(entry.mode)) {
-                                const stream = FS.open(path, 'w+', 0o666);
-                                FS.write(
-                                    stream,
-                                    entry.contents,
-                                    0,
-                                    entry.contents.length,
-                                    0,
-                                    true /* canOwn */
-                                );
-                                FS.close(stream);
-                            }
-                            done(null);
-                        } catch (e) {
-                            return done(e);
-                        }
-                    } else {
-                        // save file to IDB
-                        var req = store.put(entry, path);
-                        req.onsuccess = function() {
-                            done(null);
-                        };
-                        req.onerror = function() {
-                            done(this.error);
-                        };
-                    }
-                }
-                for (var path in remove) {
-                    if (!remove.hasOwnProperty(path)) continue;
-                    var entry = remove[path];
-                    if (dst.type === 'local') {
-                        // delete file from local
-                        try {
-                            if (FS.isDir(entry.mode)) {
-                                // TODO recursive delete?
-                                FS.rmdir(path);
-                            } else if (FS.isFile(entry.mode)) {
-                                FS.unlink(path);
-                            }
-                            done(null);
-                        } catch (e) {
-                            return done(e);
-                        }
-                    } else {
-                        // delete file from IDB
-                        var req = store.delete(path);
-                        req.onsuccess = function() {
-                            done(null);
-                        };
-                        req.onerror = function() {
-                            done(this.error);
-                        };
-                    }
-                }
-            },
-            getLocalSet: function(mount, callback) {
-                const files = {};
-                const isRealDir = function(p) {
-                    return p !== '.' && p !== '..';
-                };
-                const toAbsolute = function(root) {
-                    return function(p) {
-                        return PATH.join(root, p);
-                    };
-                };
-                const check = FS.readdir(mount.mountpoint)
-                    .filter(isRealDir)
-                    .map(toAbsolute(mount.mountpoint));
-                while (check.length) {
-                    const path = check.pop();
-                    let stat, node;
-                    try {
-                        const lookup = FS.lookupPath(path);
-                        node = lookup.node;
-                        stat = FS.stat(path);
-                    } catch (e) {
-                        return callback(e);
-                    }
-                    if (FS.isDir(stat.mode)) {
-                        check.push.apply(
-                            check,
-                            FS.readdir(path)
-                                .filter(isRealDir)
-                                .map(toAbsolute(path))
-                        );
-                        files[path] = {
-                            mode: stat.mode,
-                            timestamp: stat.mtime
-                        };
-                    } else if (FS.isFile(stat.mode)) {
-                        files[path] = {
-                            contents: node.contents,
-                            mode: stat.mode,
-                            timestamp: stat.mtime
-                        };
-                    } else {
-                        return callback(new Error('node type not supported'));
-                    }
-                }
-                return callback(null, { type: 'local', files: files });
-            },
-            getDB: function(name, callback) {
-                // look it up in the cache
-                let db = IDBFS.dbs[name];
-                if (db) {
-                    return callback(null, db);
-                }
-                let req;
-                try {
-                    req = IDBFS.indexedDB().open(name, IDBFS.DB_VERSION);
-                } catch (e) {
-                    return onerror(e);
-                }
-                req.onupgradeneeded = function() {
-                    db = req.result;
-                    db.createObjectStore(IDBFS.DB_STORE_NAME);
-                };
-                req.onsuccess = function() {
-                    db = req.result;
-                    // add to the cache
-                    IDBFS.dbs[name] = db;
-                    callback(null, db);
-                };
-                req.onerror = function() {
-                    callback(this.error);
-                };
-            },
-            getRemoteSet: function(mount, callback) {
-                const files = {};
-                IDBFS.getDB(mount.mountpoint, function(err, db) {
-                    if (err) return callback(err);
-                    const transaction = db.transaction(
-                        [IDBFS.DB_STORE_NAME],
-                        'readonly'
-                    );
-                    transaction.onerror = function() {
-                        callback(this.error);
-                    };
-                    const store = transaction.objectStore(IDBFS.DB_STORE_NAME);
-                    store.openCursor().onsuccess = function(event) {
-                        const cursor = event.target.result;
-                        if (!cursor) {
-                            return callback(null, {
-                                type: 'remote',
-                                db: db,
-                                files: files
-                            });
-                        }
-                        files[cursor.key] = cursor.value;
-                        cursor.continue();
-                    };
-                });
-            }
-        };
-        const NODEFS = {
-            mount: function() {},
-            createNode: function(parent, name, mode, dev) {
-                if (!FS.isDir(mode) && !FS.isFile(mode) && !FS.isLink(mode)) {
-                    throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
-                }
-                const node = FS.createNode(parent, name, mode);
-                node.node_ops = NODEFS.node_ops;
-                node.stream_ops = NODEFS.stream_ops;
-                return node;
-            },
-            getMode: function(path) {
-                let stat;
-                try {
-                    stat = fs.lstatSync(path);
-                } catch (e) {
-                    if (!e.code) throw e;
-                    throw new FS.ErrnoError(ERRNO_CODES[e.code]);
-                }
-                return stat.mode;
-            },
-            realPath: function(node) {
-                const parts = [];
-                while (node.parent !== node) {
-                    parts.push(node.name);
-                    node = node.parent;
-                }
-                parts.push(node.mount.opts.root);
-                parts.reverse();
-                return PATH.join.apply(null, parts);
-            },
-            node_ops: {
-                getattr: function(node) {
-                    const path = NODEFS.realPath(node);
-                    let stat;
-                    try {
-                        stat = fs.lstatSync(path);
-                    } catch (e) {
-                        if (!e.code) throw e;
-                        throw new FS.ErrnoError(ERRNO_CODES[e.code]);
-                    }
-                    return {
-                        dev: stat.dev,
-                        ino: stat.ino,
-                        mode: stat.mode,
-                        nlink: stat.nlink,
-                        uid: stat.uid,
-                        gid: stat.gid,
-                        rdev: stat.rdev,
-                        size: stat.size,
-                        atime: stat.atime,
-                        mtime: stat.mtime,
-                        ctime: stat.ctime,
-                        blksize: stat.blksize,
-                        blocks: stat.blocks
-                    };
-                },
-                setattr: function(node, attr) {
-                    const path = NODEFS.realPath(node);
-                    try {
-                        if (attr.mode !== undefined) {
-                            fs.chmodSync(path, attr.mode);
-                            // update the common node structure mode as well
-                            node.mode = attr.mode;
-                        }
-                        if (attr.timestamp !== undefined) {
-                            const date = new Date(attr.timestamp);
-                            fs.utimesSync(path, date, date);
-                        }
-                        if (attr.size !== undefined) {
-                            fs.truncateSync(path, attr.size);
-                        }
-                    } catch (e) {
-                        if (!e.code) throw e;
-                        throw new FS.ErrnoError(ERRNO_CODES[e.code]);
-                    }
-                },
-                lookup: function(parent, name) {
-                    const path = PATH.join(NODEFS.realPath(parent), name);
-                    const mode = NODEFS.getMode(path);
-                    return NODEFS.createNode(parent, name, mode);
-                },
-                mknod: function(parent, name, mode, dev) {
-                    const node = NODEFS.createNode(parent, name, mode, dev);
-                    // create the backing node for this in the fs root as well
-                    const path = NODEFS.realPath(node);
-                    try {
-                        if (FS.isDir(node.mode)) {
-                            fs.mkdirSync(path, node.mode);
-                        } else {
-                            fs.writeFileSync(path, '', { mode: node.mode });
-                        }
-                    } catch (e) {
-                        if (!e.code) throw e;
-                        throw new FS.ErrnoError(ERRNO_CODES[e.code]);
-                    }
-                    return node;
-                },
-                rename: function(oldNode, newDir, newName) {
-                    const oldPath = NODEFS.realPath(oldNode);
-                    const newPath = PATH.join(NODEFS.realPath(newDir), newName);
-                    try {
-                        fs.renameSync(oldPath, newPath);
-                    } catch (e) {
-                        if (!e.code) throw e;
-                        throw new FS.ErrnoError(ERRNO_CODES[e.code]);
-                    }
-                },
-                unlink: function(parent, name) {
-                    const path = PATH.join(NODEFS.realPath(parent), name);
-                    try {
-                        fs.unlinkSync(path);
-                    } catch (e) {
-                        if (!e.code) throw e;
-                        throw new FS.ErrnoError(ERRNO_CODES[e.code]);
-                    }
-                },
-                rmdir: function(parent, name) {
-                    const path = PATH.join(NODEFS.realPath(parent), name);
-                    try {
-                        fs.rmdirSync(path);
-                    } catch (e) {
-                        if (!e.code) throw e;
-                        throw new FS.ErrnoError(ERRNO_CODES[e.code]);
-                    }
-                },
-                readdir: function(node) {
-                    const path = NODEFS.realPath(node);
-                    try {
-                        return fs.readdirSync(path);
-                    } catch (e) {
-                        if (!e.code) throw e;
-                        throw new FS.ErrnoError(ERRNO_CODES[e.code]);
-                    }
-                },
-                symlink: function(parent, newName, oldPath) {
-                    const newPath = PATH.join(NODEFS.realPath(parent), newName);
-                    try {
-                        fs.symlinkSync(oldPath, newPath);
-                    } catch (e) {
-                        if (!e.code) throw e;
-                        throw new FS.ErrnoError(ERRNO_CODES[e.code]);
-                    }
-                },
-                readlink: function(node) {
-                    const path = NODEFS.realPath(node);
-                    try {
-                        return fs.readlinkSync(path);
-                    } catch (e) {
-                        if (!e.code) throw e;
-                        throw new FS.ErrnoError(ERRNO_CODES[e.code]);
-                    }
-                }
-            },
-            stream_ops: {
-                open: function(stream) {
-                    const path = NODEFS.realPath(stream.node);
-                    try {
-                        if (FS.isFile(stream.node.mode)) {
-                            stream.nfd = fs.openSync(path, stream.flags);
-                        }
-                    } catch (e) {
-                        if (!e.code) throw e;
-                        throw new FS.ErrnoError(ERRNO_CODES[e.code]);
-                    }
-                },
-                close: function(stream) {
-                    try {
-                        if (FS.isFile(stream.node.mode)) {
-                            fs.closeSync(stream.nfd);
-                        }
-                    } catch (e) {
-                        if (!e.code) throw e;
-                        throw new FS.ErrnoError(ERRNO_CODES[e.code]);
-                    }
-                },
-                read: function(stream, buffer, offset, length, position) {
-                    // FIXME this is terrible.
-                    const nbuffer = new Buffer(length);
-                    let res;
-                    try {
-                        res = fs.readSync(
-                            stream.nfd,
-                            nbuffer,
-                            0,
-                            length,
-                            position
-                        );
-                    } catch (e) {
-                        throw new FS.ErrnoError(ERRNO_CODES[e.code]);
-                    }
-                    if (res > 0) {
-                        for (let i = 0; i < res; i++) {
-                            buffer[offset + i] = nbuffer[i];
-                        }
-                    }
-                    return res;
-                },
-                write: function(stream, buffer, offset, length, position) {
-                    // FIXME this is terrible.
-                    const nbuffer = new Buffer(
-                        buffer.subarray(offset, offset + length)
-                    );
-                    let res;
-                    try {
-                        res = fs.writeSync(
-                            stream.nfd,
-                            nbuffer,
-                            0,
-                            length,
-                            position
-                        );
-                    } catch (e) {
-                        throw new FS.ErrnoError(ERRNO_CODES[e.code]);
-                    }
-                    return res;
-                },
-                llseek: function(stream, offset, whence) {
-                    let position = offset;
-                    if (whence === 1) {
-                        // SEEK_CUR.
-                        position += stream.position;
-                    } else if (whence === 2) {
-                        // SEEK_END.
-                        if (FS.isFile(stream.node.mode)) {
-                            try {
-                                const stat = fs.fstatSync(stream.nfd);
-                                position += stat.size;
-                            } catch (e) {
-                                throw new FS.ErrnoError(ERRNO_CODES[e.code]);
-                            }
-                        }
-                    }
-                    if (position < 0) {
-                        throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
-                    }
-                    stream.position = position;
-                    return position;
-                }
-            }
-        };
         const _stdin = allocate(1, 'i32*', ALLOC_STATIC);
         const _stdout = allocate(1, 'i32*', ALLOC_STATIC);
         var _stderr = allocate(1, 'i32*', ALLOC_STATIC);
-        function _fflush(stream) {
+        function _fflush() {
             // int fflush(FILE *stream);
             // http://pubs.opengroup.org/onlinepubs/000095399/functions/fflush.html
             // we don't currently perform any user-space buffering of data
@@ -3705,7 +3222,7 @@ class LibTiMidity {
                         }
                         return bytesRead;
                     },
-                    write: function(stream, buffer, offset, length, pos) {
+                    write: function(stream, buffer, offset, length) {
                         for (var i = 0; i < length; i++) {
                             try {
                                 output(buffer[offset + i]);
@@ -3721,7 +3238,7 @@ class LibTiMidity {
                 });
                 return FS.mkdev(path, mode, dev);
             },
-            createLink: function(parent, name, target, canRead, canWrite) {
+            createLink: function(parent, name, target) {
                 const path = PATH.join(
                     typeof parent === 'string' ? parent : FS.getPath(parent),
                     name
@@ -3826,7 +3343,6 @@ class LibTiMidity {
                 dontCreateFile,
                 canOwn
             ) {
-                Browser.init();
                 // TODO we should allow people to just pass in a complete filename instead
                 // of parent and name being that we just join them anyways
                 const fullname = name
@@ -3847,36 +3363,10 @@ class LibTiMidity {
                         if (onload) onload();
                         removeRunDependency('cp ' + fullname);
                     }
-                    let handled = false;
-                    Module['preloadPlugins'].forEach(function(plugin) {
-                        if (handled) return;
-                        if (plugin['canHandle'](fullname)) {
-                            plugin['handle'](
-                                byteArray,
-                                fullname,
-                                finish,
-                                function() {
-                                    if (onerror) onerror();
-                                    removeRunDependency('cp ' + fullname);
-                                }
-                            );
-                            handled = true;
-                        }
-                    });
-                    if (!handled) finish(byteArray);
+                    finish(byteArray);
                 }
                 addRunDependency('cp ' + fullname);
-                if (typeof url == 'string') {
-                    Browser.asyncLoad(
-                        url,
-                        function(byteArray) {
-                            processData(byteArray);
-                        },
-                        onerror
-                    );
-                } else {
-                    processData(url);
-                }
+                processData(url);
             },
             indexedDB: function() {
                 return (
@@ -3904,7 +3394,6 @@ class LibTiMidity {
                     return onerror(e);
                 }
                 openRequest.onupgradeneeded = function() {
-                    // console.log('creating db');
                     const db = openRequest.result;
                     db.createObjectStore(FS.DB_STORE_NAME);
                 };
@@ -5191,7 +4680,7 @@ class LibTiMidity {
             Runtime.stackRestore(stack);
             return ret;
         }
-        function _recv(fd, buf, len, flags) {
+        function _recv(fd, buf, len) {
             const sock = SOCKFS.getSocket(fd);
             if (!sock) {
                 ___setErrNo(ERRNO_CODES.EBADF);
@@ -5323,9 +4812,7 @@ class LibTiMidity {
             return _fprintf(stdout, format, varargs);
         }
         Module['_memset'] = _memset;
-        const _llvm_memset_p0i8_i32 = _memset;
         Module['_memcpy'] = _memcpy;
-        const _llvm_memcpy_p0i8_p0i8_i32 = _memcpy;
         const _llvm_pow_f64 = Math_pow;
         const _sin = Math_sin;
         function _strrchr(ptr, chr) {
@@ -5704,625 +5191,6 @@ class LibTiMidity {
             }
             return ret;
         }
-        const Browser = {
-            mainLoop: {
-                scheduler: null,
-                shouldPause: false,
-                paused: false,
-                queue: [],
-                pause: function() {
-                    Browser.mainLoop.shouldPause = true;
-                },
-                resume: function() {
-                    if (Browser.mainLoop.paused) {
-                        Browser.mainLoop.paused = false;
-                        Browser.mainLoop.scheduler();
-                    }
-                    Browser.mainLoop.shouldPause = false;
-                },
-                updateStatus: function() {
-                    if (Module['setStatus']) {
-                        const message =
-                            Module['statusMessage'] || 'Please wait...';
-                        const remaining = Browser.mainLoop.remainingBlockers;
-                        const expected = Browser.mainLoop.expectedBlockers;
-                        if (remaining) {
-                            if (remaining < expected) {
-                                Module['setStatus'](
-                                    message +
-                                        ' (' +
-                                        (expected - remaining) +
-                                        '/' +
-                                        expected +
-                                        ')'
-                                );
-                            } else {
-                                Module['setStatus'](message);
-                            }
-                        } else {
-                            Module['setStatus']('');
-                        }
-                    }
-                }
-            },
-            isFullScreen: false,
-            pointerLock: false,
-            moduleContextCreatedCallbacks: [],
-            workers: [],
-            init: function() {
-                if (!Module['preloadPlugins']) Module['preloadPlugins'] = []; // needs to exist even in workers
-                if (Browser.initted) return;
-                Browser.initted = true;
-                try {
-                    new Blob();
-                    Browser.hasBlobConstructor = true;
-                } catch (e) {
-                    Browser.hasBlobConstructor = false;
-                    console.warn(
-                        'No blob constructor, cannot create blobs with mimetypes'
-                    );
-                }
-                Browser.BlobBuilder =
-                    typeof MozBlobBuilder != 'undefined'
-                        ? MozBlobBuilder
-                        : typeof WebKitBlobBuilder != 'undefined'
-                        ? WebKitBlobBuilder
-                        : !Browser.hasBlobConstructor
-                        ? console.warn('No BlobBuilder')
-                        : null;
-                Browser.URLObject =
-                    typeof window != 'undefined'
-                        ? window.URL
-                            ? window.URL
-                            : window.webkitURL
-                        : undefined;
-                if (
-                    !Module.noImageDecoding &&
-                    typeof Browser.URLObject === 'undefined'
-                ) {
-                    console.warn(
-                        'Browser does not support creating object URLs. Built-in browser image decoding will not be available.'
-                    );
-                    Module.noImageDecoding = true;
-                }
-                // Support for plugins that can process preloaded files. You can add more of these to
-                // your app by creating and appending to Module.preloadPlugins.
-                //
-                // Each plugin is asked if it can handle a file based on the file's name. If it can,
-                // it is given the file's raw data. When it is done, it calls a callback with the file's
-                // (possibly modified) data. For example, a plugin might decompress a file, or it
-                // might create some side data structure for use later (like an Image element, etc.).
-                const imagePlugin = {};
-                imagePlugin['canHandle'] = function(name) {
-                    return (
-                        !Module.noImageDecoding &&
-                        /\.(jpg|jpeg|png|bmp)$/i.test(name)
-                    );
-                };
-                imagePlugin['handle'] = function(
-                    byteArray,
-                    name,
-                    onload,
-                    onerror
-                ) {
-                    let b = null;
-                    if (Browser.hasBlobConstructor) {
-                        try {
-                            b = new Blob([byteArray], {
-                                type: Browser.getMimetype(name)
-                            });
-                            if (b.size !== byteArray.length) {
-                                // Safari bug #118630
-                                // Safari's Blob can only take an ArrayBuffer
-                                b = new Blob(
-                                    [new Uint8Array(byteArray).buffer],
-                                    { type: Browser.getMimetype(name) }
-                                );
-                            }
-                        } catch (e) {
-                            Runtime.warnOnce(
-                                'Blob constructor present but fails: ' +
-                                    e +
-                                    '; falling back to blob builder'
-                            );
-                        }
-                    }
-                    if (!b) {
-                        const bb = new Browser.BlobBuilder();
-                        bb.append(new Uint8Array(byteArray).buffer); // we need to pass a buffer, and must copy the array to get the right data range
-                        b = bb.getBlob();
-                    }
-                    const url = Browser.URLObject.createObjectURL(b);
-                    const img = new Image();
-                    img.onload = function() {
-                        assert(
-                            img.complete,
-                            'Image ' + name + ' could not be decoded'
-                        );
-                        const canvas = document.createElement('canvas');
-                        canvas.width = img.width;
-                        canvas.height = img.height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0);
-                        Module['preloadedImages'][name] = canvas;
-                        Browser.URLObject.revokeObjectURL(url);
-                        if (onload) onload(byteArray);
-                    };
-                    img.onerror = function(event) {
-                        console.error('Image ' + url + ' could not be decoded');
-                        if (onerror) onerror();
-                    };
-                    img.src = url;
-                };
-                Module['preloadPlugins'].push(imagePlugin);
-                const audioPlugin = {};
-                audioPlugin['canHandle'] = function(name) {
-                    return (
-                        !Module.noAudioDecoding &&
-                        name.substr(-4) in { '.ogg': 1, '.wav': 1, '.mp3': 1 }
-                    );
-                };
-                audioPlugin['handle'] = function(
-                    byteArray,
-                    name,
-                    onload,
-                    onerror
-                ) {
-                    let done = false;
-                    function finish(audio) {
-                        if (done) return;
-                        done = true;
-                        Module['preloadedAudios'][name] = audio;
-                        if (onload) onload(byteArray);
-                    }
-                    function fail() {
-                        if (done) return;
-                        done = true;
-                        Module['preloadedAudios'][name] = new Audio(); // empty shim
-                        if (onerror) onerror();
-                    }
-                    if (Browser.hasBlobConstructor) {
-                        try {
-                            var b = new Blob([byteArray], {
-                                type: Browser.getMimetype(name)
-                            });
-                        } catch (e) {
-                            return fail();
-                        }
-                        const url = Browser.URLObject.createObjectURL(b); // XXX we never revoke this!
-                        var audio = new Audio();
-                        audio.addEventListener(
-                            'canplaythrough',
-                            function() {
-                                finish(audio);
-                            },
-                            false
-                        ); // use addEventListener due to chromium bug 124926
-                        audio.onerror = function(event) {
-                            if (done) return;
-                            console.warn(
-                                'Browser could not fully decode audio ' +
-                                    name +
-                                    ', trying slower base64 approach'
-                            );
-                            function encode64(data) {
-                                const BASE =
-                                    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-                                const PAD = '=';
-                                let ret = '';
-                                let leftchar = 0;
-                                let leftbits = 0;
-                                for (let i = 0; i < data.length; i++) {
-                                    leftchar = (leftchar << 8) | data[i];
-                                    leftbits += 8;
-                                    while (leftbits >= 6) {
-                                        const curr =
-                                            (leftchar >> (leftbits - 6)) & 0x3f;
-                                        leftbits -= 6;
-                                        ret += BASE[curr];
-                                    }
-                                }
-                                if (leftbits == 2) {
-                                    ret += BASE[(leftchar & 3) << 4];
-                                    ret += PAD + PAD;
-                                } else if (leftbits == 4) {
-                                    ret += BASE[(leftchar & 0xf) << 2];
-                                    ret += PAD;
-                                }
-                                return ret;
-                            }
-                            audio.src =
-                                'data:audio/x-' +
-                                name.substr(-3) +
-                                ';base64,' +
-                                encode64(byteArray);
-                            finish(audio); // we don't wait for confirmation this worked - but it's worth trying
-                        };
-                        audio.src = url;
-                        // workaround for chrome bug 124926 - we do not always get oncanplaythrough or onerror
-                        Browser.safeSetTimeout(function() {
-                            finish(audio); // try to use it even though it is not necessarily ready to play
-                        }, 10000);
-                    } else {
-                        return fail();
-                    }
-                };
-                Module['preloadPlugins'].push(audioPlugin);
-                // Canvas event setup
-                const canvas = Module['canvas'];
-                canvas.requestPointerLock =
-                    canvas['requestPointerLock'] ||
-                    canvas['mozRequestPointerLock'] ||
-                    canvas['webkitRequestPointerLock'];
-                canvas.exitPointerLock =
-                    document['exitPointerLock'] ||
-                    document['mozExitPointerLock'] ||
-                    document['webkitExitPointerLock'] ||
-                    function() {}; // no-op if function does not exist
-                canvas.exitPointerLock = canvas.exitPointerLock.bind(document);
-                function pointerLockChange() {
-                    Browser.pointerLock =
-                        document['pointerLockElement'] === canvas ||
-                        document['mozPointerLockElement'] === canvas ||
-                        document['webkitPointerLockElement'] === canvas;
-                }
-                document.addEventListener(
-                    'pointerlockchange',
-                    pointerLockChange,
-                    false
-                );
-                document.addEventListener(
-                    'mozpointerlockchange',
-                    pointerLockChange,
-                    false
-                );
-                document.addEventListener(
-                    'webkitpointerlockchange',
-                    pointerLockChange,
-                    false
-                );
-                if (Module['elementPointerLock']) {
-                    canvas.addEventListener(
-                        'click',
-                        function(ev) {
-                            if (
-                                !Browser.pointerLock &&
-                                canvas.requestPointerLock
-                            ) {
-                                canvas.requestPointerLock();
-                                ev.preventDefault();
-                            }
-                        },
-                        false
-                    );
-                }
-            },
-            createContext: function(canvas, useWebGL, setInModule) {
-                let ctx;
-                try {
-                    if (useWebGL) {
-                        ctx = canvas.getContext('experimental-webgl', {
-                            alpha: false
-                        });
-                    } else {
-                        ctx = canvas.getContext('2d');
-                    }
-                    if (!ctx) throw ':(';
-                } catch (e) {
-                    console.error('Could not create canvas - ' + e);
-                    return null;
-                }
-                if (useWebGL) {
-                    // Set the background of the WebGL canvas to black
-                    canvas.style.backgroundColor = 'black';
-                    // Warn on context loss
-                    canvas.addEventListener(
-                        'webglcontextlost',
-                        function(event) {
-                            alert(
-                                'WebGL context lost. You will need to reload the page.'
-                            );
-                        },
-                        false
-                    );
-                }
-                if (setInModule) {
-                    Module.ctx = ctx;
-                    Module.useWebGL = useWebGL;
-                    Browser.moduleContextCreatedCallbacks.forEach(function(
-                        callback
-                    ) {
-                        callback();
-                    });
-                    Browser.init();
-                }
-                return ctx;
-            },
-            destroyContext: function(canvas, useWebGL, setInModule) {},
-            fullScreenHandlersInstalled: false,
-            lockPointer: undefined,
-            resizeCanvas: undefined,
-            requestFullScreen: function(lockPointer, resizeCanvas) {
-                Browser.lockPointer = lockPointer;
-                Browser.resizeCanvas = resizeCanvas;
-                if (typeof Browser.lockPointer === 'undefined')
-                    Browser.lockPointer = true;
-                if (typeof Browser.resizeCanvas === 'undefined')
-                    Browser.resizeCanvas = false;
-                const canvas = Module['canvas'];
-                function fullScreenChange() {
-                    Browser.isFullScreen = false;
-                    if (
-                        (document['webkitFullScreenElement'] ||
-                            document['webkitFullscreenElement'] ||
-                            document['mozFullScreenElement'] ||
-                            document['mozFullscreenElement'] ||
-                            document['fullScreenElement'] ||
-                            document['fullscreenElement']) === canvas
-                    ) {
-                        canvas.cancelFullScreen =
-                            document['cancelFullScreen'] ||
-                            document['mozCancelFullScreen'] ||
-                            document['webkitCancelFullScreen'];
-                        canvas.cancelFullScreen = canvas.cancelFullScreen.bind(
-                            document
-                        );
-                        if (Browser.lockPointer) canvas.requestPointerLock();
-                        Browser.isFullScreen = true;
-                        if (Browser.resizeCanvas)
-                            Browser.setFullScreenCanvasSize();
-                    } else if (Browser.resizeCanvas) {
-                        Browser.setWindowedCanvasSize();
-                    }
-                    if (Module['onFullScreen'])
-                        Module['onFullScreen'](Browser.isFullScreen);
-                }
-                if (!Browser.fullScreenHandlersInstalled) {
-                    Browser.fullScreenHandlersInstalled = true;
-                    document.addEventListener(
-                        'fullscreenchange',
-                        fullScreenChange,
-                        false
-                    );
-                    document.addEventListener(
-                        'mozfullscreenchange',
-                        fullScreenChange,
-                        false
-                    );
-                    document.addEventListener(
-                        'webkitfullscreenchange',
-                        fullScreenChange,
-                        false
-                    );
-                }
-                canvas.requestFullScreen =
-                    canvas['requestFullScreen'] ||
-                    canvas['mozRequestFullScreen'] ||
-                    (canvas['webkitRequestFullScreen']
-                        ? function() {
-                              canvas['webkitRequestFullScreen'](
-                                  Element['ALLOW_KEYBOARD_INPUT']
-                              );
-                          }
-                        : null);
-                canvas.requestFullScreen();
-            },
-            requestAnimationFrame: function(func) {
-                if (!window.requestAnimationFrame) {
-                    window.requestAnimationFrame =
-                        window['requestAnimationFrame'] ||
-                        window['mozRequestAnimationFrame'] ||
-                        window['webkitRequestAnimationFrame'] ||
-                        window['msRequestAnimationFrame'] ||
-                        window['oRequestAnimationFrame'] ||
-                        window['setTimeout'];
-                }
-                window.requestAnimationFrame(func);
-            },
-            safeCallback: function(func) {
-                return function() {
-                    if (!ABORT) return func.apply(null, arguments);
-                };
-            },
-            safeRequestAnimationFrame: function(func) {
-                return Browser.requestAnimationFrame(function() {
-                    if (!ABORT) func();
-                });
-            },
-            safeSetTimeout: function(func, timeout) {
-                return setTimeout(function() {
-                    if (!ABORT) func();
-                }, timeout);
-            },
-            safeSetInterval: function(func, timeout) {
-                return setInterval(function() {
-                    if (!ABORT) func();
-                }, timeout);
-            },
-            getMimetype: function(name) {
-                return {
-                    jpg: 'image/jpeg',
-                    jpeg: 'image/jpeg',
-                    png: 'image/png',
-                    bmp: 'image/bmp',
-                    ogg: 'audio/ogg',
-                    wav: 'audio/wav',
-                    mp3: 'audio/mpeg'
-                }[name.substr(name.lastIndexOf('.') + 1)];
-            },
-            getUserMedia: function(func) {
-                if (!window.getUserMedia) {
-                    window.getUserMedia =
-                        navigator['getUserMedia'] ||
-                        navigator['mozGetUserMedia'];
-                }
-                window.getUserMedia(func);
-            },
-            getMovementX: function(event) {
-                return (
-                    event['movementX'] ||
-                    event['mozMovementX'] ||
-                    event['webkitMovementX'] ||
-                    0
-                );
-            },
-            getMovementY: function(event) {
-                return (
-                    event['movementY'] ||
-                    event['mozMovementY'] ||
-                    event['webkitMovementY'] ||
-                    0
-                );
-            },
-            mouseX: 0,
-            mouseY: 0,
-            mouseMovementX: 0,
-            mouseMovementY: 0,
-            calculateMouseEvent: function(event) {
-                // event should be mousemove, mousedown or mouseup
-                if (Browser.pointerLock) {
-                    // When the pointer is locked, calculate the coordinates
-                    // based on the movement of the mouse.
-                    // Workaround for Firefox bug 764498
-                    if (event.type != 'mousemove' && 'mozMovementX' in event) {
-                        Browser.mouseMovementX = Browser.mouseMovementY = 0;
-                    } else {
-                        Browser.mouseMovementX = Browser.getMovementX(event);
-                        Browser.mouseMovementY = Browser.getMovementY(event);
-                    }
-                    // check if SDL is available
-                    if (typeof SDL != 'undefined') {
-                        Browser.mouseX = SDL.mouseX + Browser.mouseMovementX;
-                        Browser.mouseY = SDL.mouseY + Browser.mouseMovementY;
-                    } else {
-                        // just add the mouse delta to the current absolut mouse position
-                        // FIXME: ideally this should be clamped against the canvas size and zero
-                        Browser.mouseX += Browser.mouseMovementX;
-                        Browser.mouseY += Browser.mouseMovementY;
-                    }
-                } else {
-                    // Otherwise, calculate the movement based on the changes
-                    // in the coordinates.
-                    const rect = Module['canvas'].getBoundingClientRect();
-                    let x, y;
-                    if (
-                        event.type == 'touchstart' ||
-                        event.type == 'touchend' ||
-                        event.type == 'touchmove'
-                    ) {
-                        const t = event.touches.item(0);
-                        if (t) {
-                            x = t.pageX - (window.scrollX + rect.left);
-                            y = t.pageY - (window.scrollY + rect.top);
-                        } else {
-                            return;
-                        }
-                    } else {
-                        x = event.pageX - (window.scrollX + rect.left);
-                        y = event.pageY - (window.scrollY + rect.top);
-                    }
-                    // the canvas might be CSS-scaled compared to its backbuffer;
-                    // SDL-using content will want mouse coordinates in terms
-                    // of backbuffer units.
-                    const cw = Module['canvas'].width;
-                    const ch = Module['canvas'].height;
-                    x = x * (cw / rect.width);
-                    y = y * (ch / rect.height);
-                    Browser.mouseMovementX = x - Browser.mouseX;
-                    Browser.mouseMovementY = y - Browser.mouseY;
-                    Browser.mouseX = x;
-                    Browser.mouseY = y;
-                }
-            },
-            xhrLoad: function(url, onload, onerror) {
-                const xhr = new XMLHttpRequest();
-                xhr.open('GET', url, true);
-                xhr.responseType = 'arraybuffer';
-                xhr.onload = function() {
-                    if (
-                        xhr.status == 200 ||
-                        (xhr.status == 0 && xhr.response)
-                    ) {
-                        // file URLs can return 0
-                        onload(xhr.response);
-                    } else {
-                        onerror();
-                    }
-                };
-                xhr.onerror = onerror;
-                xhr.send(null);
-            },
-            asyncLoad: function(url, onload, onerror, noRunDep) {
-                Browser.xhrLoad(
-                    url,
-                    function(arrayBuffer) {
-                        assert(
-                            arrayBuffer,
-                            'Loading data file "' +
-                                url +
-                                '" failed (no arrayBuffer).'
-                        );
-                        onload(new Uint8Array(arrayBuffer));
-                        if (!noRunDep) removeRunDependency('al ' + url);
-                    },
-                    function() {
-                        if (onerror) {
-                            onerror();
-                        } else {
-                            throw 'Loading data file "' + url + '" failed.';
-                        }
-                    }
-                );
-                if (!noRunDep) addRunDependency('al ' + url);
-            },
-            resizeListeners: [],
-            updateResizeListeners: function() {
-                const canvas = Module['canvas'];
-                Browser.resizeListeners.forEach(function(listener) {
-                    listener(canvas.width, canvas.height);
-                });
-            },
-            setCanvasSize: function(width, height, noUpdates) {
-                const canvas = Module['canvas'];
-                canvas.width = width;
-                canvas.height = height;
-                if (!noUpdates) Browser.updateResizeListeners();
-            },
-            windowedWidth: 0,
-            windowedHeight: 0,
-            setFullScreenCanvasSize: function() {
-                const canvas = Module['canvas'];
-                this.windowedWidth = canvas.width;
-                this.windowedHeight = canvas.height;
-                canvas.width = screen.width;
-                canvas.height = screen.height;
-                // check if SDL is available
-                if (typeof SDL != 'undefined') {
-                    let flags =
-                        HEAPU32[(SDL.screen + Runtime.QUANTUM_SIZE * 0) >> 2];
-                    flags = flags | 0x00800000; // set SDL_FULLSCREEN flag
-                    HEAP32[
-                        (SDL.screen + Runtime.QUANTUM_SIZE * 0) >> 2
-                    ] = flags;
-                }
-                Browser.updateResizeListeners();
-            },
-            setWindowedCanvasSize: function() {
-                const canvas = Module['canvas'];
-                canvas.width = this.windowedWidth;
-                canvas.height = this.windowedHeight;
-                // check if SDL is available
-                if (typeof SDL != 'undefined') {
-                    let flags =
-                        HEAPU32[(SDL.screen + Runtime.QUANTUM_SIZE * 0) >> 2];
-                    flags = flags & ~0x00800000; // clear SDL_FULLSCREEN flag
-                    HEAP32[
-                        (SDL.screen + Runtime.QUANTUM_SIZE * 0) >> 2
-                    ] = flags;
-                }
-                Browser.updateResizeListeners();
-            }
-        };
 
         FS.staticInit();
         __ATINIT__.unshift({
@@ -6369,24 +5237,6 @@ class LibTiMidity {
             }
         });
         ___strtok_state = Runtime.staticAlloc(4);
-        Module['requestFullScreen'] = function(lockPointer, resizeCanvas) {
-            Browser.requestFullScreen(lockPointer, resizeCanvas);
-        };
-        Module['requestAnimationFrame'] = function(func) {
-            Browser.requestAnimationFrame(func);
-        };
-        Module['setCanvasSize'] = function(width, height, noUpdates) {
-            Browser.setCanvasSize(width, height, noUpdates);
-        };
-        Module['pauseMainLoop'] = function() {
-            Browser.mainLoop.pause();
-        };
-        Module['resumeMainLoop'] = function() {
-            Browser.mainLoop.resume();
-        };
-        Module['getUserMedia'] = function() {
-            Browser.getUserMedia();
-        };
         STACK_BASE = STACKTOP = Runtime.alignMemory(STATICTOP);
         STACK_MAX = STACK_BASE + 5242880;
         DYNAMIC_BASE = DYNAMICTOP = Runtime.alignMemory(STACK_MAX);
@@ -6821,8 +5671,8 @@ class LibTiMidity {
                 A = z;
                 if ((z | 0) == 0) {
                     z = c[m >> 2] | 0;
+                    // _fprintf;
                     ar(
-                        z | 0,
                         6512,
                         ((z = i),
                         (i = (i + 1) | 0),
@@ -7391,11 +6241,15 @@ class LibTiMidity {
                 }
                 return;
             }
+            // mid_song_get_num_missing_instruments
+            // takes a number (a)
+            // returns a number
             function bt(a) {
                 a = a | 0;
                 return c[(a + 13136) >> 2] | 0;
             }
 
+            // mid_song_get_missing_instrument
             function bu(a, b) {
                 a = a | 0;
                 b = b | 0;
@@ -7421,6 +6275,7 @@ class LibTiMidity {
                 return f | 0;
             }
 
+            // returns number of missing patches
             function bv(a) {
                 a = a | 0;
                 let b = 0,
@@ -7436,9 +6291,11 @@ class LibTiMidity {
                     if ((e | 0) == 0) {
                         break;
                     }
+                    // get number of instrument patches
                     if ((c[(b + 28 + (a << 2)) >> 2] | 0) != 0) {
                         d = (d + (bw(b, 0, a) | 0)) | 0;
                     }
+                    // get number of drum patches
                     if ((c[(b + 540 + (a << 2)) >> 2] | 0) != 0) {
                         d = (d + (bw(b, 1, a) | 0)) | 0;
                     }
@@ -7609,6 +6466,7 @@ class LibTiMidity {
                                                 ((g * 28) | 0)) >>
                                                 2
                                         ] | 0;
+                                    // prints 'Missing patch: arachno-88.pat' or 'Missing patch: MT32Drums/mt32drum-6.pat'
                                     ar(
                                         v | 0,
                                         5120,
@@ -7621,14 +6479,6 @@ class LibTiMidity {
                                     if ((c[(f + 13136) >> 2] | 0) < 256) {
                                         q = c[m >> 2] | 0;
                                         p = c[(f + 13136) >> 2] | 0;
-                                        ar(
-                                            q | 0,
-                                            4856,
-                                            ((v = i),
-                                            (i = (i + 8) | 0),
-                                            (c[v >> 2] = p),
-                                            v) | 0
-                                        ) | 0;
                                         i = v;
                                         c[
                                             (f +
@@ -15575,11 +14425,13 @@ class LibTiMidity {
                 i = j;
                 return n | 0;
             }
+            // mid_song_load
             function cX(a, b) {
                 a = a | 0;
                 b = b | 0;
                 return cW(a, 0, b) | 0;
             }
+            // mid_song_free
             function cY(a) {
                 a = a | 0;
                 let b = 0;
@@ -15614,6 +14466,7 @@ class LibTiMidity {
                 c0(b);
                 return;
             }
+            // mid_exit
             function cZ() {
                 let a = 0,
                     b = 0,
@@ -15714,6 +14567,7 @@ class LibTiMidity {
                 }
                 return 0;
             }
+            // malloc
             function c$(a) {
                 a = a | 0;
                 let b = 0,
@@ -17858,6 +16712,7 @@ class LibTiMidity {
                 n = 0;
                 return n | 0;
             }
+            // free
             function c0(a) {
                 a = a | 0;
                 let b = 0,
@@ -18790,47 +17645,36 @@ class LibTiMidity {
         );
         var _strlen = (Module['_strlen'] = asm['_strlen']);
         var _strcat = (Module['_strcat'] = asm['_strcat']);
-        const _mid_create_options = (Module['_mid_create_options'] =
-            asm['_mid_create_options']);
-        const _mid_istream_open_mem = (Module['_mid_istream_open_mem'] =
-            asm['_mid_istream_open_mem']);
-        const _mid_istream_open_file = (Module['_mid_istream_open_file'] =
-            asm['_mid_istream_open_file']);
-        const _mid_song_read_wave = (Module['_mid_song_read_wave'] =
-            asm['_mid_song_read_wave']);
-        const _mid_exit = (Module['_mid_exit'] = asm['_mid_exit']);
-        const _mid_song_note_on = (Module['_mid_song_note_on'] =
-            asm['_mid_song_note_on']);
+        Module['_mid_create_options'] = asm['_mid_create_options'];
+        Module['_mid_istream_open_mem'] = asm['_mid_istream_open_mem'];
+        Module['_mid_istream_open_file'] = asm['_mid_istream_open_file'];
+        Module['_mid_song_read_wave'] = asm['_mid_song_read_wave'];
+        Module['_mid_exit'] = asm['_mid_exit'];
+        Module['_mid_song_note_on'] = asm['_mid_song_note_on'];
         var _strncpy = (Module['_strncpy'] = asm['_strncpy']);
         var _memset = (Module['_memset'] = asm['_memset']);
         var _memcpy = (Module['_memcpy'] = asm['_memcpy']);
-        const _mid_song_get_missing_instrument = (Module[
-            '_mid_song_get_missing_instrument'
-        ] = asm['_mid_song_get_missing_instrument']);
-        const _mid_istream_close = (Module['_mid_istream_close'] =
-            asm['_mid_istream_close']);
-        const _mid_song_free = (Module['_mid_song_free'] =
-            asm['_mid_song_free']);
-        const _mid_init = (Module['_mid_init'] = asm['_mid_init']);
-        const _mid_song_load = (Module['_mid_song_load'] =
-            asm['_mid_song_load']);
-        const _mid_song_start = (Module['_mid_song_start'] =
-            asm['_mid_song_start']);
-        const _mid_song_get_num_missing_instruments = (Module[
-            '_mid_song_get_num_missing_instruments'
-        ] = asm['_mid_song_get_num_missing_instruments']);
+        Module['_mid_song_get_missing_instrument'] =
+            asm['_mid_song_get_missing_instrument'];
+        Module['_mid_istream_close'] = asm['_mid_istream_close'];
+        Module['_mid_song_free'] = asm['_mid_song_free'];
+        Module['_mid_init'] = asm['_mid_init'];
+        Module['_mid_song_load'] = asm['_mid_song_load'];
+        Module['_mid_song_start'] = asm['_mid_song_start'];
+        Module['_mid_song_get_num_missing_instruments'] =
+            asm['_mid_song_get_num_missing_instruments'];
         var _memcmp = (Module['_memcmp'] = asm['_memcmp']);
-        const _free = (Module['_free'] = asm['_free']);
+        Module['_free'] = asm['_free'];
         var _malloc = (Module._malloc = asm['_malloc']);
         var _strcpy = (Module['_strcpy'] = asm['_strcpy']);
         const runPostSets = (Module['runPostSets'] = asm['runPostSets']);
 
-        const dynCall_ii = (Module['dynCall_ii'] = asm['dynCall_ii']);
-        const dynCall_vi = (Module['dynCall_vi'] = asm['dynCall_vi']);
-        const dynCall_iiiii = (Module['dynCall_iiiii'] = asm['dynCall_iiiii']);
-        const dynCall_viii = (Module['dynCall_viii'] = asm['dynCall_viii']);
-        const dynCall_v = (Module['dynCall_v'] = asm['dynCall_v']);
-        const dynCall_iii = (Module['dynCall_iii'] = asm['dynCall_iii']);
+        Module['dynCall_ii'] = asm['dynCall_ii'];
+        Module['dynCall_vi'] = asm['dynCall_vi'];
+        Module['dynCall_iiiii'] = asm['dynCall_iiiii'];
+        Module['dynCall_viii'] = asm['dynCall_viii'];
+        Module['dynCall_v'] = asm['dynCall_v'];
+        Module['dynCall_iii'] = asm['dynCall_iii'];
 
         Runtime.stackAlloc = function(size) {
             return asm['stackAlloc'](size);
@@ -18852,17 +17696,6 @@ class LibTiMidity {
                 HEAPU8.set(data, STATIC_BASE);
             }
             addRunDependency('memory initializer');
-            Browser.asyncLoad(
-                memoryInitializer,
-                function(data) {
-                    applyData(data);
-                    removeRunDependency('memory initializer');
-                },
-                function(data) {
-                    throw 'could not load memory initializer ' +
-                        memoryInitializer;
-                }
-            );
         }
 
         var initialStackTop;
