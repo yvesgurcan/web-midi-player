@@ -1357,8 +1357,7 @@ class LibTiMidity {
                     resolvedPath = path + '/' + resolvedPath;
                     resolvedAbsolute = path.charAt(0) === '/';
                 }
-                // At this point the path should be resolved to a full absolute path, but
-                // handle relative paths to be safe (might happen when process.cwd() fails)
+                // At this point the path should be resolved to a full absolute path, but handle relative paths to be safe (might happen when process.cwd() fails)
                 resolvedPath = PATH.normalizeArray(
                     resolvedPath.split('/').filter(function(p) {
                         return !!p;
@@ -1425,13 +1424,7 @@ class LibTiMidity {
                         stream.tty.ops.put_char(stream.tty, 10);
                     }
                 },
-                read: function(
-                    stream,
-                    buffer,
-                    offset,
-                    length,
-                    pos /* ignored */
-                ) {
+                read: function(stream, buffer, offset, length) {
                     if (!stream.tty || !stream.tty.ops.get_char) {
                         throw new FS.ErrnoError(ERRNO_CODES.ENXIO);
                     }
@@ -1479,25 +1472,11 @@ class LibTiMidity {
                 get_char: function(tty) {
                     if (!tty.input.length) {
                         let result = null;
-                        if (
-                            typeof window != 'undefined' &&
-                            typeof window.prompt == 'function'
-                        ) {
-                            // browser
-                            result = window.prompt('Input: '); // returns null on cancel
-                            if (result !== null) {
-                                result += '\n';
-                            }
-                        } else if (typeof readline == 'function') {
-                            // Command line.
-                            result = readline();
-                            if (result !== null) {
-                                result += '\n';
-                            }
-                        }
+                        result = window.prompt('Input: ');
                         if (!result) {
                             return null;
                         }
+                        result += '\n';
                         tty.input = intArrayFromString(result, true);
                     }
                     return tty.input.shift();
@@ -3183,8 +3162,7 @@ class LibTiMidity {
                 const mode = FS.getMode(!!input, !!output);
                 if (!FS.createDevice.major) FS.createDevice.major = 64;
                 const dev = FS.makedev(FS.createDevice.major++, 0);
-                // Create a fake device that a set of stream ops to emulate
-                // the old behavior.
+                // Create a fake device that a set of stream ops to emulate he old behavior.
                 FS.registerDevice(dev, {
                     open: function(stream) {
                         stream.seekable = false;
@@ -3195,13 +3173,7 @@ class LibTiMidity {
                             output(10);
                         }
                     },
-                    read: function(
-                        stream,
-                        buffer,
-                        offset,
-                        length,
-                        pos /* ignored */
-                    ) {
+                    read: function(stream, buffer, offset, length) {
                         let bytesRead = 0;
                         for (let i = 0; i < length; i++) {
                             let result;
@@ -3245,93 +3217,6 @@ class LibTiMidity {
                 );
                 return FS.symlink(target, path);
             },
-            forceLoadFile: function(obj) {
-                if (obj.isDevice || obj.isFolder || obj.link || obj.contents)
-                    return true;
-                let success = true;
-                if (typeof XMLHttpRequest !== 'undefined') {
-                    throw new Error(
-                        'Lazy loading should have been performed (contents set) in createLazyFile, but it was not. Lazy loading only works in web workers. Use --embed-file or --preload-file in emcc on the main thread.'
-                    );
-                } else if (Module['read']) {
-                    // Command-line.
-                    try {
-                        // WARNING: Can't read binary files in V8's d8 or tracemonkey's js, as
-                        //          read() will try to parse UTF8.
-                        obj.contents = intArrayFromString(
-                            Module['read'](obj.url),
-                            true
-                        );
-                    } catch (e) {
-                        success = false;
-                    }
-                } else {
-                    throw new Error(
-                        'Cannot load without read() or XMLHttpRequest.'
-                    );
-                }
-                if (!success) ___setErrNo(ERRNO_CODES.EIO);
-                return success;
-            },
-            createLazyFile: function(parent, name, url, canRead, canWrite) {
-                if (typeof XMLHttpRequest !== 'undefined') {
-                    throw 'Cannot do synchronous binary XHRs outside webworkers in modern browsers. Use --embed-file or --preload-file in emcc';
-                } else {
-                    var properties = { isDevice: false, url: url };
-                }
-                const node = FS.createFile(parent, name, canRead, canWrite);
-                // This is a total hack, but I want to get this lazy file code out of the
-                // core of MEMFS. If we want to keep this lazy file concept I feel it should
-                // be its own thin LAZYFS proxying calls to MEMFS.
-                if (properties.contents) {
-                    node.contents = properties.contents;
-                } else if (properties.url) {
-                    node.contents = null;
-                    node.url = properties.url;
-                }
-                // override each stream op with one that tries to force load the lazy file first
-                const stream_ops = {};
-                const keys = Object.keys(node.stream_ops);
-                keys.forEach(function(key) {
-                    const fn = node.stream_ops[key];
-                    stream_ops[key] = function() {
-                        if (!FS.forceLoadFile(node)) {
-                            throw new FS.ErrnoError(ERRNO_CODES.EIO);
-                        }
-                        return fn.apply(null, arguments);
-                    };
-                });
-                // use a custom read function
-                stream_ops.read = function(
-                    stream,
-                    buffer,
-                    offset,
-                    length,
-                    position
-                ) {
-                    if (!FS.forceLoadFile(node)) {
-                        throw new FS.ErrnoError(ERRNO_CODES.EIO);
-                    }
-                    const contents = stream.node.contents;
-                    if (position >= contents.length) return 0;
-                    const size = Math.min(contents.length - position, length);
-                    assert(size >= 0);
-                    if (contents.slice) {
-                        // normal array
-                        for (var i = 0; i < size; i++) {
-                            buffer[offset + i] = contents[position + i];
-                        }
-                    } else {
-                        for (var i = 0; i < size; i++) {
-                            // LazyUint8Array from sync binary XHR
-                            buffer[offset + i] = contents.get(position + i);
-                        }
-                    }
-                    return size;
-                };
-                node.stream_ops = stream_ops;
-                return node;
-            },
             createPreloadedFile: function(
                 parent,
                 name,
@@ -3339,12 +3224,10 @@ class LibTiMidity {
                 canRead,
                 canWrite,
                 onload,
-                onerror,
                 dontCreateFile,
                 canOwn
             ) {
-                // TODO we should allow people to just pass in a complete filename instead
-                // of parent and name being that we just join them anyways
+                // TODO we should allow people to just pass in a complete filename instead of parent and name being that we just join them anyways
                 const fullname = name
                     ? PATH.resolve(PATH.join(parent, name))
                     : parent;
@@ -3566,8 +3449,7 @@ class LibTiMidity {
                 const name = SOCKFS.nextname();
                 const node = FS.createNode(SOCKFS.root, name, 49152, 0);
                 node.sock = sock;
-                // and the wrapping stream that enables library functions such
-                // as read and write to indirectly interact with the socket
+                // and the wrapping stream that enables library functions such as read and write to indirectly interact with the socket
                 const stream = FS.createStream({
                     path: name,
                     node: node,
@@ -3575,8 +3457,7 @@ class LibTiMidity {
                     seekable: false,
                     stream_ops: SOCKFS.stream_ops
                 });
-                // map the new stream to the socket structure (sockets have a 1:1
-                // relationship with a stream)
+                // map the new stream to the socket structure (sockets have a 1:1 relationship with a stream)
                 sock.stream = stream;
                 return sock;
             },
@@ -3630,14 +3511,12 @@ class LibTiMidity {
                         port = null;
                     }
                     if (ws) {
-                        // for sockets that've already connected (e.g. we're the server)
-                        // we can inspect the _socket property for the address
+                        // for sockets that've already connected (e.g. we're the server) we can inspect the _socket property for the address
                         if (ws._socket) {
                             addr = ws._socket.remoteAddress;
                             port = ws._socket.remotePort;
                         }
-                        // if we're just now initializing a connection to the remote,
-                        // inspect the url property
+                        // if we're just now initializing a connection to the remote, inspect the url property
                         else {
                             const result = /ws[s]?:\/\/([^:]+):(\d+)/.exec(
                                 ws.url
@@ -3835,8 +3714,7 @@ class LibTiMidity {
                     }
                     sock.saddr = addr;
                     sock.sport = port || _mkport();
-                    // in order to emulate dgram sockets, we need to launch a listen server when
-                    // binding on a connection-less socket
+                    // in order to emulate dgram sockets, we need to launch a listen server when binding on a connection-less socket
                     // note: this is only required on the server side
                     if (sock.type === 2) {
                         // close the existing server if it exists
@@ -3858,10 +3736,6 @@ class LibTiMidity {
                     if (sock.server) {
                         throw new FS.ErrnoError(ERRNO_CODS.EOPNOTSUPP);
                     }
-                    // TODO autobind
-                    // if (!sock.addr && sock.type == 2) {
-                    // }
-                    // early out if we're already connected / in the middle of connecting
                     if (
                         typeof sock.daddr !== 'undefined' &&
                         typeof sock.dport !== 'undefined'
@@ -3882,8 +3756,7 @@ class LibTiMidity {
                             }
                         }
                     }
-                    // add the socket to our peer list and set our
-                    // destination address / port to match
+                    // add the socket to our peer list and set our destination address / port to match
                     const peer = SOCKFS.websocket_sock_ops.createPeer(
                         sock,
                         addr,
@@ -3921,9 +3794,7 @@ class LibTiMidity {
                             // push to queue for accept to pick up
                             sock.pending.push(newsock);
                         } else {
-                            // create a peer on the listen socket so calling sendto
-                            // with the listen socket and an address will resolve
-                            // to the correct client
+                            // create a peer on the listen socket so calling sendto with the listen socket and an address will resolve to the correct client
                             SOCKFS.websocket_sock_ops.createPeer(sock, ws);
                         }
                     });
@@ -3954,8 +3825,6 @@ class LibTiMidity {
                         addr = sock.daddr;
                         port = sock.dport;
                     } else {
-                        // TODO saddr and sport will be set for bind()'d UDP sockets, but what
-                        // should we be returning for TCP sockets that've been connect()'d?
                         addr = sock.saddr || 0;
                         port = sock.sport || 0;
                     }
@@ -3963,8 +3832,7 @@ class LibTiMidity {
                 },
                 sendmsg: function(sock, buffer, offset, length, addr, port) {
                     if (sock.type === 2) {
-                        // connection-less sockets will honor the message address,
-                        // and otherwise fall back to the bound destination address
+                        // connection-less sockets will honor the message address, and otherwise fall back to the bound destination address
                         if (addr === undefined || port === undefined) {
                             addr = sock.daddr;
                             port = sock.dport;
@@ -3998,9 +3866,7 @@ class LibTiMidity {
                             throw new FS.ErrnoError(ERRNO_CODES.EAGAIN);
                         }
                     }
-                    // create a copy of the incoming data to send, as the WebSocket API
-                    // doesn't work entirely with an ArrayBufferView, it'll just send
-                    // the entire underlying buffer
+                    // create a copy of the incoming data to send, as the WebSocket API doesn't work entirely with an ArrayBufferView, it'll just send the entire underlying buffer
                     let data;
                     if (
                         buffer instanceof Array ||
@@ -4014,9 +3880,7 @@ class LibTiMidity {
                             buffer.byteOffset + offset + length
                         );
                     }
-                    // if we're emulating a connection-less dgram socket and don't have
-                    // a cached connection, queue the buffer to send upon connect and
-                    // lie, saying the data was sent now.
+                    // if we're emulating a connection-less dgram socket and don't have a cached connection, queue the buffer to send upon connect and lie, saying the data was sent now.
                     if (sock.type === 2) {
                         if (
                             !dest ||
@@ -4079,8 +3943,7 @@ class LibTiMidity {
                             throw new FS.ErrnoError(ERRNO_CODES.EAGAIN);
                         }
                     }
-                    // queued.data will be an ArrayBuffer if it's unadulterated, but if it's
-                    // requeued TCP data it'll be an ArrayBufferView
+                    // queued.data will be an ArrayBuffer if it's unadulterated, but if it's requeued TCP data it'll be an ArrayBufferView
                     const queuedLength =
                         queued.data.byteLength || queued.data.length;
                     const queuedOffset = queued.data.byteOffset || 0;
@@ -4109,13 +3972,12 @@ class LibTiMidity {
                 }
             }
         };
-        function _send(fd, buf, len, flags) {
+        function _send(fd, buf, len) {
             const sock = SOCKFS.getSocket(fd);
             if (!sock) {
                 ___setErrNo(ERRNO_CODES.EBADF);
                 return -1;
             }
-            // TODO honor flags
             return _write(fd, buf, len);
         }
         function _pwrite(fildes, buf, nbyte, offset) {
@@ -4657,8 +4519,6 @@ class LibTiMidity {
                         }
                     }
                     textIndex += 2;
-                    // TODO: Support a/A (hex float) and m (last error) specifiers.
-                    // TODO: Support %1${specifier} for arg selection.
                 } else {
                     ret.push(curr);
                     textIndex += 1;
@@ -4686,7 +4546,6 @@ class LibTiMidity {
                 ___setErrNo(ERRNO_CODES.EBADF);
                 return -1;
             }
-            // TODO honor flags
             return _read(fd, buf, len);
         }
         function _pread(fildes, buf, nbyte, offset) {
@@ -5010,10 +4869,12 @@ class LibTiMidity {
             return ___errno_state;
         }
         function _sbrk(bytes) {
-            // Implement a Linux-like 'memory area' for our 'process'.
-            // Changes the size of the memory area by |bytes|; returns the
-            // address of the previous top ('break') of the memory area
-            // We control the "dynamic" memory - DYNAMIC_BASE to DYNAMICTOP
+            /*
+                Implement a Linux-like 'memory area' for our 'process'.
+                Changes the size of the memory area by |bytes|.
+                Returns the address of the previous top ('break') of the memory area.
+                We control the "dynamic" memory - DYNAMIC_BASE to DYNAMICTOP.
+            */
             const self = _sbrk;
             if (!self.called) {
                 DYNAMICTOP = alignMemoryPage(DYNAMICTOP); // make sure we start out aligned
@@ -5214,7 +5075,6 @@ class LibTiMidity {
         Module.createDataFile = FS.createDataFile;
         Module.loadPatchFromUrl = FS.loadPatchFromUrl;
         Module['FS_createPreloadedFile'] = FS.createPreloadedFile;
-        Module['FS_createLazyFile'] = FS.createLazyFile;
         Module['FS_createLink'] = FS.createLink;
         Module['FS_createDevice'] = FS.createDevice;
 
@@ -5298,11 +5158,11 @@ class LibTiMidity {
         }
 
         function asmPrintInt(x, y) {
-            console.log('int ' + x + ',' + y); // + ' ' + new Error().stack);
+            console.log('int ' + x + ',' + y);
         }
 
         function asmPrintFloat(x, y) {
-            console.log('float ' + x + ',' + y); // + ' ' + new Error().stack);
+            console.log('float ' + x + ',' + y);
         }
 
         // EMSCRIPTEN_START_ASM
@@ -5399,17 +5259,9 @@ class LibTiMidity {
             let aH = env._strchr;
             let aI = env._read;
             const aJ = env._time;
-            const aK = env.__formatString;
             const aL = env._atoi;
-            const aM = env._recv;
-            const aN = env._pwrite;
-            const aO = env._llvm_pow_f64;
-            const aP = env._fsync;
             const aQ = env.___errno_location;
-            const aR = env._isspace;
             const aS = env._sbrk;
-            const aT = env.__parseInt;
-            const aU = env._fwrite;
             const aV = env._strcmp;
 
             // EMSCRIPTEN_START_FUNCS
@@ -5443,17 +5295,6 @@ class LibTiMidity {
                 a[(k + 1) | 0] = a[(b + 1) | 0];
                 a[(k + 2) | 0] = a[(b + 2) | 0];
                 a[(k + 3) | 0] = a[(b + 3) | 0];
-            }
-            function a5(b) {
-                b = b | 0;
-                a[k] = a[b];
-                a[(k + 1) | 0] = a[(b + 1) | 0];
-                a[(k + 2) | 0] = a[(b + 2) | 0];
-                a[(k + 3) | 0] = a[(b + 3) | 0];
-                a[(k + 4) | 0] = a[(b + 4) | 0];
-                a[(k + 5) | 0] = a[(b + 5) | 0];
-                a[(k + 6) | 0] = a[(b + 6) | 0];
-                a[(k + 7) | 0] = a[(b + 7) | 0];
             }
             function a6(a) {
                 a = a | 0;
@@ -17699,7 +17540,6 @@ class LibTiMidity {
         }
 
         var initialStackTop;
-        let preloadStartTime = null;
         let calledRun = false;
         dependenciesFulfilled = function runCaller() {
             // If run has never been called, and we should call run (INVOKE_RUN is true, and Module.noInitialRun is not false)
@@ -17717,11 +17557,6 @@ class LibTiMidity {
                 'cannot call main when preRun functions remain to be called'
             );
             args = args || [];
-            if (preloadStartTime !== null) {
-                console.warn(
-                    'preload time: ' + (Date.now() - preloadStartTime) + ' ms'
-                );
-            }
             ensureInitRuntime();
             const argc = args.length + 1;
             function pad() {
@@ -17754,8 +17589,7 @@ class LibTiMidity {
                 }
             } catch (e) {
                 if (e instanceof ExitStatus) {
-                    // exit() throws this once it's done to make sure execution
-                    // has been stopped completely
+                    // exit() throws this once it's done to make sure execution has been stopped completely
                     return;
                 } else if (e == 'SimulateInfiniteLoop') {
                     // running an evented main loop, don't immediately exit
@@ -17769,7 +17603,6 @@ class LibTiMidity {
 
         function run(args) {
             args = args || Module['arguments'];
-            if (preloadStartTime === null) preloadStartTime = Date.now();
             if (runDependencies > 0) {
                 console.warn(
                     'run() called, but dependencies remain, so not running'
@@ -17836,7 +17669,6 @@ class LibTiMidity {
         };
 
         // shouldRunNow refers to calling main(), not run().
-
         var shouldRunNow = true;
 
         if (Module['noInitialRun']) {
