@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import uuid from 'uuid/v4';
 import MidiPlayer from 'web-midi-player';
+import LocalStorageManager from '../util/LocalStorageManager';
+import AddSong from './AddSong';
+
+const localStorageManager = new LocalStorageManager();
 
 const MIDI_PLAY = 'MIDI_PLAY';
 const MIDI_PAUSE = 'MIDI_PAUSE';
@@ -92,10 +97,10 @@ const SONGS = [
     }
 ];
 
-const getPlayPauseButton = (songState, songIndex, player) => {
+const getPlayPauseButton = (songState, songIndex, songList, player) => {
     switch (songState) {
         default: {
-            const { url, name } = SONGS[songIndex];
+            const { url, name } = songList[songIndex] || {};
             return (
                 <Button
                     onClick={() =>
@@ -120,12 +125,30 @@ const getPlayPauseButton = (songState, songIndex, player) => {
 
 const Player = () => {
     const [midiPlayer, setMidiPlayer] = useState(null);
+    const [songList, setSongList] = useState([]);
     const [currentSongIndex, setCurrentSongIndex] = useState(0);
     const [currentSongState, setCurrentSongState] = useState(null);
     const [currentSongTime, setCurrentSongTime] = useState(0);
 
     // mount
     useEffect(() => {
+        async function handleSongs() {
+            const songs = await localStorageManager.getItem('songs');
+            if (!songs || songs.length === 0) {
+                const songsWithId = SONGS.map(song => ({
+                    ...song,
+                    id: uuid()
+                }));
+                localStorageManager.setItem('songs', songsWithId);
+                setSongList(songsWithId);
+                return;
+            }
+
+            setSongList(songs);
+        }
+
+        handleSongs();
+
         if (!midiPlayer) {
             const eventLogger = payload => {
                 console.log(payload);
@@ -139,10 +162,10 @@ const Player = () => {
 
                 if (payload.event === MIDI_END) {
                     let nextIndex = currentSongIndex + 1;
-                    if (nextIndex > SONGS.length - 1) {
+                    if (nextIndex > songList.length - 1) {
                         nextIndex = 0;
                     }
-                    const { url, name } = SONGS[nextIndex];
+                    const { url, name } = songList[nextIndex];
                     midiPlayer.play({ url, name });
                     setCurrentSongIndex(nextIndex);
                 }
@@ -166,27 +189,58 @@ const Player = () => {
         }
     }, [midiPlayer]);
 
+    function handleAddSong(newSong) {
+        const updatedSongs = [...songList, { ...newSong, id: uuid() }];
+
+        localStorageManager.setItem('songs', updatedSongs);
+        setSongList(updatedSongs);
+    }
+
+    function handleDeleteSong(songId) {
+        const songIndex = songList.findIndex(song => song.id === songId);
+        const updatedSongs = [...songList.filter(song => song.id !== songId)];
+
+        localStorageManager.setItem('songs', updatedSongs);
+        setSongList(updatedSongs);
+
+        if (currentSongIndex === songIndex) {
+            midiPlayer.stop();
+            setCurrentSongIndex(0);
+            setCurrentSongTime(0);
+        } else if (songIndex < currentSongIndex) {
+            setCurrentSongIndex(currentSongIndex - 1);
+        }
+    }
+
     return (
         <Container>
             <Playlist>
-                {SONGS.map(({ url, name }, index) => (
+                {songList.map(({ id, url, name }, index) => (
                     <Song
-                        key={url}
+                        key={id || url}
                         first={index === 0}
                         selected={currentSongIndex === index}
-                        onClick={() => {
-                            midiPlayer.play({ url, name });
-                            setCurrentSongIndex(index);
-                        }}
                     >
-                        {name}
+                        <div
+                            onClick={() => {
+                                midiPlayer.play({ url, name });
+                                setCurrentSongIndex(index);
+                            }}
+                        >
+                            {name}
+                        </div>
+                        <CloseButton onClick={() => handleDeleteSong(id)}>
+                            &times;
+                        </CloseButton>
                     </Song>
                 ))}
             </Playlist>
+            <AddSong handleAddSong={handleAddSong} />
             <Control>
                 {getPlayPauseButton(
                     currentSongState,
                     currentSongIndex,
+                    songList,
                     midiPlayer
                 )}
                 <Button title="Stop track" onClick={() => midiPlayer.stop()}>
@@ -197,9 +251,9 @@ const Player = () => {
                     onClick={() => {
                         let prevIndex = currentSongIndex - 1;
                         if (prevIndex < 0) {
-                            prevIndex = SONGS.length - 1;
+                            prevIndex = songList.length - 1;
                         }
-                        const { url, name } = SONGS[prevIndex];
+                        const { url, name } = songList[prevIndex];
                         midiPlayer.play({ url, name });
                         setCurrentSongIndex(prevIndex);
                     }}
@@ -210,10 +264,10 @@ const Player = () => {
                     title="Next track"
                     onClick={() => {
                         let nextIndex = currentSongIndex + 1;
-                        if (nextIndex > SONGS.length - 1) {
+                        if (nextIndex > songList.length - 1) {
                             nextIndex = 0;
                         }
-                        const { url, name } = SONGS[nextIndex];
+                        const { url, name } = songList[nextIndex];
                         midiPlayer.play({ url, name });
                         setCurrentSongIndex(nextIndex);
                     }}
@@ -244,8 +298,14 @@ const Song = styled.div(
     cursor: pointer;
     ${props.first && 'border-top: 1px solid white'};
     ${props.selected && 'font-weight: bold'};
+    display: flex;
+    justify-content: space-between;
 `
 );
+
+const CloseButton = styled.div`
+    margin-left: 5px;
+`;
 
 const Control = styled.div`
     display: flex;
