@@ -8,6 +8,8 @@ title: 'Bug: '
 
 - Version of `web-midi-player`: 1.X.X
 - Browser: 
+- Operating system: 
+- Device model: 
 
 ## Bug
 
