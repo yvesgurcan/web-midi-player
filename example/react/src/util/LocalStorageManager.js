@@ -1,5 +1,3 @@
-let _instance = null;
-
 const MIDI_PLAYER_PREFIX = 'midiPlayer';
 
 const formatKey = string =>
@@ -8,12 +6,6 @@ const formatKey = string =>
     )}`;
 
 export default class LocalStorageManager {
-    constructor() {
-        if (_instance) {
-            return _instance;
-        }
-    }
-
     async getItem(key) {
         try {
             const items = await localStorage.getItem(formatKey(key));
