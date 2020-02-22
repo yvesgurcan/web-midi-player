@@ -133,7 +133,7 @@ const Player = () => {
     const [currentSongIndex, setCurrentSongIndex] = useState(0);
     const [currentSongState, setCurrentSongState] = useState(null);
     const [currentSongTime, setCurrentSongTime] = useState(0);
-    const [logger, setLogger] = useState('custom');
+    const [logger, setLogger] = useState(CUSTOM);
 
     // mount
     useEffect(() => {
