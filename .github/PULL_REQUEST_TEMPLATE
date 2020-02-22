@@ -6,12 +6,12 @@
 
 ## Checklist
 
-*All tasks below must be performed in addition to automated CI/CD checks.*
+*All the relevant tasks below must be performed in addition to automated CI/CD checks.*
 
 - [ ] Changes are documented.
 - [ ] Tests were added, deleted, and/or updated.
 - [ ] Version was bumped with `npm run upgrade:patch`, `npm run upgrade:minor` or `npm run upgrade:major`
-- [ ] Example was updated (if applicable).
+- [ ] Example was updated.
 
 ## Issue(s) adressed
 
