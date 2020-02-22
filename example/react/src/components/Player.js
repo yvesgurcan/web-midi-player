@@ -100,6 +100,7 @@ const SONGS = [
 
 const CUSTOM = 'custom';
 const CONSOLE = 'console';
+const NONE = 'none';
 
 const getPlayPauseButton = (songState, songIndex, songList, player) => {
     switch (songState) {
@@ -197,6 +198,10 @@ const Player = () => {
 
             if (logger === CONSOLE) {
                 midiPlayer.setLogger({ eventLogger: null, logging: true });
+            }
+
+            if (logger === NONE) {
+                midiPlayer.setLogger({});
             }
         }
     }, [songList, currentSongIndex, logger]);
