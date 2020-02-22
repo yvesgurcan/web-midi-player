@@ -461,23 +461,6 @@ export default class MidiPlayer {
         }
     }
 
-    /**
-     * Updates the configuration of the logger.
-     * @param {object} [configuration]
-     * @param {function} [configuration.eventLogger = undefined] The function that receives event payloads.
-     * @param {boolean} [configuration.logging = false] Turns ON or OFF logging to the console.
-     * @example
-     *  const eventLogger = (payload) => {
-     *   console.log('Received event:', payload.event);
-     * }
-     * midiPlayer.setLogger({ eventLogger });
-     */
-    setLogger({ eventLogger = undefined, logging = false }) {
-        this.eventLogger = eventLogger;
-        this.logging = logging;
-        this.eventHandler.setLogger({ eventLogger, logging });
-    }
-
     freeMemory() {
         LibTiMidity._free(this.waveBuffer);
         LibTiMidity._free(this.midiFileBuffer);
@@ -502,4 +485,21 @@ export default class MidiPlayer {
      * midiPlayer.emitEvent({ event, message });
      */
     emitEvent = payload => this.eventHandler.emitEvent(payload);
+
+    /**
+     * Updates the configuration of the logger.
+     * @param {object} [configuration]
+     * @param {function} [configuration.eventLogger = undefined] The function that receives event payloads.
+     * @param {boolean} [configuration.logging = false] Turns ON or OFF logging to the console.
+     * @example
+     *  const eventLogger = (payload) => {
+     *   console.log('Received event:', payload.event);
+     * }
+     * midiPlayer.setLogger({ eventLogger });
+     */
+    setLogger({ eventLogger = undefined, logging = false }) {
+        this.eventLogger = eventLogger;
+        this.logging = logging;
+        this.eventHandler.setLogger({ eventLogger, logging });
+    }
 }
