@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import uuid from 'uuid/v4';
 import MidiPlayer from 'web-midi-player';
 import LocalStorageManager from '../util/LocalStorageManager';
 import AddSong from './AddSong';
+import LoggerDropdown from './LoggerDropdown';
 
 const localStorageManager = new LocalStorageManager();
 
@@ -97,6 +98,9 @@ const SONGS = [
     }
 ];
 
+const CUSTOM = 'custom';
+const CONSOLE = 'console';
+
 const getPlayPauseButton = (songState, songIndex, songList, player) => {
     switch (songState) {
         default: {
@@ -129,6 +133,7 @@ const Player = () => {
     const [currentSongIndex, setCurrentSongIndex] = useState(0);
     const [currentSongState, setCurrentSongState] = useState(null);
     const [currentSongTime, setCurrentSongTime] = useState(0);
+    const [logger, setLogger] = useState(CUSTOM);
 
     // mount
     useEffect(() => {
@@ -150,35 +155,51 @@ const Player = () => {
         handleSongs();
 
         if (!midiPlayer) {
-            const eventLogger = payload => {
-                console.log(payload);
-                setCurrentSongState(payload.event);
-                setCurrentSongTime(payload.time || 0);
-
-                if (payload.event === MIDI_ERROR) {
-                    console.error(payload.message);
-                    console.error(payload.error);
-                }
-
-                if (payload.event === MIDI_END) {
-                    let nextIndex = currentSongIndex + 1;
-                    if (nextIndex > songList.length - 1) {
-                        nextIndex = 0;
-                    }
-                    const { url, name } = songList[nextIndex];
-                    midiPlayer.play({ url, name });
-                    setCurrentSongIndex(nextIndex);
-                }
-            };
-
             setMidiPlayer(
                 new MidiPlayer({
-                    eventLogger,
                     patchUrl: 'patches/'
                 })
             );
         }
     }, []);
+
+    // update the logger when playlist data changes
+    useEffect(() => {
+        if (midiPlayer) {
+            if (logger === CUSTOM) {
+                const eventLogger = payload => {
+                    console.log('Event received:', payload);
+                    setCurrentSongState(payload.event);
+                    setCurrentSongTime(payload.time || 0);
+
+                    if (payload.event === MIDI_ERROR) {
+                        console.error(payload.message);
+                        console.error(payload.error);
+                    }
+
+                    if (payload.event === MIDI_END) {
+                        if (songList.length === 0) {
+                            console.log('Nothing else to play.');
+                            return;
+                        }
+
+                        let nextIndex = currentSongIndex + 1;
+                        if (nextIndex > songList.length - 1) {
+                            nextIndex = 0;
+                        }
+                        const { url, name } = songList[nextIndex];
+                        midiPlayer.play({ url, name });
+                        setCurrentSongIndex(nextIndex);
+                    }
+                };
+                midiPlayer.setLogger({ eventLogger });
+            }
+
+            if (logger === CONSOLE) {
+                midiPlayer.setLogger({ eventLogger: null, logging: true });
+            }
+        }
+    }, [songList, currentSongIndex, logger]);
 
     // unmount
     useEffect(() => {
@@ -236,47 +257,57 @@ const Player = () => {
                 ))}
             </Playlist>
             <AddSong handleAddSong={handleAddSong} />
-            <Control>
-                {getPlayPauseButton(
-                    currentSongState,
-                    currentSongIndex,
-                    songList,
-                    midiPlayer
-                )}
-                <Button title="Stop track" onClick={() => midiPlayer.stop()}>
-                    ⏹️
-                </Button>
-                <Button
-                    title="Previous track"
-                    onClick={() => {
-                        let prevIndex = currentSongIndex - 1;
-                        if (prevIndex < 0) {
-                            prevIndex = songList.length - 1;
-                        }
-                        const { url, name } = songList[prevIndex];
-                        midiPlayer.play({ url, name });
-                        setCurrentSongIndex(prevIndex);
-                    }}
-                >
-                    ⏮
-                </Button>
-                <Button
-                    title="Next track"
-                    onClick={() => {
-                        let nextIndex = currentSongIndex + 1;
-                        if (nextIndex > songList.length - 1) {
-                            nextIndex = 0;
-                        }
-                        const { url, name } = songList[nextIndex];
-                        midiPlayer.play({ url, name });
-                        setCurrentSongIndex(nextIndex);
-                    }}
-                >
-                    ⏭
-                </Button>
-            </Control>
-            <PlaybackState>{currentSongState}</PlaybackState>
-            <PlaybackTime>{Math.floor(currentSongTime)} seconds</PlaybackTime>
+            <LoggerDropdown logger={logger} setLogger={setLogger} />
+            {logger === CUSTOM && (
+                <Fragment>
+                    <Control>
+                        {getPlayPauseButton(
+                            currentSongState,
+                            currentSongIndex,
+                            songList,
+                            midiPlayer
+                        )}
+                        <Button
+                            title="Stop track"
+                            onClick={() => midiPlayer.stop()}
+                        >
+                            ⏹️
+                        </Button>
+                        <Button
+                            title="Previous track"
+                            onClick={() => {
+                                let prevIndex = currentSongIndex - 1;
+                                if (prevIndex < 0) {
+                                    prevIndex = songList.length - 1;
+                                }
+                                const { url, name } = songList[prevIndex];
+                                midiPlayer.play({ url, name });
+                                setCurrentSongIndex(prevIndex);
+                            }}
+                        >
+                            ⏮
+                        </Button>
+                        <Button
+                            title="Next track"
+                            onClick={() => {
+                                let nextIndex = currentSongIndex + 1;
+                                if (nextIndex > songList.length - 1) {
+                                    nextIndex = 0;
+                                }
+                                const { url, name } = songList[nextIndex];
+                                midiPlayer.play({ url, name });
+                                setCurrentSongIndex(nextIndex);
+                            }}
+                        >
+                            ⏭
+                        </Button>
+                    </Control>
+                    <PlaybackState>{currentSongState}</PlaybackState>
+                    <PlaybackTime>
+                        {Math.floor(currentSongTime)} seconds
+                    </PlaybackTime>
+                </Fragment>
+            )}
         </Container>
     );
 };
