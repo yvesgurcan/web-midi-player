@@ -21,7 +21,7 @@ export default class MidiPlayer {
      * @param {string} [configuration.patchUrl = https://cdn.jsdelivr.net/npm/midi-instrument-patches@latest/] The public path where MIDI instrument patches can be found.
      * @property {string} playerId ID of this instance of Midi Player.
      * @property {object} context The AudioContext instance.
-     * @property {Number} sampleRate The sample rate of the AudioContext.
+     * @property {number} sampleRate The sample rate of the AudioContext.
      * @property {function} eventLogger The function that is called to emit events.
      * @property {boolean} logging Whether console logging is ON or OFF.
      * @property {arrayBuffer} midiFileArray A typed array that represents the content of the MIDI.
@@ -38,10 +38,10 @@ export default class MidiPlayer {
      * import MidiPlayer from 'web-midi-player';
      *
      * const eventLogger = (payload) => {
-     *   console.log('Received event:', payload.event)
+     *   console.log('Received event:', payload.event);
      * }
      *
-     * const midiPlayer = new MidiPlayer({ eventLogger, logging: true });
+     * const midiPlayer = new MidiPlayer({ eventLogger });
      */
     constructor({
         eventLogger = undefined,
@@ -459,6 +459,23 @@ export default class MidiPlayer {
 
             return false;
         }
+    }
+
+    /**
+     * Updates the configuration of the logger.
+     * @param {object} [configuration]
+     * @param {function} [configuration.eventLogger = undefined] The function that receives event payloads.
+     * @param {boolean} [configuration.logging = false] Turns ON or OFF logging to the console.
+     * @example
+     *  const eventLogger = (payload) => {
+     *   console.log('Received event:', payload.event);
+     * }
+     * midiPlayer.setLogger({ eventLogger });
+     */
+    setLogger({ eventLogger = undefined, logging = false }) {
+        this.eventLogger = eventLogger;
+        this.logging = logging;
+        this.eventHandler.setLogger({ eventLogger, logging });
     }
 
     freeMemory() {

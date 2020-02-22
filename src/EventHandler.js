@@ -169,4 +169,17 @@ export default class EventHandler {
             }
         }
     };
+
+    /**
+     * Updates the configuration of the logger.
+     * @function
+     * @param {object} [configuration]
+     * @param {function} [configuration.eventLogger = undefined] The function that receives event payloads.
+     * @param {boolean} [configuration.logging = false] Turns ON or OFF logging to the console.
+     */
+    setLogger({ eventLogger = undefined, logging = false }) {
+        this.eventLogger = eventLogger;
+
+        this.logging = logging;
+    }
 }
