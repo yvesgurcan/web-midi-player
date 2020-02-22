@@ -32,18 +32,21 @@ export default ({ handleAddSong }) => {
 const Form = styled.form`
     display: flex;
     justify-content: center;
+    flex-wrap: wrap;
     margin-top: 5px;
     margin-bottom: 5px;
 `;
 const TextInput = styled.input`
     padding: 2px;
     margin-right: 10px;
+    margin-top: 10px;
     min-width: 215px;
 `;
 
 const AddButtonContainer = styled.div`
     display: flex;
     justify-content: center;
+    margin-top: 10px;
 `;
 
 const AddButton = styled.button`
