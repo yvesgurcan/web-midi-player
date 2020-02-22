@@ -4,7 +4,7 @@
     <head>
         <meta charset="utf-8" />
         <title>
-            web-midi-player 1.3.7 |
+            web-midi-player 1.3.8 |
             Documentation
         </title>
         
@@ -24,7 +24,7 @@
                                 <code>web-midi-player</code>
                             </h3>
                             <div class="mb1">
-                                <code>1.3.7</code>
+                                <code>1.3.8</code>
                                 |
                                 <a href="https://midi.yvesgurcan.com">README</a>
                             </div>
@@ -60,12 +60,12 @@
                                         <code>#stop</code>
                                     </a>
                                     
-                                    <a href="#midiplayersetlogger" class="button-indent regular block">
-                                        <code>#setLogger</code>
-                                    </a>
-                                    
                                     <a href="#midiplayeremitevent" class="button-indent regular block">
                                         <code>#emitEvent</code>
+                                    </a>
+                                    
+                                    <a href="#midiplayersetlogger" class="button-indent regular block">
+                                        <code>#setLogger</code>
                                     </a>
                                        
                                 </div>
@@ -954,6 +954,104 @@ midiPlayer.play({ arrayBuffer, <span class="hljs-attr">name</span>: name2 });</c
     
 </section>
   
+    <section id='midiplayeremitevent' class='mt2 mb2 px3 py1 keyline-top'>
+
+    <div class='right py2'>
+        
+        
+    </div>
+
+    <h3 class='regular'>
+        <a class='black' href='#midiplayeremitevent'>
+            <code>
+				emitEvent<span class='gray'>(payload)</span>
+			</code>
+        </a>
+    </h3>
+
+    <p>Send custom payloads to the event logger.</p>
+
+    
+
+    
+    
+    
+    
+    
+    
+
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>payload</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+  <td class='col-2 strong'>payload.event</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?
+    
+  </td>
+  <td class='col-8'>The name of the event.
+</td>
+</tr>
+
+
+        
+        <tr>
+  <td class='col-2 strong'>payload.message</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?
+    
+  </td>
+  <td class='col-8'>A message that described the event.
+</td>
+</tr>
+
+
+        
+        
+        
+    </table>
+    
+
+    
+
+    
+
+    
+
+    
+    <h4 class='caps quiet mb1 mt3'>Examples</h4>
+    
+    
+    <pre class='p1 overflow-auto round fill-light'><code><span class="hljs-keyword">const</span> event = <span class="hljs-string">'MIDI_CUSTOM_EVENT'</span>;
+<span class="hljs-keyword">const</span> message = <span class="hljs-string">'Something happened.'</span>;
+midiPlayer.emitEvent({ event, message });</code></pre>
+    
+    
+
+    
+
+    
+
+    
+
+    
+</section>
+  
     <section id='midiplayersetlogger' class='mt2 mb2 px3 py1 keyline-top'>
 
     <div class='right py2'>
@@ -1045,104 +1143,6 @@ midiPlayer.play({ arrayBuffer, <span class="hljs-attr">name</span>: name2 });</c
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Received event:'</span>, payload.event);
 }
 midiPlayer.setLogger({ eventLogger });</code></pre>
-    
-    
-
-    
-
-    
-
-    
-
-    
-</section>
-  
-    <section id='midiplayeremitevent' class='mt2 mb2 px3 py1 keyline-top'>
-
-    <div class='right py2'>
-        
-        
-    </div>
-
-    <h3 class='regular'>
-        <a class='black' href='#midiplayeremitevent'>
-            <code>
-				emitEvent<span class='gray'>(payload)</span>
-			</code>
-        </a>
-    </h3>
-
-    <p>Send custom payloads to the event logger.</p>
-
-    
-
-    
-    
-    
-    
-    
-    
-
-    
-    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
-        <thead class='fill-light'>
-            <th class='col-3 small caps quiet'>parameter</th>
-            <th class='col-3 small caps quiet'>type</th>
-            <th class='col-6 small caps quiet'>description</th>
-        </thead>
-        
-        <tr>
-            <td class='col-3 strong'><code>payload</code></td>
-            <td class='col-3 quiet'>
-                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>
-                
-            </td>
-            <td class='col-6'></td>
-        </tr>
-        
-        
-        <tr>
-  <td class='col-2 strong'>payload.event</td>
-  <td class="col-2 quiet">
-    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?
-    
-  </td>
-  <td class='col-8'>The name of the event.
-</td>
-</tr>
-
-
-        
-        <tr>
-  <td class='col-2 strong'>payload.message</td>
-  <td class="col-2 quiet">
-    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?
-    
-  </td>
-  <td class='col-8'>A message that described the event.
-</td>
-</tr>
-
-
-        
-        
-        
-    </table>
-    
-
-    
-
-    
-
-    
-
-    
-    <h4 class='caps quiet mb1 mt3'>Examples</h4>
-    
-    
-    <pre class='p1 overflow-auto round fill-light'><code><span class="hljs-keyword">const</span> event = <span class="hljs-string">'MIDI_CUSTOM_EVENT'</span>;
-<span class="hljs-keyword">const</span> message = <span class="hljs-string">'Something happened.'</span>;
-midiPlayer.emitEvent({ event, message });</code></pre>
     
     
 
