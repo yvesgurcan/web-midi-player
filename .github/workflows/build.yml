@@ -12,7 +12,7 @@ jobs:
             - name: Set up workflow
               uses: actions/checkout@v2
               with:
-                ref: ${{ github.head_ref }}
+                  ref: ${{ github.head_ref }}
             - name: Set up Node environment
               uses: actions/setup-node@v1
               with:
@@ -27,10 +27,14 @@ jobs:
               run: npm run build
             - name: Update documentation
               run: npm run docs
+            - name: Build React example
+              run: |
+                  cd example/react
+                  npm run build
             - name: Push code changes
               uses: stefanzweifel/git-auto-commit-action@v2.5.0
               with:
                   commit_message: New build
                   branch: ${{ github.head_ref }}
               env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
