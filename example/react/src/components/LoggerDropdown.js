@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 const CUSTOM = 'custom';
 const CONSOLE = 'console';
+const NONE = 'none';
 
 export default ({ logger, setLogger }) => (
     <Container>
@@ -14,6 +15,7 @@ export default ({ logger, setLogger }) => (
             >
                 <option value={CUSTOM}>Custom function</option>
                 <option value={CONSOLE}>Console</option>
+                <option value={NONE}>None</option>
             </select>
         </label>
     </Container>
