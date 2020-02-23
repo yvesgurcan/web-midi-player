@@ -204,7 +204,7 @@ const Player = () => {
                 midiPlayer.setLogger({});
             }
         }
-    }, [songList, logger]);
+    }, [songList, currentSongIndex, logger]);
 
     // unmount
     useEffect(() => {
