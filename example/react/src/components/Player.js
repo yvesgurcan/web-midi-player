@@ -166,13 +166,6 @@ const Player = () => {
 
     // update the logger when playlist data changes
     useEffect(() => {
-        async function handlePreload() {
-            if (!preloaded) {
-                await midiPlayer.preload({ items: songList });
-                setPreloaded(true);
-            }
-        }
-
         if (midiPlayer) {
             if (logger === CUSTOM) {
                 const eventLogger = payload => {
@@ -210,8 +203,6 @@ const Player = () => {
             if (logger === NONE) {
                 midiPlayer.setLogger({});
             }
-
-            handlePreload();
         }
     }, [songList, logger]);
 
