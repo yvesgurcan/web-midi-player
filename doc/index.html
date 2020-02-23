@@ -4,7 +4,7 @@
     <head>
         <meta charset="utf-8" />
         <title>
-            web-midi-player 1.3.8 |
+            web-midi-player 1.3.9 |
             Documentation
         </title>
         
@@ -24,7 +24,7 @@
                                 <code>web-midi-player</code>
                             </h3>
                             <div class="mb1">
-                                <code>1.3.8</code>
+                                <code>1.3.9</code>
                                 |
                                 <a href="https://midi.yvesgurcan.com">README</a>
                             </div>
@@ -44,6 +44,10 @@
                                         <code>.formatMidiName</code>
                                     </a>
                                        
+                                    <a href="#midiplayerpreload" class="button-indent regular block">
+                                        <code>#preload</code>
+                                    </a>
+                                    
                                     <a href="#midiplayerplay" class="button-indent regular block">
                                         <code>#play</code>
                                     </a>
@@ -636,6 +640,151 @@
     
     <h4 class='caps quiet mb2 mt3'>Instance Members</h4>
     <div class="section-indent">
+  
+    <section id='midiplayerpreload' class='mt2 mb2 px3 py1 keyline-top'>
+
+    <div class='right py2'>
+        
+        
+    </div>
+
+    <h3 class='regular'>
+        <a class='black' href='#midiplayerpreload'>
+            <code>
+				preload<span class='gray'>(parameters)</span>
+			</code>
+        </a>
+    </h3>
+
+    <p>Loads instrument patches for a list of MIDI input.</p>
+<p>Please note that you can not use <code>parameters.items.arrayBuffer</code> and <code>parameters.items.url</code> concurrently.</p>
+
+    
+
+    
+    
+    
+    
+    
+    
+
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>parameters</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>
+                
+                = <code>{}</code>
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+  <td class='col-2 strong'>parameters.items</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>?
+    
+      (default <code>[]</code>)
+    
+  </td>
+  <td class='col-8'>An array.
+</td>
+</tr>
+
+  
+    <tr>
+  <td class='col-2 strong'>parameters.items.arrayBuffer</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer">arrayBuffer</a>?
+    
+  </td>
+  <td class='col-8'>An array buffer containing MIDI data to play.
+</td>
+</tr>
+
+
+  
+    <tr>
+  <td class='col-2 strong'>parameters.items.url</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?
+    
+  </td>
+  <td class='col-8'>The URL where the MIDI file to play is located.
+</td>
+</tr>
+
+
+  
+
+
+        
+        <tr>
+  <td class='col-2 strong'>parameters.audioContext</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>?
+    
+  </td>
+  <td class='col-8'>An instance of the Web Audio API AudioContext interface.
+</td>
+</tr>
+
+
+        
+        
+        
+    </table>
+    
+
+    
+
+    
+    
+    <h4 class='caps quiet mb1 mt3'>Returns</h4>
+    <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+    :
+    <span class='force-inline'>Whether instrument patches were successfully preloaded or not.
+</span>
+    
+    
+    
+
+    
+
+    
+    <h4 class='caps quiet mb1 mt3'>Examples</h4>
+    
+    
+    <pre class='p1 overflow-auto round fill-light'><code><span class="hljs-keyword">const</span> name1 = <span class="hljs-string">'My MIDI file from URL'</span>;
+<span class="hljs-keyword">const</span> url = <span class="hljs-string">'media/file.midi'</span>;
+<span class="hljs-keyword">const</span> name2 = <span class="hljs-string">'My MIDI file from ArrayBuffer'</span>;
+<span class="hljs-keyword">const</span> arrayBuffer = <span class="hljs-keyword">new</span> <span class="hljs-built_in">ArrayBuffer</span>();
+
+midiPlayer.preload({
+  <span class="hljs-attr">items</span>: [
+    { url, <span class="hljs-attr">name</span>: name1 },
+    { arrayBuffer, <span class="hljs-attr">name</span>: name2 }
+  ]
+});</code></pre>
+    
+    
+
+    
+
+    
+
+    
+
+    
+</section>
   
     <section id='midiplayerplay' class='mt2 mb2 px3 py1 keyline-top'>
 
