@@ -135,6 +135,7 @@ const Player = () => {
     const [currentSongState, setCurrentSongState] = useState(null);
     const [currentSongTime, setCurrentSongTime] = useState(0);
     const [logger, setLogger] = useState(CUSTOM);
+    const [preloaded, setPreloaded] = useState(false);
 
     // mount
     useEffect(() => {
@@ -166,6 +167,14 @@ const Player = () => {
 
     // update the logger when playlist data changes
     useEffect(() => {
+        async function handlePreload() {
+            if (!preloaded) {
+                await midiPlayer.preload({ items: songList });
+                setPreloaded(true);
+            }
+        }
+
+        console.log(midiPlayer, songList.length);
         if (midiPlayer) {
             if (logger === CUSTOM) {
                 const eventLogger = payload => {
@@ -203,8 +212,10 @@ const Player = () => {
             if (logger === NONE) {
                 midiPlayer.setLogger({});
             }
+
+            handlePreload();
         }
-    }, [songList, currentSongIndex, logger]);
+    }, [songList, logger]);
 
     // unmount
     useEffect(() => {
@@ -241,25 +252,31 @@ const Player = () => {
     return (
         <Container>
             <Playlist>
-                {songList.map(({ id, url, name }, index) => (
-                    <Song
-                        key={id || url}
-                        first={index === 0}
-                        selected={currentSongIndex === index}
-                    >
-                        <div
-                            onClick={() => {
-                                midiPlayer.play({ url, name });
-                                setCurrentSongIndex(index);
-                            }}
+                {!preloaded ? (
+                    <Loading>
+                        <i>Loading MIDIs...</i>
+                    </Loading>
+                ) : (
+                    songList.map(({ id, url, name }, index) => (
+                        <Song
+                            key={id || url}
+                            first={index === 0}
+                            selected={currentSongIndex === index}
                         >
-                            {name}
-                        </div>
-                        <CloseButton onClick={() => handleDeleteSong(id)}>
-                            &times;
-                        </CloseButton>
-                    </Song>
-                ))}
+                            <div
+                                onClick={() => {
+                                    midiPlayer.play({ url, name });
+                                    setCurrentSongIndex(index);
+                                }}
+                            >
+                                {name}
+                            </div>
+                            <CloseButton onClick={() => handleDeleteSong(id)}>
+                                &times;
+                            </CloseButton>
+                        </Song>
+                    ))
+                )}
             </Playlist>
             <AddSong handleAddSong={handleAddSong} />
             <LoggerDropdown logger={logger} setLogger={setLogger} />
@@ -319,6 +336,7 @@ const Player = () => {
 
 const Container = styled.div`
     padding: 5px;
+    pointer-events: ${props => (props.disabled ? 'none' : false)};
 `;
 
 const Playlist = styled.div`
@@ -359,6 +377,13 @@ const PlaybackState = styled.div`
 
 const PlaybackTime = styled.div`
     text-align: center;
+`;
+
+const Loading = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 500px;
 `;
 
 export default Player;

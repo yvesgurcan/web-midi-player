@@ -93,6 +93,56 @@ export default class MidiPlayer {
     }
 
     /**
+     * Loads instrument patches for a list of MIDI input.
+     *
+     * Please note that you can not use `parameters.items.arrayBuffer` and `parameters.items.url` concurrently.
+     * @param {object} parameters
+     * @param {object} [parameters.items] An array.
+     * @param {arrayBuffer} [parameters.items.arrayBuffer] An array buffer containing MIDI data to play.
+     * @param {string} [parameters.items.url] The URL where the MIDI file to play is located.
+     * @param {object} [parameters.audioContext] An instance of the Web Audio API AudioContext interface.
+     * @return {boolean} Whether instrument patches were successfully preloaded or not.
+     * @example
+     * const name1 = 'My MIDI file from URL';
+     * const url = 'media/file.midi';
+     * const name2 = 'My MIDI file from ArrayBuffer';
+     * const arrayBuffer = new ArrayBuffer();
+     *
+     * midiPlayer.preload({
+     *   items: [
+     *     { url, name: name1 },
+     *     { arrayBuffer, name: name2 }
+     *   ]
+     * });
+     */
+    async preload({ items = [], audioContext } = {}) {
+        for (let i = 0; i < items.length; i++) {
+            const item = items[i];
+            const { url, arrayBuffer } = item;
+
+            const initialized = this.initAudioContext({ audioContext });
+
+            if (!initialized) {
+                return false;
+            }
+
+            if (!this.isSourceValid({ url, arrayBuffer })) {
+                return false;
+            }
+
+            const data = await this.getSource({ url, arrayBuffer });
+
+            if (!data) {
+                return false;
+            }
+
+            this.midiFileArray = new Int8Array(data);
+            this.handleStream();
+            await this.getInstrumentPatches();
+        }
+    }
+
+    /**
      * Starts playback of MIDI input.
      *
      * Please note that you can not use `input.arrayBuffer` and `input.url` concurrently.
@@ -114,6 +164,34 @@ export default class MidiPlayer {
     async play({ arrayBuffer, url, name, audioContext } = {}) {
         this.stop();
 
+        const initialized = this.initAudioContext({ audioContext });
+
+        if (!initialized) {
+            return false;
+        }
+
+        if (!this.isSourceValid({ url, arrayBuffer })) {
+            return false;
+        }
+
+        this.eventHandler.emitLoadFile({
+            message: `Loading${MidiPlayer.formatMidiName(name)}...`
+        });
+
+        const data = await this.getSource({ url, arrayBuffer });
+
+        if (!data) {
+            return false;
+        }
+
+        const loaded = await this.loadSong({ arrayBuffer: data });
+
+        if (loaded) {
+            return this.initPlayback();
+        }
+    }
+
+    initAudioContext({ audioContext }) {
         try {
             // AudioContext must be fired close to the touch/click event initiated by the user to work in Safari
             this.context =
@@ -122,14 +200,17 @@ export default class MidiPlayer {
             this.sampleRate = this.context.sampleRate;
             let gainNode = this.context.createGain();
             gainNode.gain.value = 1; // volume
+            return true;
         } catch (error) {
             this.eventHandler.emitError({
                 message: `Could not set AudioContext.`,
                 error
             });
-            return;
+            return false;
         }
+    }
 
+    isSourceValid({ arrayBuffer, url }) {
         if (!arrayBuffer && !url) {
             this.eventHandler.emitError({
                 message:
@@ -146,88 +227,44 @@ export default class MidiPlayer {
             return false;
         }
 
-        this.eventHandler.emitLoadFile({
-            message: `Loading${MidiPlayer.formatMidiName(name)}...`
-        });
+        return true;
+    }
 
-        let data = arrayBuffer;
+    async getSource({ arrayBuffer, url }) {
+        if (arrayBuffer) {
+            return arrayBuffer;
+        }
 
-        if (url) {
-            try {
-                const response = await fetch(url);
-                if (response.status !== 200) {
-                    this.eventHandler.emitError({
-                        message: `Could not retrieve MIDI${MidiPlayer.formatMidiName(
-                            name
-                        )}.`,
-                        error: `Status code: ${response.status}.`
-                    });
-
-                    return false;
-                }
-
-                data = await response.arrayBuffer();
-            } catch (error) {
+        try {
+            const response = await fetch(url);
+            if (response.status !== 200) {
                 this.eventHandler.emitError({
                     message: `Could not retrieve MIDI${MidiPlayer.formatMidiName(
                         name
                     )}.`,
-                    error
+                    error: `Status code: ${response.status}.`
                 });
+
                 return false;
             }
-        }
 
-        return this.loadSong({ arrayBuffer: data });
+            return response.arrayBuffer();
+        } catch (error) {
+            this.eventHandler.emitError({
+                message: `Could not retrieve MIDI${MidiPlayer.formatMidiName(
+                    name
+                )}.`,
+                error
+            });
+            return null;
+        }
     }
 
     async loadSong({ arrayBuffer }) {
         this.midiFileArray = new Int8Array(arrayBuffer);
 
         try {
-            this.midiFileBuffer = LibTiMidity._malloc(
-                this.midiFileArray.length
-            );
-
-            LibTiMidity.writeArrayToMemory(
-                this.midiFileArray,
-                this.midiFileBuffer
-            );
-            LibTiMidity.call('mid_init', 'number', [], []);
-
-            this.stream = LibTiMidity.call(
-                'mid_istream_open_mem',
-                'number',
-                ['number', 'number', 'number'],
-                [this.midiFileBuffer, this.midiFileArray.length, false]
-            );
-
-            const options = LibTiMidity.call(
-                'mid_create_options',
-                'number',
-                ['number', 'number', 'number', 'number'],
-                [
-                    this.sampleRate,
-                    MIDI_AUDIO_S16LSB,
-                    1,
-                    MIDI_AUDIO_BUFFER_SIZE * 2
-                ]
-            );
-
-            this.song = LibTiMidity.call(
-                'mid_song_load',
-                'number',
-                ['number', 'number'],
-                [this.stream, options]
-            );
-
-            LibTiMidity.call(
-                'mid_istream_close',
-                'number',
-                ['number'],
-                [this.stream]
-            );
-
+            const options = this.handleStream();
             await this.getInstrumentPatches();
 
             // we need to reload the MIDI once the instrument patches have been loaded
@@ -259,11 +296,47 @@ export default class MidiPlayer {
             return false;
         }
 
-        this.initPlayback();
         return true;
     }
 
-    getInstrumentPatches = async () => {
+    handleStream() {
+        this.midiFileBuffer = LibTiMidity._malloc(this.midiFileArray.length);
+
+        LibTiMidity.writeArrayToMemory(this.midiFileArray, this.midiFileBuffer);
+        LibTiMidity.call('mid_init', 'number', [], []);
+
+        this.stream = LibTiMidity.call(
+            'mid_istream_open_mem',
+            'number',
+            ['number', 'number', 'number'],
+            [this.midiFileBuffer, this.midiFileArray.length, false]
+        );
+
+        const options = LibTiMidity.call(
+            'mid_create_options',
+            'number',
+            ['number', 'number', 'number', 'number'],
+            [this.sampleRate, MIDI_AUDIO_S16LSB, 1, MIDI_AUDIO_BUFFER_SIZE * 2]
+        );
+
+        this.song = LibTiMidity.call(
+            'mid_song_load',
+            'number',
+            ['number', 'number'],
+            [this.stream, options]
+        );
+
+        LibTiMidity.call(
+            'mid_istream_close',
+            'number',
+            ['number'],
+            [this.stream]
+        );
+
+        return options;
+    }
+
+    async getInstrumentPatches() {
         const missingPatchCount = LibTiMidity.call(
             'mid_song_get_num_missing_instruments',
             'number',
@@ -291,14 +364,16 @@ export default class MidiPlayer {
                     );
                 } catch (error) {
                     this.eventHandler.emitError({
-                        message: `Could not retrieve missing instrument patch #${i}.`,
+                        message: `Could not retrieve missing instrument patch ${
+                            missingPatch ? `'${missingPatch}'` : `#${i}`
+                        }.`,
                         error
                     });
                     return false;
                 }
             }
         }
-    };
+    }
 
     initPlayback = () => {
         LibTiMidity.call('mid_song_start', 'void', ['number'], [this.song]);
