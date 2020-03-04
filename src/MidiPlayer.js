@@ -19,19 +19,22 @@ export default class MidiPlayer {
      * @param {function} [configuration.eventLogger = undefined] The function that receives event payloads.
      * @param {boolean} [configuration.logging = false] Turns ON or OFF logging to the console.
      * @param {string} [configuration.patchUrl = https://cdn.jsdelivr.net/npm/midi-instrument-patches@latest/] The public path where MIDI instrument patches can be found.
-     * @property {string} playerId ID of this instance of Midi Player.
+     * @param {number} [configuration.volume = 80] Set playback volume when initializing the player.
      * @property {object} context The AudioContext instance.
-     * @property {number} sampleRate The sample rate of the AudioContext.
      * @property {function} eventLogger The function that is called to emit events.
      * @property {boolean} logging Whether console logging is ON or OFF.
+     * @property {boolean} isFirstInstance Whether this is the first instance of the Midi Player or 
      * @property {arrayBuffer} midiFileArray A typed array that represents the content of the MIDI.
      * @property {*} midiFileBuffer The buffer with the MIDI data.
      * @property {string} patchUrl The URL used to load MIDI instrument patches.
+     * @property {string} playerId ID of this instance of Midi Player.
+     * @property {number} sampleRate The sample rate of the AudioContext.
      * @property {object} source The source that plays the audio signal.
      * @property {number} startTime The time when MIDI playback started.
      * @property {number} stream The MIDI stream.
+     * @property {number} volume Playback volume.
      * @property {*} waveBuffer The buffer with the MIDI data converted to WAV.
-     * @property {boolean} isFirstInstance Whether this is the first instance of the Midi Player or not.
+not.
      *
      * @return {object} A `MidiPlayer` instance.
      * @example
@@ -46,7 +49,8 @@ export default class MidiPlayer {
     constructor({
         eventLogger = undefined,
         logging = false,
-        patchUrl = MIDI_DEFAULT_PATCH_URL
+        patchUrl = MIDI_DEFAULT_PATCH_URL,
+        volume = 80
     } = {}) {
         try {
             const playerId = uuid();
@@ -65,6 +69,7 @@ export default class MidiPlayer {
             this.eventLogger = eventLogger;
             this.logging = logging;
             this.patchUrl = patchUrl;
+            this.volume = volume;
             this.startTime = 0;
 
             LibTiMidity.init(isFirstInstance);
@@ -198,8 +203,6 @@ export default class MidiPlayer {
                 audioContext ||
                 new (window.AudioContext || window.webkitAudioContext)();
             this.sampleRate = this.context.sampleRate;
-            let gainNode = this.context.createGain();
-            gainNode.gain.value = 1; // volume
             return true;
         } catch (error) {
             this.eventHandler.emitError({
@@ -397,6 +400,7 @@ export default class MidiPlayer {
     connectSource = () => {
         // Warning! This feature has been marked as deprecated: https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/createScriptProcessor
         // See issue: https://github.com/yvesgurcan/web-midi-player/issues/29
+        // However, the replacement "AudioWorklet" is still experimental (https://caniuse.com/#search=audioworklet)
         this.source = this.context.createScriptProcessor(
             MIDI_AUDIO_BUFFER_SIZE,
             0,
@@ -406,9 +410,19 @@ export default class MidiPlayer {
         // event handler for next buffer full of audio data
         this.source.onaudioprocess = event => this.handleOutput(event);
 
-        // connects the source to the context's destination (the speakers)
-        this.source.connect(this.context.destination);
+        this.createGainNode();
     };
+
+    createGainNode() {
+        this.gainNode = this.context.createGain();
+        this.gainNode.gain.value = this.volume / 100;
+
+        // connects the gain node (controls volume) to the context's destination (the speakers)
+        this.gainNode.connect(this.context.destination);
+
+        // connects the source to the gain node
+        this.source.connect(this.gainNode);
+    }
 
     handleOutput({ outputBuffer }) {
         try {
@@ -434,6 +448,7 @@ export default class MidiPlayer {
             for (let i = 0; i < MIDI_AUDIO_BUFFER_SIZE; i++) {
                 if (i < readWaveBytes) {
                     // converts PCM data from sint16 in C to number in JavaScript (range: -1.0 .. +1.0)
+                    // this is where the data is converted to waveform audio signal
                     outputBuffer.getChannelData(0)[i] =
                         LibTiMidity.getValue(this.waveBuffer + 2 * i, 'i16') /
                         MAX_I16;
@@ -534,6 +549,38 @@ export default class MidiPlayer {
 
             return false;
         }
+    }
+
+    /**
+     * Gets the current volume of the playback.
+     * @function
+     * @param {undefined}
+     * @return {number} The current volume.
+     * @example
+     * const volume = midiPlayer.getVolume();
+     */
+    getVolume() {
+        return this.volume;
+    }
+
+    /**
+     * Sets the current volume of the playback.
+     * @function
+     * @param {object} input
+     * @param {number} input.volume The new value for the volume (also known as gain). Typically, a whole number between 0 and 100 but can actually be negative, greater, or even a decimal number.
+     * @example
+     * midiPlayer.setVolume({ volume: 80 });
+     */
+    setVolume({ volume }) {
+        if (Number.isNaN(parseFloat(volume))) {
+            this.eventHandler.emitError({
+                message: `Volume must be parsable into a number. Got '${volume}' instead.`
+            });
+            return;
+        }
+
+        this.volume = volume;
+        this.gainNode.gain.value = volume / 100;
     }
 
     freeMemory() {
