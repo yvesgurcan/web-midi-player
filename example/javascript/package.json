@@ -4,7 +4,7 @@
     "scripts": {
         "start": "serve -l 8081 --symlinks",
         "lint": "prettier --write **/*.js",
-        "link:make": "ln -s ../../../index.js ./src/web-midi-player.js",
+        "link:make": "npm run link:delete && ln -s ../../../index.js ./src/web-midi-player.js",
         "link:delete": "rm ./src/web-midi-player.js"
     },
     "devDependencies": {
