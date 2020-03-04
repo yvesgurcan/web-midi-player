@@ -8,7 +8,7 @@
             Documentation
         </title>
         
-        <meta name='description' content='🎹 Event-driven JavaScript library to enable MIDI playback in the browser.'>
+        <meta name='description' content='🎹 Event-driven JavaScript library that enables MIDI playback in the browser.'>
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <link href="assets/styles.css" rel="stylesheet" />
     </head>
@@ -62,6 +62,14 @@
                                     
                                     <a href="#midiplayerstop" class="button-indent regular block">
                                         <code>#stop</code>
+                                    </a>
+                                    
+                                    <a href="#midiplayergetvolume" class="button-indent regular block">
+                                        <code>#getVolume</code>
+                                    </a>
+                                    
+                                    <a href="#midiplayersetvolume" class="button-indent regular block">
+                                        <code>#setVolume</code>
                                     </a>
                                     
                                     <a href="#midiplayeremitevent" class="button-indent regular block">
@@ -354,6 +362,20 @@
 
 
         
+        <tr>
+  <td class='col-2 strong'>configuration.volume</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+    
+      (default <code>80</code>)
+    
+  </td>
+  <td class='col-8'>Set playback volume when initializing the player.
+</td>
+</tr>
+
+
+        
         
         
     </table>
@@ -368,36 +390,12 @@
         </thead>
         
         <tr>
-            <td class='col-2 strong'>playerId</td>
-            <td class='col-2 quiet'>
-                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
-                
-            </td>
-            <td class='col-8'>: ID of this instance of Midi Player.
-</td>
-        </tr>
-
-        
-        
-        <tr>
             <td class='col-2 strong'>context</td>
             <td class='col-2 quiet'>
                 <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>
                 
             </td>
             <td class='col-8'>: The AudioContext instance.
-</td>
-        </tr>
-
-        
-        
-        <tr>
-            <td class='col-2 strong'>sampleRate</td>
-            <td class='col-2 quiet'>
-                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
-                
-            </td>
-            <td class='col-8'>: The sample rate of the AudioContext.
 </td>
         </tr>
 
@@ -422,6 +420,18 @@
                 
             </td>
             <td class='col-8'>: Whether console logging is ON or OFF.
+</td>
+        </tr>
+
+        
+        
+        <tr>
+            <td class='col-2 strong'>isFirstInstance</td>
+            <td class='col-2 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>
+                
+            </td>
+            <td class='col-8'>: Whether this is the first instance of the Midi Player or
 </td>
         </tr>
 
@@ -464,6 +474,30 @@
         
         
         <tr>
+            <td class='col-2 strong'>playerId</td>
+            <td class='col-2 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+                
+            </td>
+            <td class='col-8'>: ID of this instance of Midi Player.
+</td>
+        </tr>
+
+        
+        
+        <tr>
+            <td class='col-2 strong'>sampleRate</td>
+            <td class='col-2 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+                
+            </td>
+            <td class='col-8'>: The sample rate of the AudioContext.
+</td>
+        </tr>
+
+        
+        
+        <tr>
             <td class='col-2 strong'>source</td>
             <td class='col-2 quiet'>
                 <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>
@@ -500,24 +534,25 @@
         
         
         <tr>
-            <td class='col-2 strong'>waveBuffer</td>
+            <td class='col-2 strong'>volume</td>
             <td class='col-2 quiet'>
-                any
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
                 
             </td>
-            <td class='col-8'>: The buffer with the MIDI data converted to WAV.
+            <td class='col-8'>: Playback volume.
 </td>
         </tr>
 
         
         
         <tr>
-            <td class='col-2 strong'>isFirstInstance</td>
+            <td class='col-2 strong'>waveBuffer</td>
             <td class='col-2 quiet'>
-                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>
+                any
                 
             </td>
-            <td class='col-8'>: Whether this is the first instance of the Midi Player or not.
+            <td class='col-8'>: The buffer with the MIDI data converted to WAV.
+not.
 </td>
         </tr>
 
@@ -1091,6 +1126,150 @@ midiPlayer.play({ arrayBuffer, <span class="hljs-attr">name</span>: name2 });</c
     
     
     <pre class='p1 overflow-auto round fill-light'><code>midiPlayer.stop();</code></pre>
+    
+    
+
+    
+
+    
+
+    
+
+    
+</section>
+  
+    <section id='midiplayergetvolume' class='mt2 mb2 px3 py1 keyline-top'>
+
+    <div class='right py2'>
+        
+        
+    </div>
+
+    <h3 class='regular'>
+        <a class='black' href='#midiplayergetvolume'>
+            <code>
+				getVolume<span class='gray'>()</span>
+			</code>
+        </a>
+    </h3>
+
+    <p>Gets the current volume of the playback.</p>
+
+    
+
+    
+    
+    
+    
+    
+    
+
+    
+
+    
+
+    
+    
+    <h4 class='caps quiet mb1 mt3'>Returns</h4>
+    <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></code>
+    :
+    <span class='force-inline'>The current volume.
+</span>
+    
+    
+    
+
+    
+
+    
+    <h4 class='caps quiet mb1 mt3'>Examples</h4>
+    
+    
+    <pre class='p1 overflow-auto round fill-light'><code><span class="hljs-keyword">const</span> volume = midiPlayer.getVolume();</code></pre>
+    
+    
+
+    
+
+    
+
+    
+
+    
+</section>
+  
+    <section id='midiplayersetvolume' class='mt2 mb2 px3 py1 keyline-top'>
+
+    <div class='right py2'>
+        
+        
+    </div>
+
+    <h3 class='regular'>
+        <a class='black' href='#midiplayersetvolume'>
+            <code>
+				setVolume<span class='gray'>(input)</span>
+			</code>
+        </a>
+    </h3>
+
+    <p>Sets the current volume of the playback.</p>
+
+    
+
+    
+    
+    
+    
+    
+    
+
+    
+    <table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+        <thead class='fill-light'>
+            <th class='col-3 small caps quiet'>parameter</th>
+            <th class='col-3 small caps quiet'>type</th>
+            <th class='col-6 small caps quiet'>description</th>
+        </thead>
+        
+        <tr>
+            <td class='col-3 strong'><code>input</code></td>
+            <td class='col-3 quiet'>
+                <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>
+                
+            </td>
+            <td class='col-6'></td>
+        </tr>
+        
+        
+        <tr>
+  <td class='col-2 strong'>input.volume</td>
+  <td class="col-2 quiet">
+    <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+    
+  </td>
+  <td class='col-8'>The new value for the volume (also known as gain). Typically, a whole number between 0 and 100 but can actually be negative, greater, or even a decimal number.
+</td>
+</tr>
+
+
+        
+        
+        
+    </table>
+    
+
+    
+
+    
+
+    
+
+    
+    <h4 class='caps quiet mb1 mt3'>Examples</h4>
+    
+    
+    <pre class='p1 overflow-auto round fill-light'><code>midiPlayer.setVolume({ <span class="hljs-attr">volume</span>: <span class="hljs-number">80</span> });</code></pre>
     
     
 
