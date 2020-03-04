@@ -8,6 +8,7 @@ import LoggerDropdown from './LoggerDropdown';
 
 const localStorageManager = new LocalStorageManager();
 
+const MIDI_INIT = 'MIDI_INIT';
 const MIDI_PLAY = 'MIDI_PLAY';
 const MIDI_PAUSE = 'MIDI_PAUSE';
 const MIDI_END = 'MIDI_END';
@@ -130,6 +131,7 @@ const getPlayPauseButton = (songState, songIndex, songList, player) => {
 
 const Player = () => {
     const [midiPlayer, setMidiPlayer] = useState(null);
+    const [volume, setVolume] = useState(50);
     const [songList, setSongList] = useState([]);
     const [currentSongIndex, setCurrentSongIndex] = useState(0);
     const [currentSongState, setCurrentSongState] = useState(null);
@@ -158,7 +160,8 @@ const Player = () => {
         if (!midiPlayer) {
             setMidiPlayer(
                 new MidiPlayer({
-                    patchUrl: 'patches/'
+                    patchUrl: 'patches/',
+                    volume
                 })
             );
         }
@@ -306,6 +309,16 @@ const Player = () => {
                         >
                             ⏭
                         </Button>
+                        <VolumeSlider
+                            value={volume}
+                            onChange={event => {
+                                const volume = event.target.value;
+                                midiPlayer.setVolume({
+                                    volume
+                                });
+                                setVolume(volume);
+                            }}
+                        />
                     </Control>
                     <PlaybackState>{currentSongState}</PlaybackState>
                     <PlaybackTime>
@@ -362,11 +375,6 @@ const PlaybackTime = styled.div`
     text-align: center;
 `;
 
-const Loading = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 500px;
-`;
+const VolumeSlider = styled.input.attrs({ type: 'range' })``;
 
 export default Player;
