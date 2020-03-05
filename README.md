@@ -27,7 +27,7 @@ Alternatively, you can set up `npm` to use [GPR](https://github.com/features/pac
 
     npm i @yvesgurcan/web-midi-player
 
-Whichever registry you've used, you can then use ES6 module syntax to load the dependency.
+Whichever registry you've used, you can then use ES module syntax to load the dependency.
 
     import MidiPlayer from 'web-midi-player';
 
