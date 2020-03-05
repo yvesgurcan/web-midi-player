@@ -6,7 +6,7 @@
 
 Event-driven JavaScript library that enables MIDI playback in the browser.
 
--   Check out examples [with React](https://midi.yvesgurcan.com/example/react/) and [with vanilla JavaScript](https://midi.yvesgurcan.com/example/javascript/).
+-   Check out [examples with React](https://midi.yvesgurcan.com/example/react/) and [with vanilla JavaScript](https://midi.yvesgurcan.com/example/javascript/).
 -   See the [NPM package](https://npmjs.com/package/web-midi-player) and the [GPR package](https://github.com/yvesgurcan/web-midi-player/packages/92236).
 -   Read the [API documentation](https://midi.yvesgurcan.com/doc/).
 -   Look at the [source code](https://github.com/yvesgurcan/web-midi-player).
