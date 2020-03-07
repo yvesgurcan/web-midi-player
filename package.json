@@ -51,7 +51,7 @@
         "gpr:prep": "node scripts/gpr.js"
     },
     "devDependencies": {
-        "@babel/core": "^7.8.4",
+        "@babel/core": "^7.8.6",
         "@babel/plugin-proposal-class-properties": "^7.3.4",
         "@babel/plugin-transform-arrow-functions": "^7.2.0",
         "@babel/plugin-transform-runtime": "^7.3.4",
