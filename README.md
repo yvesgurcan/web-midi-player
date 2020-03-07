@@ -4,7 +4,7 @@
 [![publish status](https://github.com/yvesgurcan/web-midi-player/workflows/Publish/badge.svg)](https://github.com/yvesgurcan/web-midi-player/actions?query=workflow%3APublish)
 [![](https://data.jsdelivr.com/v1/package/npm/web-midi-player/badge?style=rounded)](https://www.jsdelivr.com/package/npm/web-midi-player)
 
-Event-driven JavaScript library to enable MIDI playback in the browser.
+Event-driven JavaScript library that enables MIDI playback in the browser.
 
 -   Check out examples [with React](https://midi.yvesgurcan.com/example/react/) and [with vanilla JavaScript](https://midi.yvesgurcan.com/example/javascript/).
 -   See the [NPM package](https://npmjs.com/package/web-midi-player) and the [GPR package](https://github.com/yvesgurcan/web-midi-player/packages/92236).

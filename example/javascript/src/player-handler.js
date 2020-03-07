@@ -6,11 +6,7 @@ const MIDI_ERROR = 'MIDI_ERROR';
 
 let midiPlayer = null;
 
-const eventLogger = payload => {
-    console[event === MIDI_ERROR ? 'error' : 'log'](payload);
-};
-
-midiPlayer = new MidiPlayer({ eventLogger, patchUrl: 'patches/' });
+midiPlayer = new MidiPlayer({ logging: true, patchUrl: 'patches/' });
 
 const songElements = document.getElementsByClassName('Player__Song');
 
