@@ -91,9 +91,7 @@ Start development server.
 
 ### Continuous integration / Continuous development
 
-This repository uses GitHub Actions to automate certain tasks such as creating releases, publishing to NPM, and running tests.
-
-The list of workflows used for this project can be found [here](.github/workflows).
+This repository uses GitHub Actions to [automate certain tasks](.github/workflows) such as creating releases, publishing to NPM, and running tests.
 
 ## Related projects
 
