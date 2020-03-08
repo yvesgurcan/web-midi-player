@@ -9,19 +9,10 @@ const README = 'https://midi.yvesgurcan.com/';
 const ExternalLinks = () => {
     return (
         <Help>
-            <Link href={NPM_PACKAGE} target="_blank" noopener noreferrer>
-                Package
-            </Link>
-            <Link href={GITHUB_REPO} target="_blank" noopener noreferrer>
-                Repository
-            </Link>
-
-            <Link href={DOCS} target="_blank" noopener noreferrer>
-                Documentation
-            </Link>
-            <Link href={README} target="_blank" noopener noreferrer>
-                Readme
-            </Link>
+            <Link href={NPM_PACKAGE}>Package</Link>
+            <Link href={GITHUB_REPO}>Repository</Link>
+            <Link href={DOCS}>Documentation</Link>
+            <Link href={README}>Readme</Link>
         </Help>
     );
 };
@@ -32,7 +23,7 @@ const Help = styled.div`
     justify-content: space-around;
 `;
 
-const Link = styled.a`
+const Link = styled.a.attrs({ target: '_blank', rel: 'noopener' })`
     display: block;
     color: white;
     margin: 7px;

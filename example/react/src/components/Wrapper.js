@@ -27,7 +27,7 @@ const View = styled.div`
 `;
 
 const Container = styled.div`
-    background: rgb(125, 125, 125);
+    background: rgb(100, 100, 100);
     color: white;
     padding: 20px;
     border-radius: 10px;
