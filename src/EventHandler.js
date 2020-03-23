@@ -7,7 +7,7 @@ import {
     MIDI_RESUME,
     MIDI_STOP,
     MIDI_END,
-    MIDI_ERROR
+    MIDI_ERROR,
 } from './events';
 
 export default class EventHandler {
@@ -22,7 +22,7 @@ export default class EventHandler {
     constructor({
         eventLogger = undefined,
         logging = false,
-        playerId = undefined
+        playerId = undefined,
     }) {
         this.playerId = playerId;
         this.logging = logging;
@@ -37,7 +37,7 @@ export default class EventHandler {
     emitInit() {
         this.emitEvent({
             event: MIDI_INIT,
-            message: 'MIDI player initialized.'
+            message: 'MIDI player initialized.',
         });
     }
 
@@ -50,7 +50,7 @@ export default class EventHandler {
     emitLoadFile = ({ message = 'Loading MIDI file...' }) => {
         this.emitEvent({
             event: MIDI_LOAD_FILE,
-            message
+            message,
         });
     };
 
@@ -63,7 +63,7 @@ export default class EventHandler {
     emitLoadPatch = ({ message = 'Loading instrument patch...' }) => {
         this.emitEvent({
             event: MIDI_LOAD_PATCH,
-            message
+            message,
         });
     };
 
@@ -76,7 +76,7 @@ export default class EventHandler {
     emitPlay({ time }) {
         this.emitEvent({
             event: MIDI_PLAY,
-            time
+            time,
         });
     }
 
@@ -89,7 +89,7 @@ export default class EventHandler {
     emitPause({ time }) {
         this.emitEvent({
             event: MIDI_PAUSE,
-            time
+            time,
         });
     }
 
@@ -102,7 +102,7 @@ export default class EventHandler {
     emitResume({ time }) {
         this.emitEvent({
             event: MIDI_RESUME,
-            time
+            time,
         });
     }
 
@@ -114,7 +114,7 @@ export default class EventHandler {
     emitStop() {
         this.emitEvent({
             event: MIDI_STOP,
-            time: 0
+            time: 0,
         });
     }
 
@@ -127,7 +127,7 @@ export default class EventHandler {
     emitEnd({ time }) {
         this.emitEvent({
             event: MIDI_END,
-            time
+            time,
         });
     }
 
@@ -142,7 +142,7 @@ export default class EventHandler {
         this.emitEvent({
             event: MIDI_ERROR,
             message,
-            error
+            error,
         });
     };
 
@@ -153,10 +153,10 @@ export default class EventHandler {
      * @param {string} [payload.event] The name of the event.
      * @param {string} [payload.message] A message that describes the event.
      */
-    emitEvent = payload => {
+    emitEvent = (payload) => {
         const payloadWithId = {
             ...payload,
-            playerId: this.playerId
+            playerId: this.playerId,
         };
 
         if (this.eventLogger) {

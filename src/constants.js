@@ -136,7 +136,7 @@ export const LIBTIMIDITY_ERROR_CODES = {
     ECANCELED: 125,
     ENOTRECOVERABLE: 131,
     EOWNERDEAD: 130,
-    ESTRPIPE: 86
+    ESTRPIPE: 86,
 };
 
 export const LIBTIMIDITY_ERROR_MESSAGES = {
@@ -258,7 +258,7 @@ export const LIBTIMIDITY_ERROR_MESSAGES = {
     123: 'No medium (in tape drive)',
     125: 'Operation canceled',
     130: 'Previous owner died',
-    131: 'State not recoverable'
+    131: 'State not recoverable',
 };
 
 // prettier-ignore
@@ -6840,5 +6840,5 @@ export const MEMORY_ALLOCATION = [
     0,
     0,
     0,
-    0
+    0,
 ];

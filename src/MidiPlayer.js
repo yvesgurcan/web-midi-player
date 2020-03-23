@@ -4,7 +4,7 @@ import {
     MIDI_AUDIO_BUFFER_SIZE,
     MIDI_DEFAULT_PATCH_URL,
     MIDI_AUDIO_S16LSB,
-    MAX_I16
+    MAX_I16,
 } from './constants';
 
 import LibTiMidity from './LibTiMidity';
@@ -50,7 +50,7 @@ not.
         eventLogger = undefined,
         logging = false,
         patchUrl = MIDI_DEFAULT_PATCH_URL,
-        volume = 80
+        volume = 80,
     } = {}) {
         try {
             const playerId = uuid();
@@ -58,7 +58,7 @@ not.
             this.eventHandler = new EventHandler({
                 eventLogger,
                 logging,
-                playerId
+                playerId,
             });
         } catch (error) {
             console.error('Fatal error. Could not initialize event handler.');
@@ -83,7 +83,7 @@ not.
         } catch (error) {
             this.eventHandler.emitError({
                 message: 'Could not initialize instance of MidiPlayer.',
-                error
+                error,
             });
         }
     }
@@ -180,7 +180,7 @@ not.
         }
 
         this.eventHandler.emitLoadFile({
-            message: `Loading${MidiPlayer.formatMidiName(name)}...`
+            message: `Loading${MidiPlayer.formatMidiName(name)}...`,
         });
 
         const data = await this.getSource({ url, arrayBuffer });
@@ -207,7 +207,7 @@ not.
         } catch (error) {
             this.eventHandler.emitError({
                 message: `Could not set AudioContext.`,
-                error
+                error,
             });
             return false;
         }
@@ -217,7 +217,7 @@ not.
         if (!arrayBuffer && !url) {
             this.eventHandler.emitError({
                 message:
-                    "Unknown source. URL or array buffer can't be both undefined to start playback."
+                    "Unknown source. URL or array buffer can't be both undefined to start playback.",
             });
             return false;
         }
@@ -225,7 +225,7 @@ not.
         if (arrayBuffer && url) {
             this.eventHandler.emitError({
                 message:
-                    'Ambiguous source. MIDI data must originate either from a URL or an array buffer to start playback. Not both.'
+                    'Ambiguous source. MIDI data must originate either from a URL or an array buffer to start playback. Not both.',
             });
             return false;
         }
@@ -245,7 +245,7 @@ not.
                     message: `Could not retrieve MIDI${MidiPlayer.formatMidiName(
                         name
                     )}.`,
-                    error: `Status code: ${response.status}.`
+                    error: `Status code: ${response.status}.`,
                 });
 
                 return false;
@@ -257,7 +257,7 @@ not.
                 message: `Could not retrieve MIDI${MidiPlayer.formatMidiName(
                     name
                 )}.`,
-                error
+                error,
             });
             return null;
         }
@@ -294,7 +294,7 @@ not.
         } catch (error) {
             this.eventHandler.emitError({
                 message: 'Could not load song.',
-                error
+                error,
             });
             return false;
         }
@@ -349,7 +349,7 @@ not.
 
         if (missingPatchCount > 0) {
             this.eventHandler.emitLoadPatch({
-                message: `Loading ${missingPatchCount} instrument patches...`
+                message: `Loading ${missingPatchCount} instrument patches...`,
             });
 
             for (let i = 0; i < missingPatchCount; i++) {
@@ -370,7 +370,7 @@ not.
                         message: `Could not retrieve missing instrument patch ${
                             missingPatch ? `'${missingPatch}'` : `#${i}`
                         }.`,
-                        error
+                        error,
                     });
                     return false;
                 }
@@ -388,7 +388,7 @@ not.
         } catch (error) {
             this.eventHandler.emitError({
                 message: 'Could not initialize playback.',
-                error
+                error,
             });
             return;
         }
@@ -408,7 +408,7 @@ not.
         );
 
         // event handler for next buffer full of audio data
-        this.source.onaudioprocess = event => this.handleOutput(event);
+        this.source.onaudioprocess = (event) => this.handleOutput(event);
 
         this.createGainNode();
     };
@@ -460,7 +460,7 @@ not.
         } catch (error) {
             this.eventHandler.emitError({
                 message: 'Could not process audio.',
-                error
+                error,
             });
         }
     }
@@ -484,7 +484,7 @@ not.
         } catch (error) {
             this.eventHandler.emitError({
                 message: 'Could not pause playback.',
-                error
+                error,
             });
 
             return false;
@@ -506,13 +506,13 @@ not.
                 time = this.context.currentTime - this.startTime;
             }
             this.eventHandler.emitResume({
-                time
+                time,
             });
             return true;
         } catch (error) {
             this.eventHandler.emitError({
                 message: 'Could not resume playback.',
-                error
+                error,
             });
 
             return false;
@@ -544,7 +544,7 @@ not.
         } catch (error) {
             this.eventHandler.emitError({
                 message: 'Could not stop playback.',
-                error
+                error,
             });
 
             return false;
@@ -574,7 +574,7 @@ not.
     setVolume({ volume }) {
         if (Number.isNaN(parseFloat(volume))) {
             this.eventHandler.emitError({
-                message: `Volume must be parsable into a number. Got '${volume}' instead.`
+                message: `Volume must be parsable into a number. Got '${volume}' instead.`,
             });
             return;
         }
@@ -606,7 +606,7 @@ not.
      * const message = 'Something happened.';
      * midiPlayer.emitEvent({ event, message });
      */
-    emitEvent = payload => this.eventHandler.emitEvent(payload);
+    emitEvent = (payload) => this.eventHandler.emitEvent(payload);
 
     /**
      * Updates the configuration of the logger.
