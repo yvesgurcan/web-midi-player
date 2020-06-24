@@ -64,7 +64,7 @@
         "documentation-theme-light": "^1.1.1",
         "file-loader": "^6.0.0",
         "html-webpack-plugin": "^3.2.0",
-        "jest": "^25.1.0",
+        "jest": "^26.1.0",
         "net": "^1.0.2",
         "prettier": "^1.16.4",
         "tls": "0.0.1",
