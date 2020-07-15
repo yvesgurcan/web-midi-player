@@ -5,7 +5,7 @@ import {
     LIBTIMIDITY_CONFIG_DATA,
     LIBTIMIDITY_ERROR_CODES as ERRNO_CODES,
     LIBTIMIDITY_ERROR_MESSAGES as ERRNO_MESSAGES,
-    MEMORY_ALLOCATION
+    MEMORY_ALLOCATION,
 } from './constants';
 
 // https://github.com/kripken/emscripten/wiki/
@@ -23,13 +23,13 @@ class LibTiMidity {
      */
     constructor() {
         const Runtime = {
-            stackSave: function() {
+            stackSave: function () {
                 return STACKTOP;
             },
-            stackRestore: function(stackTop) {
+            stackRestore: function (stackTop) {
                 STACKTOP = stackTop;
             },
-            isNumberType: function(type) {
+            isNumberType: function (type) {
                 return type in INT_TYPES || type in FLOAT_TYPES;
             },
             isPointerType: function isPointerType(type) {
@@ -42,7 +42,7 @@ class LibTiMidity {
                 // See comment in isStructPointerType()
                 return type[0] == '%';
             },
-            getNativeTypeSize: function(type) {
+            getNativeTypeSize: function (type) {
                 switch (type) {
                     case 'i1':
                     case 'i8':
@@ -68,7 +68,7 @@ class LibTiMidity {
                     }
                 }
             },
-            getNativeFieldSize: function(type) {
+            getNativeFieldSize: function (type) {
                 return Math.max(
                     Runtime.getNativeTypeSize(type),
                     Runtime.QUANTUM_SIZE
@@ -77,13 +77,13 @@ class LibTiMidity {
             dedup: function dedup(items, ident) {
                 const seen = {};
                 if (ident) {
-                    return items.filter(function(item) {
+                    return items.filter(function (item) {
                         if (seen[item[ident]]) return false;
                         seen[item[ident]] = true;
                         return true;
                     });
                 } else {
-                    return items.filter(function(item) {
+                    return items.filter(function (item) {
                         if (seen[item]) return false;
                         seen[item] = true;
                         return true;
@@ -99,7 +99,7 @@ class LibTiMidity {
                 }
                 return ret;
             },
-            getAlignSize: function(type, size, vararg) {
+            getAlignSize: function (type, size, vararg) {
                 // we align i64s and doubles on 64-bit boundaries, unlike x86
                 if (type == 'i64' || type == 'double' || vararg) return 8;
                 if (!type) return Math.min(size, 8); // align structures internally to 64 bits
@@ -113,7 +113,7 @@ class LibTiMidity {
                 type.alignSize = 0;
                 const diffs = [];
                 let prev = -1;
-                type.flatIndexes = type.fields.map(function(field) {
+                type.flatIndexes = type.fields.map(function (field) {
                     let size, alignSize;
                     if (
                         Runtime.isNumberType(field) ||
@@ -146,12 +146,14 @@ class LibTiMidity {
                         size = field.substr(1) | 0;
                         alignSize = 1;
                     } else {
-                        throw 'Unclear type in struct: ' +
+                        throw (
+                            'Unclear type in struct: ' +
                             field +
                             ', in ' +
                             type.name_ +
                             ' :: ' +
-                            dump(Types.types[type.name_]);
+                            dump(Types.types[type.name_])
+                        );
                     }
                     if (type.packed) alignSize = 1;
                     type.alignSize = Math.max(type.alignSize, alignSize);
@@ -175,7 +177,7 @@ class LibTiMidity {
                 type.needsFlattening = type.flatFactor != 1;
                 return type.flatIndexes;
             },
-            generateStructInfo: function(struct, typeName, offset) {
+            generateStructInfo: function (struct, typeName, offset) {
                 var type, alignment;
                 if (typeName) {
                     offset = offset || 0;
@@ -194,17 +196,17 @@ class LibTiMidity {
                     alignment = type.flatIndexes;
                 } else {
                     var type = {
-                        fields: struct.map(function(item) {
+                        fields: struct.map(function (item) {
                             return item[0];
-                        })
+                        }),
                     };
                     alignment = Runtime.calculateStructAlignment(type);
                 }
                 const ret = {
-                    __size__: type.flatSize
+                    __size__: type.flatSize,
                 };
                 if (typeName) {
-                    struct.forEach(function(item, i) {
+                    struct.forEach(function (item, i) {
                         if (typeof item === 'string') {
                             ret[item] = alignment[i] + offset;
                         } else {
@@ -219,13 +221,13 @@ class LibTiMidity {
                         }
                     });
                 } else {
-                    struct.forEach(function(item, i) {
+                    struct.forEach(function (item, i) {
                         ret[item[1]] = alignment[i];
                     });
                 }
                 return ret;
             },
-            dynCall: function(sig, ptr, args) {
+            dynCall: function (sig, ptr, args) {
                 if (args && args.length) {
                     if (!args.splice) args = Array.prototype.slice.call(args);
                     args.splice(0, 0, ptr);
@@ -234,10 +236,10 @@ class LibTiMidity {
                     return Module['dynCall_' + sig].call(null, ptr);
                 }
             },
-            UTF8Processor: function() {
+            UTF8Processor: function () {
                 const buffer = [];
                 let needed = 0;
-                this.processCChar = function(code) {
+                this.processCChar = function (code) {
                     code = code & 0xff;
                     if (buffer.length == 0) {
                         if ((code & 0x80) == 0x00) {
@@ -292,7 +294,7 @@ class LibTiMidity {
                     buffer.length = 0;
                     return ret;
                 };
-                this.processJSString = function(string) {
+                this.processJSString = function (string) {
                     string = unescape(encodeURIComponent(string));
                     const ret = [];
                     for (let i = 0; i < string.length; i++) {
@@ -301,19 +303,19 @@ class LibTiMidity {
                     return ret;
                 };
             },
-            stackAlloc: function(size) {
+            stackAlloc: function (size) {
                 const ret = STACKTOP;
                 STACKTOP = (STACKTOP + size) | 0;
                 STACKTOP = (STACKTOP + 7) & -8;
                 return ret;
             },
-            staticAlloc: function(size) {
+            staticAlloc: function (size) {
                 const ret = STATICTOP;
                 STATICTOP = (STATICTOP + size) | 0;
                 STATICTOP = (STATICTOP + 7) & -8;
                 return ret;
             },
-            dynamicAlloc: function(size) {
+            dynamicAlloc: function (size) {
                 const ret = DYNAMICTOP;
                 DYNAMICTOP = (DYNAMICTOP + size) | 0;
                 DYNAMICTOP = (DYNAMICTOP + 7) & -8;
@@ -324,20 +326,20 @@ class LibTiMidity {
 
                 return ret;
             },
-            alignMemory: function(size, quantum) {
+            alignMemory: function (size, quantum) {
                 const ret = (size =
                     Math.ceil(size / (quantum ? quantum : 8)) *
                     (quantum ? quantum : 8));
                 return ret;
             },
-            makeBigInt: function(low, high, unsigned) {
+            makeBigInt: function (low, high, unsigned) {
                 const ret = unsigned
                     ? +(low >>> 0) + +(high >>> 0) * +4294967296
                     : +(low >>> 0) + +(high | 0) * +4294967296;
                 return ret;
             },
             GLOBAL_BASE: 8,
-            QUANTUM_SIZE: 4
+            QUANTUM_SIZE: 4,
         };
 
         /* Initialize the runtime memory */
@@ -401,14 +403,14 @@ class LibTiMidity {
             Module['arguments'] = [];
         }
 
-        Module.read = function(url) {
+        Module.read = function (url) {
             const xhr = new XMLHttpRequest();
             xhr.open('GET', url, false);
             xhr.send(null);
             return xhr.responseText;
         };
 
-        Module.print = function(message) {
+        Module.print = function (message) {
             console.log(message);
         };
 
@@ -523,7 +525,7 @@ class LibTiMidity {
 
             let i = 0;
             const cArgs = args
-                ? args.map(function(arg) {
+                ? args.map(function (arg) {
                       return toC(arg, argTypes[i++]);
                   })
                 : [];
@@ -573,7 +575,7 @@ class LibTiMidity {
                                       (tempDouble - +(~~tempDouble >>> 0)) /
                                           +4294967296
                                   ) >>> 0
-                            : 0)
+                            : 0),
                     ]),
                         (HEAP32[ptr >> 2] = tempI64[0]),
                         (HEAP32[(ptr + 4) >> 2] = tempI64[1]);
@@ -663,7 +665,7 @@ class LibTiMidity {
                     _malloc,
                     Runtime.stackAlloc,
                     Runtime.staticAlloc,
-                    Runtime.dynamicAlloc
+                    Runtime.dynamicAlloc,
                 ][allocator === undefined ? ALLOC_STATIC : allocator](
                     Math.max(size, singleType ? 1 : types.length)
                 );
@@ -1136,7 +1138,7 @@ class LibTiMidity {
         }
 
         if (!Math['imul'])
-            Math['imul'] = function(a, b) {
+            Math['imul'] = function (a, b) {
                 const ah = a >>> 16;
                 const al = a & 0xffff;
                 const bh = b >>> 16;
@@ -1225,9 +1227,9 @@ class LibTiMidity {
         STATIC_BASE = 8;
         STATICTOP = STATIC_BASE + 8448;
         /* global initializers */ __ATINIT__.push({
-            func: function() {
+            func: function () {
                 runPostSets();
-            }
+            },
         });
         var _stderr;
         var _stderr = (_stderr = allocate(
@@ -1252,11 +1254,11 @@ class LibTiMidity {
         }
 
         const PATH = {
-            splitPath: function(filename) {
+            splitPath: function (filename) {
                 const splitPathRe = /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
                 return splitPathRe.exec(filename).slice(1);
             },
-            normalizeArray: function(parts, allowAboveRoot) {
+            normalizeArray: function (parts, allowAboveRoot) {
                 // if the path tries to go above the root, `up` ends up > 0
                 let up = 0;
                 for (let i = parts.length - 1; i >= 0; i--) {
@@ -1279,12 +1281,12 @@ class LibTiMidity {
                 }
                 return parts;
             },
-            normalize: function(path) {
+            normalize: function (path) {
                 const isAbsolute = path.charAt(0) === '/',
                     trailingSlash = path.substr(-1) === '/';
                 // Normalize the path
                 path = PATH.normalizeArray(
-                    path.split('/').filter(function(p) {
+                    path.split('/').filter(function (p) {
                         return !!p;
                     }),
                     !isAbsolute
@@ -1297,7 +1299,7 @@ class LibTiMidity {
                 }
                 return (isAbsolute ? '/' : '') + path;
             },
-            dirname: function(path) {
+            dirname: function (path) {
                 let result = PATH.splitPath(path),
                     root = result[0],
                     dir = result[1];
@@ -1311,7 +1313,7 @@ class LibTiMidity {
                 }
                 return root + dir;
             },
-            basename: function(path, ext) {
+            basename: function (path, ext) {
                 // EMSCRIPTEN return '/'' for '/', not an empty string
                 if (path === '/') return '/';
                 let f = PATH.splitPath(path)[2];
@@ -1320,14 +1322,14 @@ class LibTiMidity {
                 }
                 return f;
             },
-            extname: function(path) {
+            extname: function (path) {
                 return PATH.splitPath(path)[3];
             },
-            join: function() {
+            join: function () {
                 const paths = Array.prototype.slice.call(arguments, 0);
                 return PATH.normalize(
                     paths
-                        .filter(function(p, index) {
+                        .filter(function (p, index) {
                             if (typeof p !== 'string') {
                                 throw new TypeError(
                                     'Arguments to path.join must be strings'
@@ -1338,7 +1340,7 @@ class LibTiMidity {
                         .join('/')
                 );
             },
-            resolve: function() {
+            resolve: function () {
                 let resolvedPath = '',
                     resolvedAbsolute = false;
                 for (
@@ -1360,14 +1362,14 @@ class LibTiMidity {
                 }
                 // At this point the path should be resolved to a full absolute path, but handle relative paths to be safe (might happen when process.cwd() fails)
                 resolvedPath = PATH.normalizeArray(
-                    resolvedPath.split('/').filter(function(p) {
+                    resolvedPath.split('/').filter(function (p) {
                         return !!p;
                     }),
                     !resolvedAbsolute
                 ).join('/');
                 return (resolvedAbsolute ? '/' : '') + resolvedPath || '.';
             },
-            relative: function(from, to) {
+            relative: function (from, to) {
                 from = PATH.resolve(from).substr(1);
                 to = PATH.resolve(to).substr(1);
                 function trim(arr) {
@@ -1400,18 +1402,18 @@ class LibTiMidity {
                     toParts.slice(samePartsLength)
                 );
                 return outputParts.join('/');
-            }
+            },
         };
         const TTY = {
             ttys: [],
-            init: function() {},
-            shutdown: function() {},
-            register: function(dev, ops) {
+            init: function () {},
+            shutdown: function () {},
+            register: function (dev, ops) {
                 TTY.ttys[dev] = { input: [], output: [], ops: ops };
                 FS.registerDevice(dev, TTY.stream_ops);
             },
             stream_ops: {
-                open: function(stream) {
+                open: function (stream) {
                     const tty = TTY.ttys[stream.node.rdev];
                     if (!tty) {
                         throw new FS.ErrnoError(ERRNO_CODES.ENODEV);
@@ -1419,13 +1421,13 @@ class LibTiMidity {
                     stream.tty = tty;
                     stream.seekable = false;
                 },
-                close: function(stream) {
+                close: function (stream) {
                     // flush any pending line data
                     if (stream.tty.output.length) {
                         stream.tty.ops.put_char(stream.tty, 10);
                     }
                 },
-                read: function(stream, buffer, offset, length) {
+                read: function (stream, buffer, offset, length) {
                     if (!stream.tty || !stream.tty.ops.get_char) {
                         throw new FS.ErrnoError(ERRNO_CODES.ENXIO);
                     }
@@ -1449,7 +1451,7 @@ class LibTiMidity {
                     }
                     return bytesRead;
                 },
-                write: function(stream, buffer, offset, length, pos) {
+                write: function (stream, buffer, offset, length, pos) {
                     if (!stream.tty || !stream.tty.ops.put_char) {
                         throw new FS.ErrnoError(ERRNO_CODES.ENXIO);
                     }
@@ -1467,10 +1469,10 @@ class LibTiMidity {
                         stream.node.timestamp = Date.now();
                     }
                     return i;
-                }
+                },
             },
             default_tty_ops: {
-                get_char: function(tty) {
+                get_char: function (tty) {
                     if (!tty.input.length) {
                         let result = null;
                         result = window.prompt('Input: ');
@@ -1482,34 +1484,34 @@ class LibTiMidity {
                     }
                     return tty.input.shift();
                 },
-                put_char: function(tty, val) {
+                put_char: function (tty, val) {
                     if (val === null || val === 10) {
                         console.log(tty.output.join(''));
                         tty.output = [];
                     } else {
                         tty.output.push(TTY.utf8.processCChar(val));
                     }
-                }
+                },
             },
             default_tty1_ops: {
-                put_char: function(tty, val) {
+                put_char: function (tty, val) {
                     if (val === null || val === 10) {
                         console.warn(tty.output.join(''));
                         tty.output = [];
                     } else {
                         tty.output.push(TTY.utf8.processCChar(val));
                     }
-                }
-            }
+                },
+            },
         };
         const MEMFS = {
             CONTENT_OWNING: 1,
             CONTENT_FLEXIBLE: 2,
             CONTENT_FIXED: 3,
-            mount: function() {
+            mount: function () {
                 return MEMFS.createNode(null, '/', 16384 | 0o777, 0);
             },
-            createNode: function(parent, name, mode, dev) {
+            createNode: function (parent, name, mode, dev) {
                 if (FS.isBlkdev(mode) || FS.isFIFO(mode)) {
                     // not supported
                     throw new FS.ErrnoError(ERRNO_CODES.EPERM);
@@ -1526,23 +1528,23 @@ class LibTiMidity {
                         unlink: MEMFS.node_ops.unlink,
                         rmdir: MEMFS.node_ops.rmdir,
                         readdir: MEMFS.node_ops.readdir,
-                        symlink: MEMFS.node_ops.symlink
+                        symlink: MEMFS.node_ops.symlink,
                     };
                     node.stream_ops = {
-                        llseek: MEMFS.stream_ops.llseek
+                        llseek: MEMFS.stream_ops.llseek,
                     };
                     node.contents = {};
                 } else if (FS.isFile(node.mode)) {
                     node.node_ops = {
                         getattr: MEMFS.node_ops.getattr,
-                        setattr: MEMFS.node_ops.setattr
+                        setattr: MEMFS.node_ops.setattr,
                     };
                     node.stream_ops = {
                         llseek: MEMFS.stream_ops.llseek,
                         read: MEMFS.stream_ops.read,
                         write: MEMFS.stream_ops.write,
                         allocate: MEMFS.stream_ops.allocate,
-                        mmap: MEMFS.stream_ops.mmap
+                        mmap: MEMFS.stream_ops.mmap,
                     };
                     node.contents = [];
                     node.contentMode = MEMFS.CONTENT_FLEXIBLE;
@@ -1550,13 +1552,13 @@ class LibTiMidity {
                     node.node_ops = {
                         getattr: MEMFS.node_ops.getattr,
                         setattr: MEMFS.node_ops.setattr,
-                        readlink: MEMFS.node_ops.readlink
+                        readlink: MEMFS.node_ops.readlink,
                     };
                     node.stream_ops = {};
                 } else if (FS.isChrdev(node.mode)) {
                     node.node_ops = {
                         getattr: MEMFS.node_ops.getattr,
-                        setattr: MEMFS.node_ops.setattr
+                        setattr: MEMFS.node_ops.setattr,
                     };
                     node.stream_ops = FS.chrdev_stream_ops;
                 }
@@ -1567,7 +1569,7 @@ class LibTiMidity {
                 }
                 return node;
             },
-            ensureFlexible: function(node) {
+            ensureFlexible: function (node) {
                 if (node.contentMode !== MEMFS.CONTENT_FLEXIBLE) {
                     const contents = node.contents;
                     node.contents = Array.prototype.slice.call(contents);
@@ -1575,7 +1577,7 @@ class LibTiMidity {
                 }
             },
             node_ops: {
-                getattr: function(node) {
+                getattr: function (node) {
                     const attr = {};
                     // device numbers reuse inode numbers.
                     attr.dev = FS.isChrdev(node.mode) ? node.id : 1;
@@ -1602,7 +1604,7 @@ class LibTiMidity {
                     attr.blocks = Math.ceil(attr.size / attr.blksize);
                     return attr;
                 },
-                setattr: function(node, attr) {
+                setattr: function (node, attr) {
                     if (attr.mode !== undefined) {
                         node.mode = attr.mode;
                     }
@@ -1619,13 +1621,13 @@ class LibTiMidity {
                                 contents.push(0);
                     }
                 },
-                lookup: function() {
+                lookup: function () {
                     throw new FS.ErrnoError(ERRNO_CODES.ENOENT);
                 },
-                mknod: function(parent, name, mode, dev) {
+                mknod: function (parent, name, mode, dev) {
                     return MEMFS.createNode(parent, name, mode, dev);
                 },
-                rename: function(old_node, new_dir, new_name) {
+                rename: function (old_node, new_dir, new_name) {
                     // if we're overwriting a directory at new_name, make sure it's empty.
                     if (FS.isDir(old_node.mode)) {
                         let new_node;
@@ -1643,17 +1645,17 @@ class LibTiMidity {
                     old_node.name = new_name;
                     new_dir.contents[new_name] = old_node;
                 },
-                unlink: function(parent, name) {
+                unlink: function (parent, name) {
                     delete parent.contents[name];
                 },
-                rmdir: function(parent, name) {
+                rmdir: function (parent, name) {
                     const node = FS.lookupNode(parent, name);
                     for (const i in node.contents) {
                         throw new FS.ErrnoError(ERRNO_CODES.ENOTEMPTY);
                     }
                     delete parent.contents[name];
                 },
-                readdir: function(node) {
+                readdir: function (node) {
                     const entries = ['.', '..'];
                     for (const key in node.contents) {
                         if (!node.contents.hasOwnProperty(key)) {
@@ -1663,7 +1665,7 @@ class LibTiMidity {
                     }
                     return entries;
                 },
-                symlink: function(parent, newname, oldpath) {
+                symlink: function (parent, newname, oldpath) {
                     const node = MEMFS.createNode(
                         parent,
                         newname,
@@ -1673,15 +1675,15 @@ class LibTiMidity {
                     node.link = oldpath;
                     return node;
                 },
-                readlink: function(node) {
+                readlink: function (node) {
                     if (!FS.isLink(node.mode)) {
                         throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
                     }
                     return node.link;
-                }
+                },
             },
             stream_ops: {
-                read: function(stream, buffer, offset, length, position) {
+                read: function (stream, buffer, offset, length, position) {
                     const contents = stream.node.contents;
                     if (position >= contents.length) return 0;
                     const size = Math.min(contents.length - position, length);
@@ -1699,7 +1701,7 @@ class LibTiMidity {
                     }
                     return size;
                 },
-                write: function(
+                write: function (
                     stream,
                     buffer,
                     offset,
@@ -1741,7 +1743,7 @@ class LibTiMidity {
                     }
                     return length;
                 },
-                llseek: function(stream, offset, whence) {
+                llseek: function (stream, offset, whence) {
                     let position = offset;
                     if (whence === 1) {
                         // SEEK_CUR.
@@ -1759,13 +1761,13 @@ class LibTiMidity {
                     stream.position = position;
                     return position;
                 },
-                allocate: function(stream, offset, length) {
+                allocate: function (stream, offset, length) {
                     MEMFS.ensureFlexible(stream.node);
                     const contents = stream.node.contents;
                     const limit = offset + length;
                     while (limit > contents.length) contents.push(0);
                 },
-                mmap: function(stream, buffer, length, position, flags) {
+                mmap: function (stream, buffer, length, position, flags) {
                     if (!FS.isFile(stream.node.mode)) {
                         throw new FS.ErrnoError(ERRNO_CODES.ENODEV);
                     }
@@ -1809,8 +1811,8 @@ class LibTiMidity {
                         buffer.set(contents, ptr);
                     }
                     return { ptr: ptr, allocated: allocated };
-                }
-            }
+                },
+            },
         };
         const _stdin = allocate(1, 'i32*', ALLOC_STATIC);
         const _stdout = allocate(1, 'i32*', ALLOC_STATIC);
@@ -1843,12 +1845,12 @@ class LibTiMidity {
                 this.message = ERRNO_MESSAGES[errorNumber];
                 this.details = details || '';
             },
-            handleFSError: function(e) {
+            handleFSError: function (e) {
                 if (!(e instanceof FS.ErrnoError))
                     throw e + ' : ' + new Error().stack;
                 return ___setErrNo(e.errno);
             },
-            lookupPath: function(path, opts) {
+            lookupPath: function (path, opts) {
                 path = PATH.resolve(FS.cwd(), path);
                 opts = opts || { recurse_count: 0 };
                 if (opts.recurse_count > 8) {
@@ -1857,7 +1859,7 @@ class LibTiMidity {
                 }
                 // split the path
                 const parts = PATH.normalizeArray(
-                    path.split('/').filter(function(p) {
+                    path.split('/').filter(function (p) {
                         return !!p;
                     }),
                     false
@@ -1889,7 +1891,7 @@ class LibTiMidity {
                                 link
                             );
                             const lookup = FS.lookupPath(current_path, {
-                                recurse_count: opts.recurse_count
+                                recurse_count: opts.recurse_count,
                             });
                             current = lookup.node;
                             if (count++ > 40) {
@@ -1901,7 +1903,7 @@ class LibTiMidity {
                 }
                 return { path: current_path, node: current };
             },
-            getPath: function(node) {
+            getPath: function (node) {
                 let path;
                 while (true) {
                     if (FS.isRoot(node)) {
@@ -1913,19 +1915,19 @@ class LibTiMidity {
                     node = node.parent;
                 }
             },
-            hashName: function(parentid, name) {
+            hashName: function (parentid, name) {
                 let hash = 0;
                 for (let i = 0; i < name.length; i++) {
                     hash = ((hash << 5) - hash + name.charCodeAt(i)) | 0;
                 }
                 return ((parentid + hash) >>> 0) % FS.nameTable.length;
             },
-            hashAddNode: function(node) {
+            hashAddNode: function (node) {
                 const hash = FS.hashName(node.parent.id, node.name);
                 node.name_next = FS.nameTable[hash];
                 FS.nameTable[hash] = node;
             },
-            hashRemoveNode: function(node) {
+            hashRemoveNode: function (node) {
                 const hash = FS.hashName(node.parent.id, node.name);
                 if (FS.nameTable[hash] === node) {
                     FS.nameTable[hash] = node.name_next;
@@ -1940,7 +1942,7 @@ class LibTiMidity {
                     }
                 }
             },
-            lookupNode: function(parent, name) {
+            lookupNode: function (parent, name) {
                 const err = FS.mayLookup(parent);
                 if (err) {
                     throw new FS.ErrnoError(err, name);
@@ -1959,7 +1961,7 @@ class LibTiMidity {
                 // if we failed to find it in the cache, call into the VFS
                 return FS.lookup(parent, name);
             },
-            createNode: function(parent, name, mode, rdev) {
+            createNode: function (parent, name, mode, rdev) {
                 const node = {
                     id: FS.nextInode++,
                     name: name,
@@ -1968,7 +1970,7 @@ class LibTiMidity {
                     stream_ops: {},
                     rdev: rdev,
                     parent: null,
-                    mount: null
+                    mount: null,
                 };
                 if (!parent) {
                     parent = node; // root node sets parent to itself
@@ -1982,67 +1984,67 @@ class LibTiMidity {
                 // Object.defineProperty in order to make closure compiler happy
                 Object.defineProperties(node, {
                     read: {
-                        get: function() {
+                        get: function () {
                             return (node.mode & readMode) === readMode;
                         },
-                        set: function(val) {
+                        set: function (val) {
                             val
                                 ? (node.mode |= readMode)
                                 : (node.mode &= ~readMode);
-                        }
+                        },
                     },
                     write: {
-                        get: function() {
+                        get: function () {
                             return (node.mode & writeMode) === writeMode;
                         },
-                        set: function(val) {
+                        set: function (val) {
                             val
                                 ? (node.mode |= writeMode)
                                 : (node.mode &= ~writeMode);
-                        }
+                        },
                     },
                     isFolder: {
-                        get: function() {
+                        get: function () {
                             return FS.isDir(node.mode);
-                        }
+                        },
                     },
                     isDevice: {
-                        get: function() {
+                        get: function () {
                             return FS.isChrdev(node.mode);
-                        }
-                    }
+                        },
+                    },
                 });
                 FS.hashAddNode(node);
                 return node;
             },
-            destroyNode: function(node) {
+            destroyNode: function (node) {
                 FS.hashRemoveNode(node);
             },
-            isRoot: function(node) {
+            isRoot: function (node) {
                 return node === node.parent;
             },
-            isMountpoint: function(node) {
+            isMountpoint: function (node) {
                 return node.mounted;
             },
-            isFile: function(mode) {
+            isFile: function (mode) {
                 return (mode & 61440) === 32768;
             },
-            isDir: function(mode) {
+            isDir: function (mode) {
                 return (mode & 61440) === 16384;
             },
-            isLink: function(mode) {
+            isLink: function (mode) {
                 return (mode & 61440) === 40960;
             },
-            isChrdev: function(mode) {
+            isChrdev: function (mode) {
                 return (mode & 61440) === 8192;
             },
-            isBlkdev: function(mode) {
+            isBlkdev: function (mode) {
                 return (mode & 61440) === 24576;
             },
-            isFIFO: function(mode) {
+            isFIFO: function (mode) {
                 return (mode & 61440) === 4096;
             },
-            isSocket: function(mode) {
+            isSocket: function (mode) {
                 return (mode & 49152) === 49152;
             },
             flagModes: {
@@ -2060,16 +2062,16 @@ class LibTiMidity {
                 xa: 1217,
                 'a+': 1090,
                 'ax+': 1218,
-                'xa+': 1218
+                'xa+': 1218,
             },
-            modeStringToFlags: function(str) {
+            modeStringToFlags: function (str) {
                 const flags = FS.flagModes[str];
                 if (typeof flags === 'undefined') {
                     throw new Error('Unknown file open mode: ' + str);
                 }
                 return flags;
             },
-            flagsToPermissionString: function(flag) {
+            flagsToPermissionString: function (flag) {
                 const accmode = flag & 2097155;
                 let perms = ['r', 'w', 'rw'][accmode];
                 if (flag & 512) {
@@ -2077,7 +2079,7 @@ class LibTiMidity {
                 }
                 return perms;
             },
-            nodePermissions: function(node, perms) {
+            nodePermissions: function (node, perms) {
                 if (FS.ignorePermissions) {
                     return 0;
                 }
@@ -2091,17 +2093,17 @@ class LibTiMidity {
                 }
                 return 0;
             },
-            mayLookup: function(dir) {
+            mayLookup: function (dir) {
                 return FS.nodePermissions(dir, 'x');
             },
-            mayCreate: function(dir, name) {
+            mayCreate: function (dir, name) {
                 try {
                     FS.lookupNode(dir, name);
                     return ERRNO_CODES.EEXIST;
                 } catch (e) {}
                 return FS.nodePermissions(dir, 'wx');
             },
-            mayDelete: function(dir, name, isdir) {
+            mayDelete: function (dir, name, isdir) {
                 let node;
                 try {
                     node = FS.lookupNode(dir, name);
@@ -2126,7 +2128,7 @@ class LibTiMidity {
                 }
                 return 0;
             },
-            mayOpen: function(node, flags) {
+            mayOpen: function (node, flags) {
                 if (!node) {
                     return ERRNO_CODES.ENOENT;
                 }
@@ -2146,7 +2148,7 @@ class LibTiMidity {
                 );
             },
             MAX_OPEN_FDS: 4096,
-            nextfd: function(fd_start, fd_end) {
+            nextfd: function (fd_start, fd_end) {
                 fd_start = fd_start || 1;
                 fd_end = fd_end || FS.MAX_OPEN_FDS;
                 for (let fd = fd_start; fd <= fd_end; fd++) {
@@ -2156,46 +2158,46 @@ class LibTiMidity {
                 }
                 throw new FS.ErrnoError(ERRNO_CODES.EMFILE);
             },
-            getStream: function(fd) {
+            getStream: function (fd) {
                 return FS.streams[fd];
             },
-            createStream: function(stream, fd_start, fd_end) {
+            createStream: function (stream, fd_start, fd_end) {
                 const fd = FS.nextfd(fd_start, fd_end);
                 stream.fd = fd;
                 // compatibility
                 Object.defineProperties(stream, {
                     object: {
-                        get: function() {
+                        get: function () {
                             return stream.node;
                         },
-                        set: function(val) {
+                        set: function (val) {
                             stream.node = val;
-                        }
+                        },
                     },
                     isRead: {
-                        get: function() {
+                        get: function () {
                             return (stream.flags & 2097155) !== 1;
-                        }
+                        },
                     },
                     isWrite: {
-                        get: function() {
+                        get: function () {
                             return (stream.flags & 2097155) !== 0;
-                        }
+                        },
                     },
                     isAppend: {
-                        get: function() {
+                        get: function () {
                             return stream.flags & 1024;
-                        }
-                    }
+                        },
+                    },
                 });
                 FS.streams[fd] = stream;
                 return stream;
             },
-            closeStream: function(fd) {
+            closeStream: function (fd) {
                 FS.streams[fd] = null;
             },
             chrdev_stream_ops: {
-                open: function(stream) {
+                open: function (stream) {
                     const device = FS.getDevice(stream.node.rdev);
                     // override node's stream ops with the device's
                     stream.stream_ops = device.stream_ops;
@@ -2204,33 +2206,33 @@ class LibTiMidity {
                         stream.stream_ops.open(stream);
                     }
                 },
-                llseek: function() {
+                llseek: function () {
                     throw new FS.ErrnoError(ERRNO_CODES.ESPIPE);
-                }
+                },
             },
-            major: function(dev) {
+            major: function (dev) {
                 return dev >> 8;
             },
-            minor: function(dev) {
+            minor: function (dev) {
                 return dev & 0xff;
             },
-            makedev: function(ma, mi) {
+            makedev: function (ma, mi) {
                 return (ma << 8) | mi;
             },
-            registerDevice: function(dev, ops) {
+            registerDevice: function (dev, ops) {
                 FS.devices[dev] = { stream_ops: ops };
             },
-            getDevice: function(dev) {
+            getDevice: function (dev) {
                 return FS.devices[dev];
             },
-            syncfs: function(populate, callback) {
+            syncfs: function (populate, callback) {
                 if (typeof populate === 'function') {
                     callback = populate;
                     populate = false;
                 }
                 let completed = 0;
                 const total = FS.mounts.length;
-                const done = function(err) {
+                const done = function (err) {
                     if (err) {
                         return callback(err);
                     }
@@ -2248,7 +2250,7 @@ class LibTiMidity {
                     mount.type.syncfs(mount, populate, done);
                 }
             },
-            mount: function(type, opts, mountpoint) {
+            mount: function (type, opts, mountpoint) {
                 let lookup;
                 if (mountpoint) {
                     lookup = FS.lookupPath(mountpoint, { follow: false });
@@ -2258,7 +2260,7 @@ class LibTiMidity {
                     type: type,
                     opts: opts,
                     mountpoint: mountpoint,
-                    root: null
+                    root: null,
                 };
                 // create a root node for the fs
                 var root = type.mount(mount);
@@ -2277,10 +2279,10 @@ class LibTiMidity {
                 FS.mounts.push(mount);
                 return root;
             },
-            lookup: function(parent, name) {
+            lookup: function (parent, name) {
                 return parent.node_ops.lookup(parent, name);
             },
-            mknod: function(path, mode, dev, throwError = true) {
+            mknod: function (path, mode, dev, throwError = true) {
                 const lookup = FS.lookupPath(path, { parent: true });
                 const parent = lookup.node;
                 const name = PATH.basename(path);
@@ -2299,19 +2301,19 @@ class LibTiMidity {
                 }
                 return parent.node_ops.mknod(parent, name, mode, dev);
             },
-            create: function(path, mode, throwError = true) {
+            create: function (path, mode, throwError = true) {
                 mode = mode !== undefined ? mode : 0o666;
                 mode &= 4095;
                 mode |= 32768;
                 return FS.mknod(path, mode, 0, throwError);
             },
-            mkdir: function(path, mode, throwError = true) {
+            mkdir: function (path, mode, throwError = true) {
                 mode = mode !== undefined ? mode : 0o777;
                 mode &= 511 | 512;
                 mode |= 16384;
                 return FS.mknod(path, mode, 0, throwError);
             },
-            mkdev: function(path, mode, dev) {
+            mkdev: function (path, mode, dev) {
                 if (typeof dev === 'undefined') {
                     dev = mode;
                     mode = 0o666;
@@ -2319,7 +2321,7 @@ class LibTiMidity {
                 mode |= 8192;
                 return FS.mknod(path, mode, dev);
             },
-            symlink: function(oldpath, newpath) {
+            symlink: function (oldpath, newpath) {
                 const lookup = FS.lookupPath(newpath, { parent: true });
                 var parent = lookup.node;
                 const newname = PATH.basename(newpath);
@@ -2332,7 +2334,7 @@ class LibTiMidity {
                 }
                 return parent.node_ops.symlink(parent, newname, oldpath);
             },
-            rename: function(old_path, new_path) {
+            rename: function (old_path, new_path) {
                 const old_dirname = PATH.dirname(old_path);
                 const new_dirname = PATH.dirname(new_path);
                 const old_name = PATH.basename(old_path);
@@ -2417,7 +2419,7 @@ class LibTiMidity {
                     FS.hashAddNode(old_node);
                 }
             },
-            rmdir: function(path) {
+            rmdir: function (path) {
                 const lookup = FS.lookupPath(path, { parent: true });
                 var parent = lookup.node;
                 const name = PATH.basename(path);
@@ -2435,7 +2437,7 @@ class LibTiMidity {
                 parent.node_ops.rmdir(parent, name);
                 FS.destroyNode(node);
             },
-            readdir: function(path) {
+            readdir: function (path) {
                 const lookup = FS.lookupPath(path, { follow: true });
                 const node = lookup.node;
                 if (!node.node_ops.readdir) {
@@ -2443,7 +2445,7 @@ class LibTiMidity {
                 }
                 return node.node_ops.readdir(node);
             },
-            unlink: function(path) {
+            unlink: function (path) {
                 const lookup = FS.lookupPath(path, { parent: true });
                 var parent = lookup.node;
                 const name = PATH.basename(path);
@@ -2463,7 +2465,7 @@ class LibTiMidity {
                 parent.node_ops.unlink(parent, name);
                 FS.destroyNode(node);
             },
-            readlink: function(path) {
+            readlink: function (path) {
                 const lookup = FS.lookupPath(path, { follow: false });
                 const link = lookup.node;
                 if (!link.node_ops.readlink) {
@@ -2471,7 +2473,7 @@ class LibTiMidity {
                 }
                 return link.node_ops.readlink(link);
             },
-            stat: function(path, dontFollow) {
+            stat: function (path, dontFollow) {
                 const lookup = FS.lookupPath(path, { follow: !dontFollow });
                 const node = lookup.node;
                 if (!node.node_ops.getattr) {
@@ -2479,10 +2481,10 @@ class LibTiMidity {
                 }
                 return node.node_ops.getattr(node);
             },
-            lstat: function(path) {
+            lstat: function (path) {
                 return FS.stat(path, true);
             },
-            chmod: function(path, mode, dontFollow) {
+            chmod: function (path, mode, dontFollow) {
                 let node;
                 if (typeof path === 'string') {
                     const lookup = FS.lookupPath(path, { follow: !dontFollow });
@@ -2495,20 +2497,20 @@ class LibTiMidity {
                 }
                 node.node_ops.setattr(node, {
                     mode: (mode & 4095) | (node.mode & ~4095),
-                    timestamp: Date.now()
+                    timestamp: Date.now(),
                 });
             },
-            lchmod: function(path, mode) {
+            lchmod: function (path, mode) {
                 FS.chmod(path, mode, true);
             },
-            fchmod: function(fd, mode) {
+            fchmod: function (fd, mode) {
                 const stream = FS.getStream(fd);
                 if (!stream) {
                     throw new FS.ErrnoError(ERRNO_CODES.EBADF);
                 }
                 FS.chmod(stream.node, mode);
             },
-            chown: function(path, uid, gid, dontFollow) {
+            chown: function (path, uid, gid, dontFollow) {
                 let node;
                 if (typeof path === 'string') {
                     const lookup = FS.lookupPath(path, { follow: !dontFollow });
@@ -2520,21 +2522,21 @@ class LibTiMidity {
                     throw new FS.ErrnoError(ERRNO_CODES.EPERM);
                 }
                 node.node_ops.setattr(node, {
-                    timestamp: Date.now()
+                    timestamp: Date.now(),
                     // we ignore the uid / gid for now
                 });
             },
-            lchown: function(path, uid, gid) {
+            lchown: function (path, uid, gid) {
                 FS.chown(path, uid, gid, true);
             },
-            fchown: function(fd, uid, gid) {
+            fchown: function (fd, uid, gid) {
                 const stream = FS.getStream(fd);
                 if (!stream) {
                     throw new FS.ErrnoError(ERRNO_CODES.EBADF);
                 }
                 FS.chown(stream.node, uid, gid);
             },
-            truncate: function(path, len) {
+            truncate: function (path, len) {
                 if (len < 0) {
                     throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
                 }
@@ -2560,10 +2562,10 @@ class LibTiMidity {
                 }
                 node.node_ops.setattr(node, {
                     size: len,
-                    timestamp: Date.now()
+                    timestamp: Date.now(),
                 });
             },
-            ftruncate: function(fd, len) {
+            ftruncate: function (fd, len) {
                 const stream = FS.getStream(fd);
                 if (!stream) {
                     throw new FS.ErrnoError(ERRNO_CODES.EBADF);
@@ -2573,14 +2575,14 @@ class LibTiMidity {
                 }
                 FS.truncate(stream.node, len);
             },
-            utime: function(path, atime, mtime) {
+            utime: function (path, atime, mtime) {
                 const lookup = FS.lookupPath(path, { follow: true });
                 const node = lookup.node;
                 node.node_ops.setattr(node, {
-                    timestamp: Math.max(atime, mtime)
+                    timestamp: Math.max(atime, mtime),
                 });
             },
-            open: function(path, flags, mode, fd_start, fd_end) {
+            open: function (path, flags, mode, fd_start, fd_end) {
                 path = PATH.normalize(path);
                 flags =
                     typeof flags === 'string'
@@ -2595,7 +2597,7 @@ class LibTiMidity {
                 let node;
                 try {
                     const lookup = FS.lookupPath(path, {
-                        follow: !(flags & 131072)
+                        follow: !(flags & 131072),
                     });
                     node = lookup.node;
                 } catch (e) {
@@ -2642,7 +2644,7 @@ class LibTiMidity {
                         stream_ops: node.stream_ops,
                         // used by the file family libc calls (fopen, fwrite, ferror, etc.)
                         ungotten: [],
-                        error: false
+                        error: false,
                     },
                     fd_start,
                     fd_end
@@ -2660,7 +2662,7 @@ class LibTiMidity {
                 }
                 return stream;
             },
-            close: function(stream) {
+            close: function (stream) {
                 try {
                     if (stream.stream_ops.close) {
                         stream.stream_ops.close(stream);
@@ -2671,13 +2673,13 @@ class LibTiMidity {
                     FS.closeStream(stream.fd);
                 }
             },
-            llseek: function(stream, offset, whence) {
+            llseek: function (stream, offset, whence) {
                 if (!stream.seekable || !stream.stream_ops.llseek) {
                     throw new FS.ErrnoError(ERRNO_CODES.ESPIPE);
                 }
                 return stream.stream_ops.llseek(stream, offset, whence);
             },
-            read: function(stream, buffer, offset, length, position) {
+            read: function (stream, buffer, offset, length, position) {
                 if (length < 0 || position < 0) {
                     throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
                 }
@@ -2707,7 +2709,7 @@ class LibTiMidity {
                 if (!seeking) stream.position += bytesRead;
                 return bytesRead;
             },
-            write: function(stream, buffer, offset, length, position, canOwn) {
+            write: function (stream, buffer, offset, length, position, canOwn) {
                 if (length < 0 || position < 0) {
                     throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
                 }
@@ -2742,7 +2744,7 @@ class LibTiMidity {
                 if (!seeking) stream.position += bytesWritten;
                 return bytesWritten;
             },
-            allocate: function(stream, offset, length) {
+            allocate: function (stream, offset, length) {
                 if (offset < 0 || length <= 0) {
                     throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
                 }
@@ -2757,7 +2759,7 @@ class LibTiMidity {
                 }
                 stream.stream_ops.allocate(stream, offset, length);
             },
-            mmap: function(
+            mmap: function (
                 stream,
                 buffer,
                 offset,
@@ -2783,13 +2785,13 @@ class LibTiMidity {
                     flags
                 );
             },
-            ioctl: function(stream, cmd, arg) {
+            ioctl: function (stream, cmd, arg) {
                 if (!stream.stream_ops.ioctl) {
                     throw new FS.ErrnoError(ERRNO_CODES.ENOTTY);
                 }
                 return stream.stream_ops.ioctl(stream, cmd, arg);
             },
-            readFile: function(path, opts) {
+            readFile: function (path, opts) {
                 opts = opts || {};
                 opts.flags = opts.flags || 'r';
                 opts.encoding = opts.encoding || 'binary';
@@ -2815,7 +2817,7 @@ class LibTiMidity {
                 FS.close(stream);
                 return ret;
             },
-            writeFile: function(path, data, opts) {
+            writeFile: function (path, data, opts) {
                 opts = opts || {};
                 opts.flags = opts.flags || 'w';
                 opts.encoding = opts.encoding || 'utf8';
@@ -2833,10 +2835,10 @@ class LibTiMidity {
                 }
                 FS.close(stream);
             },
-            cwd: function() {
+            cwd: function () {
                 return FS.currentPath;
             },
-            chdir: function(path) {
+            chdir: function (path) {
                 const lookup = FS.lookupPath(path, { follow: true });
                 if (!FS.isDir(lookup.node.mode)) {
                     throw new FS.ErrnoError(ERRNO_CODES.ENOTDIR);
@@ -2847,20 +2849,20 @@ class LibTiMidity {
                 }
                 FS.currentPath = lookup.path;
             },
-            createDefaultDirectories: function() {
+            createDefaultDirectories: function () {
                 FS.mkdir('/tmp');
             },
-            createDefaultDevices: function() {
+            createDefaultDevices: function () {
                 // create /dev
                 FS.mkdir('/dev');
                 // setup /dev/null
                 FS.registerDevice(FS.makedev(1, 3), {
-                    read: function() {
+                    read: function () {
                         return 0;
                     },
-                    write: function() {
+                    write: function () {
                         return 0;
-                    }
+                    },
                 });
                 FS.mkdev('/dev/null', FS.makedev(1, 3));
                 // setup /dev/tty and /dev/tty1
@@ -2875,7 +2877,7 @@ class LibTiMidity {
                 FS.mkdir('/dev/shm');
                 FS.mkdir('/dev/shm/tmp');
             },
-            createStandardStreams: function() {
+            createStandardStreams: function () {
                 // TODO deprecate the old functionality of a single
                 // input / output callback and that utilizes FS.createDevice
                 // and instead require a unique set of stream ops
@@ -2918,14 +2920,14 @@ class LibTiMidity {
                     'invalid handle for stderr (' + stderr.fd + ')'
                 );
             },
-            staticInit: function() {
+            staticInit: function () {
                 FS.nameTable = new Array(4096);
                 FS.root = FS.createNode(null, '/', 16384 | 0o777, 0);
                 FS.mount(MEMFS, {}, '/');
                 FS.createDefaultDirectories();
                 FS.createDefaultDevices();
             },
-            init: function(input, output, error) {
+            init: function (input, output, error) {
                 assert(
                     !FS.init.initialized,
                     'FS.init was previously called. If you want to initialize later with custom parameters, remove any earlier calls (note that one is automatically added to the generated code)'
@@ -2937,7 +2939,7 @@ class LibTiMidity {
                 Module['stderr'] = error || Module['stderr'];
                 FS.createStandardStreams();
             },
-            quit: function() {
+            quit: function () {
                 FS.init.initialized = false;
                 for (let i = 0; i < FS.streams.length; i++) {
                     const stream = FS.streams[i];
@@ -2947,24 +2949,24 @@ class LibTiMidity {
                     FS.close(stream);
                 }
             },
-            getMode: function(canRead, canWrite) {
+            getMode: function (canRead, canWrite) {
                 let mode = 0;
                 if (canRead) mode |= 292 | 73;
                 if (canWrite) mode |= 146;
                 return mode;
             },
-            joinPath: function(parts, forceRelative) {
+            joinPath: function (parts, forceRelative) {
                 let path = PATH.join.apply(null, parts);
                 if (forceRelative && path[0] == '/') path = path.substr(1);
                 return path;
             },
-            absolutePath: function(relative, base) {
+            absolutePath: function (relative, base) {
                 return PATH.resolve(base, relative);
             },
-            standardizePath: function(path) {
+            standardizePath: function (path) {
                 return PATH.normalize(path);
             },
-            findObject: function(path, dontResolveLastLink) {
+            findObject: function (path, dontResolveLastLink) {
                 const ret = FS.analyzePath(path, dontResolveLastLink);
                 if (ret.exists) {
                     return ret.object;
@@ -2973,11 +2975,11 @@ class LibTiMidity {
                     return null;
                 }
             },
-            analyzePath: function(path, dontResolveLastLink) {
+            analyzePath: function (path, dontResolveLastLink) {
                 // operate from within the context of the symlink's target
                 try {
                     var lookup = FS.lookupPath(path, {
-                        follow: !dontResolveLastLink
+                        follow: !dontResolveLastLink,
                     });
                     path = lookup.path;
                 } catch (e) {}
@@ -2990,7 +2992,7 @@ class LibTiMidity {
                     object: null,
                     parentExists: false,
                     parentPath: null,
-                    parentObject: null
+                    parentObject: null,
                 };
                 try {
                     var lookup = FS.lookupPath(path, { parent: true });
@@ -2999,7 +3001,7 @@ class LibTiMidity {
                     ret.parentObject = lookup.node;
                     ret.name = PATH.basename(path);
                     lookup = FS.lookupPath(path, {
-                        follow: !dontResolveLastLink
+                        follow: !dontResolveLastLink,
                     });
                     ret.exists = true;
                     ret.path = lookup.path;
@@ -3011,7 +3013,7 @@ class LibTiMidity {
                 }
                 return ret;
             },
-            createFolder: function(parent, name, canRead, canWrite) {
+            createFolder: function (parent, name, canRead, canWrite) {
                 const path = PATH.join(
                     typeof parent === 'string' ? parent : FS.getPath(parent),
                     name
@@ -3029,7 +3031,7 @@ class LibTiMidity {
              * @param {string} path The path to create.
              * @param {boolean} [throwError = true] If directory creation failed, throw an error.
              */
-            createPath: function(parent, path, throwError = true) {
+            createPath: function (parent, path, throwError = true) {
                 const parts = path.split('/').reverse();
                 while (parts.length) {
                     const part = parts.pop();
@@ -3056,7 +3058,7 @@ class LibTiMidity {
              * @param {boolean} canRead
              * @param {boolean} canWrite
              */
-            createFile: function(parent, name, canRead, canWrite) {
+            createFile: function (parent, name, canRead, canWrite) {
                 const path = PATH.join(
                     typeof parent === 'string' ? parent : FS.getPath(parent),
                     name
@@ -3079,7 +3081,7 @@ class LibTiMidity {
              * @param {boolean} [throwError = true] If file creation failed, throw an error.
              */
 
-            createDataFile: function(
+            createDataFile: function (
                 parent,
                 name,
                 data,
@@ -3135,7 +3137,7 @@ class LibTiMidity {
              * @param {string} filename The name of the instrument patch to load (including subfolder for drums).
              */
 
-            loadPatchFromUrl: async function(baseUrl, filename) {
+            loadPatchFromUrl: async function (baseUrl, filename) {
                 const response = await fetch(`${baseUrl}${filename}`);
                 if (response.status !== 200) {
                     throw new Error(JSON.stringify(response));
@@ -3155,7 +3157,7 @@ class LibTiMidity {
                 FS.chmod(path, mode);
             },
 
-            createDevice: function(parent, name, input, output) {
+            createDevice: function (parent, name, input, output) {
                 const path = PATH.join(
                     typeof parent === 'string' ? parent : FS.getPath(parent),
                     name
@@ -3165,16 +3167,16 @@ class LibTiMidity {
                 const dev = FS.makedev(FS.createDevice.major++, 0);
                 // Create a fake device that a set of stream ops to emulate he old behavior.
                 FS.registerDevice(dev, {
-                    open: function(stream) {
+                    open: function (stream) {
                         stream.seekable = false;
                     },
-                    close: function() {
+                    close: function () {
                         // flush any pending line data
                         if (output && output.buffer && output.buffer.length) {
                             output(10);
                         }
                     },
-                    read: function(stream, buffer, offset, length) {
+                    read: function (stream, buffer, offset, length) {
                         let bytesRead = 0;
                         for (let i = 0; i < length; i++) {
                             let result;
@@ -3195,7 +3197,7 @@ class LibTiMidity {
                         }
                         return bytesRead;
                     },
-                    write: function(stream, buffer, offset, length) {
+                    write: function (stream, buffer, offset, length) {
                         for (var i = 0; i < length; i++) {
                             try {
                                 output(buffer[offset + i]);
@@ -3207,18 +3209,18 @@ class LibTiMidity {
                             stream.node.timestamp = Date.now();
                         }
                         return i;
-                    }
+                    },
                 });
                 return FS.mkdev(path, mode, dev);
             },
-            createLink: function(parent, name, target) {
+            createLink: function (parent, name, target) {
                 const path = PATH.join(
                     typeof parent === 'string' ? parent : FS.getPath(parent),
                     name
                 );
                 return FS.symlink(target, path);
             },
-            createPreloadedFile: function(
+            createPreloadedFile: function (
                 parent,
                 name,
                 url,
@@ -3252,7 +3254,7 @@ class LibTiMidity {
                 addRunDependency('cp ' + fullname);
                 processData(url);
             },
-            indexedDB: function() {
+            indexedDB: function () {
                 return (
                     window.indexedDB ||
                     window.mozIndexedDB ||
@@ -3260,14 +3262,14 @@ class LibTiMidity {
                     window.msIndexedDB
                 );
             },
-            DB_NAME: function() {
+            DB_NAME: function () {
                 return 'EM_FS_' + window.location.pathname;
             },
             DB_VERSION: 20,
             DB_STORE_NAME: 'FILE_DATA',
-            saveFilesToDB: function(paths, onload, onerror) {
-                onload = onload || function() {};
-                onerror = onerror || function() {};
+            saveFilesToDB: function (paths, onload, onerror) {
+                onload = onload || function () {};
+                onerror = onerror || function () {};
                 const indexedDB = FS.indexedDB();
                 try {
                     var openRequest = indexedDB.open(
@@ -3277,11 +3279,11 @@ class LibTiMidity {
                 } catch (e) {
                     return onerror(e);
                 }
-                openRequest.onupgradeneeded = function() {
+                openRequest.onupgradeneeded = function () {
                     const db = openRequest.result;
                     db.createObjectStore(FS.DB_STORE_NAME);
                 };
-                openRequest.onsuccess = function() {
+                openRequest.onsuccess = function () {
                     const db = openRequest.result;
                     const transaction = db.transaction(
                         [FS.DB_STORE_NAME],
@@ -3295,16 +3297,16 @@ class LibTiMidity {
                         if (fail == 0) onload();
                         else onerror();
                     }
-                    paths.forEach(function(path) {
+                    paths.forEach(function (path) {
                         const putRequest = files.put(
                             FS.analyzePath(path).object.contents,
                             path
                         );
-                        putRequest.onsuccess = function() {
+                        putRequest.onsuccess = function () {
                             ok++;
                             if (ok + fail == total) finish();
                         };
-                        putRequest.onerror = function() {
+                        putRequest.onerror = function () {
                             fail++;
                             if (ok + fail == total) finish();
                         };
@@ -3313,9 +3315,9 @@ class LibTiMidity {
                 };
                 openRequest.onerror = onerror;
             },
-            loadFilesFromDB: function(paths, onload, onerror) {
-                onload = onload || function() {};
-                onerror = onerror || function() {};
+            loadFilesFromDB: function (paths, onload, onerror) {
+                onload = onload || function () {};
+                onerror = onerror || function () {};
                 const indexedDB = FS.indexedDB();
                 try {
                     var openRequest = indexedDB.open(
@@ -3326,7 +3328,7 @@ class LibTiMidity {
                     return onerror(e);
                 }
                 openRequest.onupgradeneeded = onerror; // no database to load from
-                openRequest.onsuccess = function() {
+                openRequest.onsuccess = function () {
                     const db = openRequest.result;
                     try {
                         var transaction = db.transaction(
@@ -3345,9 +3347,9 @@ class LibTiMidity {
                         if (fail == 0) onload();
                         else onerror();
                     }
-                    paths.forEach(function(path) {
+                    paths.forEach(function (path) {
                         const getRequest = files.get(path);
-                        getRequest.onsuccess = function() {
+                        getRequest.onsuccess = function () {
                             if (FS.analyzePath(path).exists) {
                                 FS.unlink(path);
                             }
@@ -3362,7 +3364,7 @@ class LibTiMidity {
                             ok++;
                             if (ok + fail == total) finish();
                         };
-                        getRequest.onerror = function() {
+                        getRequest.onerror = function () {
                             fail++;
                             if (ok + fail == total) finish();
                         };
@@ -3370,7 +3372,7 @@ class LibTiMidity {
                     transaction.onerror = onerror;
                 };
                 openRequest.onerror = onerror;
-            }
+            },
         };
         function _open(path, oflag, varargs) {
             // int open(const char *path, int oflag, ...);
@@ -3427,10 +3429,10 @@ class LibTiMidity {
         Module['_strcpy'] = _strcpy;
         Module['_strcat'] = _strcat;
         const SOCKFS = {
-            mount: function() {
+            mount: function () {
                 return FS.createNode(null, '/', 16384 | 0o777, 0);
             },
-            createSocket: function(family, type, protocol) {
+            createSocket: function (family, type, protocol) {
                 const streaming = type == 1;
                 if (protocol) {
                     assert(streaming == (protocol == 6)); // if SOCK_STREAM, must be tcp
@@ -3444,7 +3446,7 @@ class LibTiMidity {
                     peers: {},
                     pending: [],
                     recv_queue: [],
-                    sock_ops: SOCKFS.websocket_sock_ops
+                    sock_ops: SOCKFS.websocket_sock_ops,
                 };
                 // create the filesystem node to store the socket structure
                 const name = SOCKFS.nextname();
@@ -3456,13 +3458,13 @@ class LibTiMidity {
                     node: node,
                     flags: FS.modeStringToFlags('r+'),
                     seekable: false,
-                    stream_ops: SOCKFS.stream_ops
+                    stream_ops: SOCKFS.stream_ops,
                 });
                 // map the new stream to the socket structure (sockets have a 1:1 relationship with a stream)
                 sock.stream = stream;
                 return sock;
             },
-            getSocket: function(fd) {
+            getSocket: function (fd) {
                 const stream = FS.getStream(fd);
                 if (!stream || !FS.isSocket(stream.node.mode)) {
                     return null;
@@ -3470,15 +3472,15 @@ class LibTiMidity {
                 return stream.node.sock;
             },
             stream_ops: {
-                poll: function(stream) {
+                poll: function (stream) {
                     const sock = stream.node.sock;
                     return sock.sock_ops.poll(sock);
                 },
-                ioctl: function(stream, request, varargs) {
+                ioctl: function (stream, request, varargs) {
                     const sock = stream.node.sock;
                     return sock.sock_ops.ioctl(sock, request, varargs);
                 },
-                read: function(stream, buffer, offset, length) {
+                read: function (stream, buffer, offset, length) {
                     const sock = stream.node.sock;
                     const msg = sock.sock_ops.recvmsg(sock, length);
                     if (!msg) {
@@ -3488,23 +3490,23 @@ class LibTiMidity {
                     buffer.set(msg.buffer, offset);
                     return msg.buffer.length;
                 },
-                write: function(stream, buffer, offset, length) {
+                write: function (stream, buffer, offset, length) {
                     const sock = stream.node.sock;
                     return sock.sock_ops.sendmsg(sock, buffer, offset, length);
                 },
-                close: function(stream) {
+                close: function (stream) {
                     const sock = stream.node.sock;
                     sock.sock_ops.close(sock);
-                }
+                },
             },
-            nextname: function() {
+            nextname: function () {
                 if (!SOCKFS.nextname.current) {
                     SOCKFS.nextname.current = 0;
                 }
                 return 'socket[' + SOCKFS.nextname.current++ + ']';
             },
             websocket_sock_ops: {
-                createPeer: function(sock, addr, port) {
+                createPeer: function (sock, addr, port) {
                     let ws;
                     if (typeof addr === 'object') {
                         ws = addr;
@@ -3546,7 +3548,7 @@ class LibTiMidity {
                         addr: addr,
                         port: port,
                         socket: ws,
-                        dgram_send_queue: []
+                        dgram_send_queue: [],
                     };
                     SOCKFS.websocket_sock_ops.addPeer(sock, peer);
                     SOCKFS.websocket_sock_ops.handlePeerEvents(sock, peer);
@@ -3565,24 +3567,24 @@ class LibTiMidity {
                                 'r'.charCodeAt(0),
                                 't'.charCodeAt(0),
                                 (sock.sport & 0xff00) >> 8,
-                                sock.sport & 0xff
+                                sock.sport & 0xff,
                             ])
                         );
                     }
                     return peer;
                 },
-                getPeer: function(sock, addr, port) {
+                getPeer: function (sock, addr, port) {
                     return sock.peers[addr + ':' + port];
                 },
-                addPeer: function(sock, peer) {
+                addPeer: function (sock, peer) {
                     sock.peers[peer.addr + ':' + peer.port] = peer;
                 },
-                removePeer: function(sock, peer) {
+                removePeer: function (sock, peer) {
                     delete sock.peers[peer.addr + ':' + peer.port];
                 },
-                handlePeerEvents: function(sock, peer) {
+                handlePeerEvents: function (sock, peer) {
                     let first = true;
-                    const handleOpen = function() {
+                    const handleOpen = function () {
                         try {
                             let queued = peer.dgram_send_queue.shift();
                             while (queued) {
@@ -3595,7 +3597,7 @@ class LibTiMidity {
                             peer.socket.close();
                         }
                     };
-                    const handleMessage = function(data) {
+                    const handleMessage = function (data) {
                         assert(
                             typeof data !== 'string' &&
                                 data.byteLength !== undefined
@@ -3626,15 +3628,15 @@ class LibTiMidity {
                         sock.recv_queue.push({
                             addr: peer.addr,
                             port: peer.port,
-                            data: data
+                            data: data,
                         });
                     };
                     peer.socket.onopen = handleOpen;
-                    peer.socket.onmessage = function(event) {
+                    peer.socket.onmessage = function (event) {
                         handleMessage(event.data);
                     };
                 },
-                poll: function(sock) {
+                poll: function (sock) {
                     if (sock.type === 1 && sock.server) {
                         // listen sockets should only say they're available for reading
                         // if there are pending clients.
@@ -3674,7 +3676,7 @@ class LibTiMidity {
                     }
                     return mask;
                 },
-                ioctl: function(sock, request, arg) {
+                ioctl: function (sock, request, arg) {
                     switch (request) {
                         case 21531:
                             let bytes = 0;
@@ -3687,7 +3689,7 @@ class LibTiMidity {
                             return ERRNO_CODES.EINVAL;
                     }
                 },
-                close: function(sock) {
+                close: function (sock) {
                     // if we've spawned a listen server, close it
                     if (sock.server) {
                         try {
@@ -3706,7 +3708,7 @@ class LibTiMidity {
                     }
                     return 0;
                 },
-                bind: function(sock, addr, port) {
+                bind: function (sock, addr, port) {
                     if (
                         typeof sock.saddr !== 'undefined' ||
                         typeof sock.sport !== 'undefined'
@@ -3733,7 +3735,7 @@ class LibTiMidity {
                         }
                     }
                 },
-                connect: function(sock, addr, port) {
+                connect: function (sock, addr, port) {
                     if (sock.server) {
                         throw new FS.ErrnoError(ERRNO_CODS.EOPNOTSUPP);
                     }
@@ -3768,7 +3770,7 @@ class LibTiMidity {
                     // always "fail" in non-blocking mode
                     throw new FS.ErrnoError(ERRNO_CODES.EINPROGRESS);
                 },
-                listen: function(sock) {
+                listen: function (sock) {
                     if (sock.server) {
                         throw new FS.ErrnoError(ERRNO_CODES.EINVAL); // already listening
                     }
@@ -3776,9 +3778,9 @@ class LibTiMidity {
                     const host = sock.saddr;
                     sock.server = new WebSocketServer({
                         host: host,
-                        port: sock.sport
+                        port: sock.sport,
                     });
-                    sock.server.on('connection', function(ws) {
+                    sock.server.on('connection', function (ws) {
                         if (sock.type === 1) {
                             const newsock = SOCKFS.createSocket(
                                 sock.family,
@@ -3799,14 +3801,14 @@ class LibTiMidity {
                             SOCKFS.websocket_sock_ops.createPeer(sock, ws);
                         }
                     });
-                    sock.server.on('closed', function() {
+                    sock.server.on('closed', function () {
                         sock.server = null;
                     });
-                    sock.server.on('error', function() {
+                    sock.server.on('error', function () {
                         // don't throw
                     });
                 },
-                accept: function(listensock) {
+                accept: function (listensock) {
                     if (!listensock.server) {
                         throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
                     }
@@ -3814,7 +3816,7 @@ class LibTiMidity {
                     newsock.stream.flags = listensock.stream.flags;
                     return newsock;
                 },
-                getname: function(sock, peer) {
+                getname: function (sock, peer) {
                     let addr, port;
                     if (peer) {
                         if (
@@ -3831,7 +3833,7 @@ class LibTiMidity {
                     }
                     return { addr: addr, port: port };
                 },
-                sendmsg: function(sock, buffer, offset, length, addr, port) {
+                sendmsg: function (sock, buffer, offset, length, addr, port) {
                     if (sock.type === 2) {
                         // connection-less sockets will honor the message address, and otherwise fall back to the bound destination address
                         if (addr === undefined || port === undefined) {
@@ -3912,7 +3914,7 @@ class LibTiMidity {
                         throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
                     }
                 },
-                recvmsg: function(sock, length) {
+                recvmsg: function (sock, length) {
                     // http://pubs.opengroup.org/onlinepubs/7908799/xns/recvmsg.html
                     if (sock.type === 1 && sock.server) {
                         // tcp servers should not be recv()'ing on the listen socket
@@ -3957,7 +3959,7 @@ class LibTiMidity {
                             bytesRead
                         ),
                         addr: queued.addr,
-                        port: queued.port
+                        port: queued.port,
                     };
                     // push back any unread data for TCP connections
                     if (sock.type === 1 && bytesRead < queuedLength) {
@@ -3970,8 +3972,8 @@ class LibTiMidity {
                         sock.recv_queue.unshift(queued);
                     }
                     return res;
-                }
-            }
+                },
+            },
         };
         function _send(fd, buf, len) {
             const sock = SOCKFS.getSocket(fd);
@@ -4042,7 +4044,7 @@ class LibTiMidity {
                 } else if (type == 'i64') {
                     ret = [
                         HEAP32[(varargs + argIndex) >> 2],
-                        HEAP32[(varargs + (argIndex + 8)) >> 2]
+                        HEAP32[(varargs + (argIndex + 8)) >> 2],
                     ];
                     argIndex += 8; // each 32-bit chunk is in a 64-bit block
                 } else {
@@ -4315,7 +4317,7 @@ class LibTiMidity {
                             }
                             // Insert the result into the buffer.
                             argText = prefix + argText;
-                            argText.split('').forEach(function(chr) {
+                            argText.split('').forEach(function (chr) {
                                 ret.push(chr.charCodeAt(0));
                             });
                             break;
@@ -4451,7 +4453,7 @@ class LibTiMidity {
                             // Adjust case.
                             if (next < 97) argText = argText.toUpperCase();
                             // Insert the result into the buffer.
-                            argText.split('').forEach(function(chr) {
+                            argText.split('').forEach(function (chr) {
                                 ret.push(chr.charCodeAt(0));
                             });
                             break;
@@ -4882,7 +4884,7 @@ class LibTiMidity {
                 self.called = true;
                 assert(Runtime.dynamicAlloc);
                 self.alloc = Runtime.dynamicAlloc;
-                Runtime.dynamicAlloc = function() {
+                Runtime.dynamicAlloc = function () {
                     abort('cannot dynamically allocate, sbrk now has control');
                 };
             }
@@ -5056,19 +5058,19 @@ class LibTiMidity {
 
         FS.staticInit();
         __ATINIT__.unshift({
-            func: function() {
+            func: function () {
                 if (!Module['noFSInit'] && !FS.init.initialized) FS.init();
-            }
+            },
         });
         __ATMAIN__.push({
-            func: function() {
+            func: function () {
                 FS.ignorePermissions = false;
-            }
+            },
         });
         __ATEXIT__.push({
-            func: function() {
+            func: function () {
                 FS.quit();
-            }
+            },
         });
 
         Module['FS_createFolder'] = FS.createFolder;
@@ -5082,20 +5084,20 @@ class LibTiMidity {
         ___errno_state = Runtime.staticAlloc(4);
         HEAP32[___errno_state >> 2] = 0;
         __ATINIT__.unshift({
-            func: function() {
+            func: function () {
                 TTY.init();
-            }
+            },
         });
         __ATEXIT__.push({
-            func: function() {
+            func: function () {
                 TTY.shutdown();
-            }
+            },
         });
         TTY.utf8 = new Runtime.UTF8Processor();
         __ATINIT__.push({
-            func: function() {
+            func: function () {
                 SOCKFS.root = FS.mount(SOCKFS, {}, null);
-            }
+            },
         });
         ___strtok_state = Runtime.staticAlloc(4);
         STACK_BASE = STACKTOP = Runtime.alignMemory(STATICTOP);
@@ -5168,7 +5170,7 @@ class LibTiMidity {
 
         // EMSCRIPTEN_START_ASM
 
-        var asm = (function(global, env, buffer) {
+        var asm = (function (global, env, buffer) {
             'use asm';
             let a = new global.Int8Array(buffer);
             let b = new global.Int16Array(buffer);
@@ -17362,7 +17364,7 @@ class LibTiMidity {
                 dh,
                 dh,
                 dh,
-                dh
+                dh,
             ];
             var a_ = [di, di];
             var a$ = [dj, dj];
@@ -17409,7 +17411,7 @@ class LibTiMidity {
                 dynCall_iiiii: da,
                 dynCall_viii: db,
                 dynCall_v: dc,
-                dynCall_iii: dd
+                dynCall_iii: dd,
             };
         })(
             // EMSCRIPTEN_END_ASM
@@ -17423,7 +17425,7 @@ class LibTiMidity {
                 Uint16Array: Uint16Array,
                 Uint32Array: Uint32Array,
                 Float32Array: Float32Array,
-                Float64Array: Float64Array
+                Float64Array: Float64Array,
             },
             {
                 abort: abort,
@@ -17481,7 +17483,7 @@ class LibTiMidity {
                 ABORT: ABORT,
                 NaN: NaN,
                 Infinity: Infinity,
-                _stderr: _stderr
+                _stderr: _stderr,
             },
             buffer
         );
@@ -17518,13 +17520,13 @@ class LibTiMidity {
         Module['dynCall_v'] = asm['dynCall_v'];
         Module['dynCall_iii'] = asm['dynCall_iii'];
 
-        Runtime.stackAlloc = function(size) {
+        Runtime.stackAlloc = function (size) {
             return asm['stackAlloc'](size);
         };
-        Runtime.stackSave = function() {
+        Runtime.stackSave = function () {
             return asm['stackSave']();
         };
-        Runtime.stackRestore = function(top) {
+        Runtime.stackRestore = function (top) {
             asm['stackRestore'](top);
         };
 
@@ -17570,7 +17572,7 @@ class LibTiMidity {
                     intArrayFromString('/bin/this.program'),
                     'i8',
                     ALLOC_NORMAL
-                )
+                ),
             ];
             pad();
             for (var i = 0; i < argc - 1; i = i + 1) {
@@ -17626,8 +17628,8 @@ class LibTiMidity {
             }
             if (Module['setStatus']) {
                 Module['setStatus']('Running...');
-                setTimeout(function() {
-                    setTimeout(function() {
+                setTimeout(function () {
+                    setTimeout(function () {
                         Module['setStatus']('');
                     }, 1);
                     if (!ABORT) doRun();
@@ -17648,7 +17650,7 @@ class LibTiMidity {
          * @param {boolean} [throwError = true] Throw an error if file/folder creation failed.
          * @instance
          */
-        Module.init = function(throwError = true) {
+        Module.init = function (throwError = true) {
             // creates folders for instrument patches
             Module.createPath('/', LIBTIMIDITY_PATCH_DIRECTORY, throwError);
             Module.createPath(
