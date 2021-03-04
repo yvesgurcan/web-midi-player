@@ -6,7 +6,7 @@ import {
     LIBTIMIDITY_ERROR_CODES as ERRNO_CODES,
     LIBTIMIDITY_ERROR_MESSAGES as ERRNO_MESSAGES,
     MEMORY_ALLOCATION
-} from './constants';
+} from './constants.js';
 
 // https://github.com/kripken/emscripten/wiki/
 
@@ -8390,6 +8390,54 @@ class LibTiMidity {
                 cl(d, a);
                 return;
             }
+            /**
+             * Get Total Play Time
+             * @param {any} $0
+             * Usage: totalTime = LibTiMidity.call( "mid_song_get_total_time", "number", ["number"], [this.song])/1e3
+             */
+            function _mid_song_get_total_time($0) {
+                $0 = $0 | 0;
+                var $1 = 0, $10 = 0, $11 = 0, $12 = 0, $13 = 0, $14 = 0, $15 = 0, $16 = 0, $17 = 0, $18 = 0, $19 = 0, $2 = 0, $20 = 0, $21 = 0, $22 = 0, $23 = 0, $24 = 0, $25 = 0, $26 = 0, $27 = 0;
+                var $28 = 0, $29 = 0, $3 = 0, $30 = 0, $31 = 0, $32 = 0, $4 = 0, $5 = 0, $6 = 0, $7 = 0, $8 = 0, $9 = 0, label = 0, sp = 0;
+                sp = STACKTOP;
+                STACKTOP = STACKTOP + 16 | 0; if ((STACKTOP | 0) >= (STACK_MAX | 0)) abortStackOverflow(16 | 0);
+                $1 = $0;
+                $4 = $1; //@line 743 "playmidi.c"
+                $5 = ((($4)) + 13100 | 0); //@line 743 "playmidi.c"
+                $6 = HEAP32[$5 >> 2] | 0; //@line 743 "playmidi.c"
+                $7 = (($6) - 1) | 0; //@line 743 "playmidi.c"
+                $8 = $1; //@line 743 "playmidi.c"
+                $9 = ((($8)) + 13076 | 0); //@line 743 "playmidi.c"
+                $10 = HEAP32[$9 >> 2] | 0; //@line 743 "playmidi.c"
+                $11 = (($10) + ($7 << 3) | 0); //@line 743 "playmidi.c"
+                $2 = $11; //@line 743 "playmidi.c"
+                $12 = $2; //@line 745 "playmidi.c"
+                $13 = HEAP32[$12 >> 2] | 0; //@line 745 "playmidi.c"
+                $14 = $1; //@line 745 "playmidi.c"
+                $15 = ((($14)) + 4 | 0); //@line 745 "playmidi.c"
+                $16 = HEAP32[$15 >> 2] | 0; //@line 745 "playmidi.c"
+                $17 = (($13 | 0) / ($16 | 0)) & -1; //@line 745 "playmidi.c"
+                $18 = ($17 * 1000) | 0; //@line 745 "playmidi.c"
+                $3 = $18; //@line 745 "playmidi.c"
+                $19 = $2; //@line 746 "playmidi.c"
+                $20 = HEAP32[$19 >> 2] | 0; //@line 746 "playmidi.c"
+                $21 = $1; //@line 746 "playmidi.c"
+                $22 = ((($21)) + 4 | 0); //@line 746 "playmidi.c"
+                $23 = HEAP32[$22 >> 2] | 0; //@line 746 "playmidi.c"
+                $24 = (($20 | 0) % ($23 | 0)) & -1; //@line 746 "playmidi.c"
+                $25 = ($24 * 1000) | 0; //@line 746 "playmidi.c"
+                $26 = $1; //@line 746 "playmidi.c"
+                $27 = ((($26)) + 4 | 0); //@line 746 "playmidi.c"
+                $28 = HEAP32[$27 >> 2] | 0; //@line 746 "playmidi.c"
+                $29 = (($25 | 0) / ($28 | 0)) & -1; //@line 746 "playmidi.c"
+                $30 = $3; //@line 746 "playmidi.c"
+                $31 = (($30) + ($29)) | 0; //@line 746 "playmidi.c"
+                $3 = $31; //@line 746 "playmidi.c"
+                $32 = $3; //@line 747 "playmidi.c"
+                STACKTOP = sp; return ($32 | 0); //@line 747 "playmidi.c"
+            }//2021 03 NormalUniversity
+
+
             function b6(b, e, f, h) {
                 b = b | 0;
                 e = e | 0;
@@ -17373,6 +17421,7 @@ class LibTiMidity {
                 _mid_istream_open_mem: cO,
                 _mid_istream_open_file: cN,
                 _mid_song_read_wave: b6,
+                _mid_song_get_total_time: _mid_song_get_total_time,
                 _mid_exit: cZ,
                 _mid_song_note_on: b0,
                 _strncpy: c7,
@@ -17502,6 +17551,7 @@ class LibTiMidity {
         Module['_mid_song_free'] = asm['_mid_song_free'];
         Module['_mid_init'] = asm['_mid_init'];
         Module['_mid_song_load'] = asm['_mid_song_load'];
+        Module['_mid_song_get_total_time'] = asm['_mid_song_get_total_time']; //Total Play Time 2021 03 NormalUniversity
         Module['_mid_song_start'] = asm['_mid_song_start'];
         Module['_mid_song_get_num_missing_instruments'] =
             asm['_mid_song_get_num_missing_instruments'];
