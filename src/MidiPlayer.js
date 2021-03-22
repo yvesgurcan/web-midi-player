@@ -624,4 +624,35 @@ not.
         this.logging = logging;
         this.eventHandler.setLogger({ eventLogger, logging });
     }
+    /*
+     * get total duration time
+     * 2021 03 NormalUniversity
+     */
+    getDuration() {
+
+        return this.totalTime;
+    }
+    /**
+     * Seek Position.
+     * @param {any} [mSecond] milli seconds to be seek
+     * @example
+     *  midiPlayer = new MidiPlayer({ logging: false, patchUrl: 'lib/pat/' });
+     *  midiPlayer.seek({ mSecond: mSeconds });
+     */
+    async seek({ mSecond}) {
+        if (this.totalTime>0) {
+            let _mSecond = this.sampleRate * mSecond;
+            LibTiMidity.call('mid_song_seek', 'void', ['number', 'number'], [this.song, _mSecond]);
+            try {
+                this.startTime = this.context.currentTime-mSecond/1000;
+            } catch (error) {
+                this.eventHandler.emitError({
+                    message: 'Could not seek playback.',
+                    error
+                });
+                return;
+            }    
+            return;
+        }
+    }
 }
