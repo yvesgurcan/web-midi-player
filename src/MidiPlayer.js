@@ -636,8 +636,9 @@ not.
      * Seek Position.
      * @param {any} [mSecond] milli seconds to be seek
      * @example
-     *  midiPlayer = new MidiPlayer({ logging: false, patchUrl: 'lib/pat/' });
-     *  midiPlayer.seek({ mSecond: mSeconds });
+     *  let midiPlayer = new MidiPlayer({ logging: false, patchUrl: 'lib/pat/' });
+     *  midiPlayer.play({url: $url})
+     *  midiPlayer.seek({mSecond: $milliSeconds});
      */
     async seek({ mSecond}) {
         if (this.totalTime>0) {
