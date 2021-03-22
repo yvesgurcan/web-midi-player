@@ -71,6 +71,7 @@ not.
             this.patchUrl = patchUrl;
             this.volume = volume;
             this.startTime = 0;
+            this.totalTime = 0; //Total Play Time 2021 03 Normal University
 
             LibTiMidity.init(isFirstInstance);
 
