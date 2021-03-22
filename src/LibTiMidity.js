@@ -23,13 +23,13 @@ class LibTiMidity {
      */
     constructor() {
         const Runtime = {
-            stackSave: function() {
+            stackSave: function () {
                 return STACKTOP;
             },
-            stackRestore: function(stackTop) {
+            stackRestore: function (stackTop) {
                 STACKTOP = stackTop;
             },
-            isNumberType: function(type) {
+            isNumberType: function (type) {
                 return type in INT_TYPES || type in FLOAT_TYPES;
             },
             isPointerType: function isPointerType(type) {
@@ -42,7 +42,7 @@ class LibTiMidity {
                 // See comment in isStructPointerType()
                 return type[0] == '%';
             },
-            getNativeTypeSize: function(type) {
+            getNativeTypeSize: function (type) {
                 switch (type) {
                     case 'i1':
                     case 'i8':
@@ -68,7 +68,7 @@ class LibTiMidity {
                     }
                 }
             },
-            getNativeFieldSize: function(type) {
+            getNativeFieldSize: function (type) {
                 return Math.max(
                     Runtime.getNativeTypeSize(type),
                     Runtime.QUANTUM_SIZE
@@ -77,13 +77,13 @@ class LibTiMidity {
             dedup: function dedup(items, ident) {
                 const seen = {};
                 if (ident) {
-                    return items.filter(function(item) {
+                    return items.filter(function (item) {
                         if (seen[item[ident]]) return false;
                         seen[item[ident]] = true;
                         return true;
                     });
                 } else {
-                    return items.filter(function(item) {
+                    return items.filter(function (item) {
                         if (seen[item]) return false;
                         seen[item] = true;
                         return true;
@@ -99,7 +99,7 @@ class LibTiMidity {
                 }
                 return ret;
             },
-            getAlignSize: function(type, size, vararg) {
+            getAlignSize: function (type, size, vararg) {
                 // we align i64s and doubles on 64-bit boundaries, unlike x86
                 if (type == 'i64' || type == 'double' || vararg) return 8;
                 if (!type) return Math.min(size, 8); // align structures internally to 64 bits
@@ -113,7 +113,7 @@ class LibTiMidity {
                 type.alignSize = 0;
                 const diffs = [];
                 let prev = -1;
-                type.flatIndexes = type.fields.map(function(field) {
+                type.flatIndexes = type.fields.map(function (field) {
                     let size, alignSize;
                     if (
                         Runtime.isNumberType(field) ||
@@ -147,11 +147,11 @@ class LibTiMidity {
                         alignSize = 1;
                     } else {
                         throw 'Unclear type in struct: ' +
-                            field +
-                            ', in ' +
-                            type.name_ +
-                            ' :: ' +
-                            dump(Types.types[type.name_]);
+                        field +
+                        ', in ' +
+                        type.name_ +
+                        ' :: ' +
+                        dump(Types.types[type.name_]);
                     }
                     if (type.packed) alignSize = 1;
                     type.alignSize = Math.max(type.alignSize, alignSize);
@@ -175,7 +175,7 @@ class LibTiMidity {
                 type.needsFlattening = type.flatFactor != 1;
                 return type.flatIndexes;
             },
-            generateStructInfo: function(struct, typeName, offset) {
+            generateStructInfo: function (struct, typeName, offset) {
                 var type, alignment;
                 if (typeName) {
                     offset = offset || 0;
@@ -186,15 +186,15 @@ class LibTiMidity {
                     if (type.fields.length != struct.length) {
                         console.warn(
                             'Number of named fields must match the type for ' +
-                                typeName +
-                                ': possibly duplicate struct names. Cannot return structInfo'
+                            typeName +
+                            ': possibly duplicate struct names. Cannot return structInfo'
                         );
                         return null;
                     }
                     alignment = type.flatIndexes;
                 } else {
                     var type = {
-                        fields: struct.map(function(item) {
+                        fields: struct.map(function (item) {
                             return item[0];
                         })
                     };
@@ -204,7 +204,7 @@ class LibTiMidity {
                     __size__: type.flatSize
                 };
                 if (typeName) {
-                    struct.forEach(function(item, i) {
+                    struct.forEach(function (item, i) {
                         if (typeof item === 'string') {
                             ret[item] = alignment[i] + offset;
                         } else {
@@ -219,13 +219,13 @@ class LibTiMidity {
                         }
                     });
                 } else {
-                    struct.forEach(function(item, i) {
+                    struct.forEach(function (item, i) {
                         ret[item[1]] = alignment[i];
                     });
                 }
                 return ret;
             },
-            dynCall: function(sig, ptr, args) {
+            dynCall: function (sig, ptr, args) {
                 if (args && args.length) {
                     if (!args.splice) args = Array.prototype.slice.call(args);
                     args.splice(0, 0, ptr);
@@ -234,10 +234,10 @@ class LibTiMidity {
                     return Module['dynCall_' + sig].call(null, ptr);
                 }
             },
-            UTF8Processor: function() {
+            UTF8Processor: function () {
                 const buffer = [];
                 let needed = 0;
-                this.processCChar = function(code) {
+                this.processCChar = function (code) {
                     code = code & 0xff;
                     if (buffer.length == 0) {
                         if ((code & 0x80) == 0x00) {
@@ -274,8 +274,8 @@ class LibTiMidity {
                     } else if (buffer.length == 3) {
                         ret = String.fromCharCode(
                             ((c1 & 0x0f) << 12) |
-                                ((c2 & 0x3f) << 6) |
-                                (c3 & 0x3f)
+                            ((c2 & 0x3f) << 6) |
+                            (c3 & 0x3f)
                         );
                     } else {
                         // http://mathiasbynens.be/notes/javascript-encoding#surrogate-formulae
@@ -292,7 +292,7 @@ class LibTiMidity {
                     buffer.length = 0;
                     return ret;
                 };
-                this.processJSString = function(string) {
+                this.processJSString = function (string) {
                     string = unescape(encodeURIComponent(string));
                     const ret = [];
                     for (let i = 0; i < string.length; i++) {
@@ -301,19 +301,19 @@ class LibTiMidity {
                     return ret;
                 };
             },
-            stackAlloc: function(size) {
+            stackAlloc: function (size) {
                 const ret = STACKTOP;
                 STACKTOP = (STACKTOP + size) | 0;
                 STACKTOP = (STACKTOP + 7) & -8;
                 return ret;
             },
-            staticAlloc: function(size) {
+            staticAlloc: function (size) {
                 const ret = STATICTOP;
                 STATICTOP = (STATICTOP + size) | 0;
                 STATICTOP = (STATICTOP + 7) & -8;
                 return ret;
             },
-            dynamicAlloc: function(size) {
+            dynamicAlloc: function (size) {
                 const ret = DYNAMICTOP;
                 DYNAMICTOP = (DYNAMICTOP + size) | 0;
                 DYNAMICTOP = (DYNAMICTOP + 7) & -8;
@@ -324,13 +324,13 @@ class LibTiMidity {
 
                 return ret;
             },
-            alignMemory: function(size, quantum) {
+            alignMemory: function (size, quantum) {
                 const ret = (size =
                     Math.ceil(size / (quantum ? quantum : 8)) *
                     (quantum ? quantum : 8));
                 return ret;
             },
-            makeBigInt: function(low, high, unsigned) {
+            makeBigInt: function (low, high, unsigned) {
                 const ret = unsigned
                     ? +(low >>> 0) + +(high >>> 0) * +4294967296
                     : +(low >>> 0) + +(high | 0) * +4294967296;
@@ -358,9 +358,9 @@ class LibTiMidity {
 
         assert(
             typeof Int32Array !== 'undefined' &&
-                typeof Float64Array !== 'undefined' &&
-                !!new Int32Array(1)['subarray'] &&
-                !!new Int32Array(1)['set'],
+            typeof Float64Array !== 'undefined' &&
+            !!new Int32Array(1)['subarray'] &&
+            !!new Int32Array(1)['set'],
             'Typed arrays not supported.'
         );
 
@@ -401,14 +401,14 @@ class LibTiMidity {
             Module['arguments'] = [];
         }
 
-        Module.read = function(url) {
+        Module.read = function (url) {
             const xhr = new XMLHttpRequest();
             xhr.open('GET', url, false);
             xhr.send(null);
             return xhr.responseText;
         };
 
-        Module.print = function(message) {
+        Module.print = function (message) {
             console.log(message);
         };
 
@@ -523,9 +523,9 @@ class LibTiMidity {
 
             let i = 0;
             const cArgs = args
-                ? args.map(function(arg) {
-                      return toC(arg, argTypes[i++]);
-                  })
+                ? args.map(function (arg) {
+                    return toC(arg, argTypes[i++]);
+                })
                 : [];
             var ret = fromC(func.apply(null, cArgs), returnType);
             if (stack) Runtime.stackRestore(stack);
@@ -561,19 +561,19 @@ class LibTiMidity {
                     (tempI64 = [
                         value >>> 0,
                         ((tempDouble = value),
-                        +Math_abs(tempDouble) >= +1
-                            ? tempDouble > +0
-                                ? (Math_min(
-                                      +Math_floor(tempDouble / +4294967296),
-                                      +4294967295
-                                  ) |
-                                      0) >>>
-                                  0
-                                : ~~+Math_ceil(
-                                      (tempDouble - +(~~tempDouble >>> 0)) /
-                                          +4294967296
-                                  ) >>> 0
-                            : 0)
+                            +Math_abs(tempDouble) >= +1
+                                ? tempDouble > +0
+                                    ? (Math_min(
+                                        +Math_floor(tempDouble / +4294967296),
+                                        +4294967295
+                                    ) |
+                                        0) >>>
+                                    0
+                                    : ~~+Math_ceil(
+                                        (tempDouble - +(~~tempDouble >>> 0)) /
+                                        +4294967296
+                                    ) >>> 0
+                                : 0)
                     ]),
                         (HEAP32[ptr >> 2] = tempI64[0]),
                         (HEAP32[(ptr + 4) >> 2] = tempI64[1]);
@@ -1136,7 +1136,7 @@ class LibTiMidity {
         }
 
         if (!Math['imul'])
-            Math['imul'] = function(a, b) {
+            Math['imul'] = function (a, b) {
                 const ah = a >>> 16;
                 const al = a & 0xffff;
                 const bh = b >>> 16;
@@ -1225,7 +1225,7 @@ class LibTiMidity {
         STATIC_BASE = 8;
         STATICTOP = STATIC_BASE + 8448;
         /* global initializers */ __ATINIT__.push({
-            func: function() {
+            func: function () {
                 runPostSets();
             }
         });
@@ -1252,11 +1252,11 @@ class LibTiMidity {
         }
 
         const PATH = {
-            splitPath: function(filename) {
+            splitPath: function (filename) {
                 const splitPathRe = /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
                 return splitPathRe.exec(filename).slice(1);
             },
-            normalizeArray: function(parts, allowAboveRoot) {
+            normalizeArray: function (parts, allowAboveRoot) {
                 // if the path tries to go above the root, `up` ends up > 0
                 let up = 0;
                 for (let i = parts.length - 1; i >= 0; i--) {
@@ -1279,12 +1279,12 @@ class LibTiMidity {
                 }
                 return parts;
             },
-            normalize: function(path) {
+            normalize: function (path) {
                 const isAbsolute = path.charAt(0) === '/',
                     trailingSlash = path.substr(-1) === '/';
                 // Normalize the path
                 path = PATH.normalizeArray(
-                    path.split('/').filter(function(p) {
+                    path.split('/').filter(function (p) {
                         return !!p;
                     }),
                     !isAbsolute
@@ -1297,7 +1297,7 @@ class LibTiMidity {
                 }
                 return (isAbsolute ? '/' : '') + path;
             },
-            dirname: function(path) {
+            dirname: function (path) {
                 let result = PATH.splitPath(path),
                     root = result[0],
                     dir = result[1];
@@ -1311,7 +1311,7 @@ class LibTiMidity {
                 }
                 return root + dir;
             },
-            basename: function(path, ext) {
+            basename: function (path, ext) {
                 // EMSCRIPTEN return '/'' for '/', not an empty string
                 if (path === '/') return '/';
                 let f = PATH.splitPath(path)[2];
@@ -1320,14 +1320,14 @@ class LibTiMidity {
                 }
                 return f;
             },
-            extname: function(path) {
+            extname: function (path) {
                 return PATH.splitPath(path)[3];
             },
-            join: function() {
+            join: function () {
                 const paths = Array.prototype.slice.call(arguments, 0);
                 return PATH.normalize(
                     paths
-                        .filter(function(p, index) {
+                        .filter(function (p, index) {
                             if (typeof p !== 'string') {
                                 throw new TypeError(
                                     'Arguments to path.join must be strings'
@@ -1338,7 +1338,7 @@ class LibTiMidity {
                         .join('/')
                 );
             },
-            resolve: function() {
+            resolve: function () {
                 let resolvedPath = '',
                     resolvedAbsolute = false;
                 for (
@@ -1360,14 +1360,14 @@ class LibTiMidity {
                 }
                 // At this point the path should be resolved to a full absolute path, but handle relative paths to be safe (might happen when process.cwd() fails)
                 resolvedPath = PATH.normalizeArray(
-                    resolvedPath.split('/').filter(function(p) {
+                    resolvedPath.split('/').filter(function (p) {
                         return !!p;
                     }),
                     !resolvedAbsolute
                 ).join('/');
                 return (resolvedAbsolute ? '/' : '') + resolvedPath || '.';
             },
-            relative: function(from, to) {
+            relative: function (from, to) {
                 from = PATH.resolve(from).substr(1);
                 to = PATH.resolve(to).substr(1);
                 function trim(arr) {
@@ -1404,14 +1404,14 @@ class LibTiMidity {
         };
         const TTY = {
             ttys: [],
-            init: function() {},
-            shutdown: function() {},
-            register: function(dev, ops) {
+            init: function () { },
+            shutdown: function () { },
+            register: function (dev, ops) {
                 TTY.ttys[dev] = { input: [], output: [], ops: ops };
                 FS.registerDevice(dev, TTY.stream_ops);
             },
             stream_ops: {
-                open: function(stream) {
+                open: function (stream) {
                     const tty = TTY.ttys[stream.node.rdev];
                     if (!tty) {
                         throw new FS.ErrnoError(ERRNO_CODES.ENODEV);
@@ -1419,13 +1419,13 @@ class LibTiMidity {
                     stream.tty = tty;
                     stream.seekable = false;
                 },
-                close: function(stream) {
+                close: function (stream) {
                     // flush any pending line data
                     if (stream.tty.output.length) {
                         stream.tty.ops.put_char(stream.tty, 10);
                     }
                 },
-                read: function(stream, buffer, offset, length) {
+                read: function (stream, buffer, offset, length) {
                     if (!stream.tty || !stream.tty.ops.get_char) {
                         throw new FS.ErrnoError(ERRNO_CODES.ENXIO);
                     }
@@ -1449,7 +1449,7 @@ class LibTiMidity {
                     }
                     return bytesRead;
                 },
-                write: function(stream, buffer, offset, length, pos) {
+                write: function (stream, buffer, offset, length, pos) {
                     if (!stream.tty || !stream.tty.ops.put_char) {
                         throw new FS.ErrnoError(ERRNO_CODES.ENXIO);
                     }
@@ -1470,7 +1470,7 @@ class LibTiMidity {
                 }
             },
             default_tty_ops: {
-                get_char: function(tty) {
+                get_char: function (tty) {
                     if (!tty.input.length) {
                         let result = null;
                         result = window.prompt('Input: ');
@@ -1482,7 +1482,7 @@ class LibTiMidity {
                     }
                     return tty.input.shift();
                 },
-                put_char: function(tty, val) {
+                put_char: function (tty, val) {
                     if (val === null || val === 10) {
                         console.log(tty.output.join(''));
                         tty.output = [];
@@ -1492,7 +1492,7 @@ class LibTiMidity {
                 }
             },
             default_tty1_ops: {
-                put_char: function(tty, val) {
+                put_char: function (tty, val) {
                     if (val === null || val === 10) {
                         console.warn(tty.output.join(''));
                         tty.output = [];
@@ -1506,10 +1506,10 @@ class LibTiMidity {
             CONTENT_OWNING: 1,
             CONTENT_FLEXIBLE: 2,
             CONTENT_FIXED: 3,
-            mount: function() {
+            mount: function () {
                 return MEMFS.createNode(null, '/', 16384 | 0o777, 0);
             },
-            createNode: function(parent, name, mode, dev) {
+            createNode: function (parent, name, mode, dev) {
                 if (FS.isBlkdev(mode) || FS.isFIFO(mode)) {
                     // not supported
                     throw new FS.ErrnoError(ERRNO_CODES.EPERM);
@@ -1567,7 +1567,7 @@ class LibTiMidity {
                 }
                 return node;
             },
-            ensureFlexible: function(node) {
+            ensureFlexible: function (node) {
                 if (node.contentMode !== MEMFS.CONTENT_FLEXIBLE) {
                     const contents = node.contents;
                     node.contents = Array.prototype.slice.call(contents);
@@ -1575,7 +1575,7 @@ class LibTiMidity {
                 }
             },
             node_ops: {
-                getattr: function(node) {
+                getattr: function (node) {
                     const attr = {};
                     // device numbers reuse inode numbers.
                     attr.dev = FS.isChrdev(node.mode) ? node.id : 1;
@@ -1602,7 +1602,7 @@ class LibTiMidity {
                     attr.blocks = Math.ceil(attr.size / attr.blksize);
                     return attr;
                 },
-                setattr: function(node, attr) {
+                setattr: function (node, attr) {
                     if (attr.mode !== undefined) {
                         node.mode = attr.mode;
                     }
@@ -1619,19 +1619,19 @@ class LibTiMidity {
                                 contents.push(0);
                     }
                 },
-                lookup: function() {
+                lookup: function () {
                     throw new FS.ErrnoError(ERRNO_CODES.ENOENT);
                 },
-                mknod: function(parent, name, mode, dev) {
+                mknod: function (parent, name, mode, dev) {
                     return MEMFS.createNode(parent, name, mode, dev);
                 },
-                rename: function(old_node, new_dir, new_name) {
+                rename: function (old_node, new_dir, new_name) {
                     // if we're overwriting a directory at new_name, make sure it's empty.
                     if (FS.isDir(old_node.mode)) {
                         let new_node;
                         try {
                             new_node = FS.lookupNode(new_dir, new_name);
-                        } catch (e) {}
+                        } catch (e) { }
                         if (new_node) {
                             for (const i in new_node.contents) {
                                 throw new FS.ErrnoError(ERRNO_CODES.ENOTEMPTY);
@@ -1643,17 +1643,17 @@ class LibTiMidity {
                     old_node.name = new_name;
                     new_dir.contents[new_name] = old_node;
                 },
-                unlink: function(parent, name) {
+                unlink: function (parent, name) {
                     delete parent.contents[name];
                 },
-                rmdir: function(parent, name) {
+                rmdir: function (parent, name) {
                     const node = FS.lookupNode(parent, name);
                     for (const i in node.contents) {
                         throw new FS.ErrnoError(ERRNO_CODES.ENOTEMPTY);
                     }
                     delete parent.contents[name];
                 },
-                readdir: function(node) {
+                readdir: function (node) {
                     const entries = ['.', '..'];
                     for (const key in node.contents) {
                         if (!node.contents.hasOwnProperty(key)) {
@@ -1663,7 +1663,7 @@ class LibTiMidity {
                     }
                     return entries;
                 },
-                symlink: function(parent, newname, oldpath) {
+                symlink: function (parent, newname, oldpath) {
                     const node = MEMFS.createNode(
                         parent,
                         newname,
@@ -1673,7 +1673,7 @@ class LibTiMidity {
                     node.link = oldpath;
                     return node;
                 },
-                readlink: function(node) {
+                readlink: function (node) {
                     if (!FS.isLink(node.mode)) {
                         throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
                     }
@@ -1681,7 +1681,7 @@ class LibTiMidity {
                 }
             },
             stream_ops: {
-                read: function(stream, buffer, offset, length, position) {
+                read: function (stream, buffer, offset, length, position) {
                     const contents = stream.node.contents;
                     if (position >= contents.length) return 0;
                     const size = Math.min(contents.length - position, length);
@@ -1699,7 +1699,7 @@ class LibTiMidity {
                     }
                     return size;
                 },
-                write: function(
+                write: function (
                     stream,
                     buffer,
                     offset,
@@ -1741,7 +1741,7 @@ class LibTiMidity {
                     }
                     return length;
                 },
-                llseek: function(stream, offset, whence) {
+                llseek: function (stream, offset, whence) {
                     let position = offset;
                     if (whence === 1) {
                         // SEEK_CUR.
@@ -1759,13 +1759,13 @@ class LibTiMidity {
                     stream.position = position;
                     return position;
                 },
-                allocate: function(stream, offset, length) {
+                allocate: function (stream, offset, length) {
                     MEMFS.ensureFlexible(stream.node);
                     const contents = stream.node.contents;
                     const limit = offset + length;
                     while (limit > contents.length) contents.push(0);
                 },
-                mmap: function(stream, buffer, length, position, flags) {
+                mmap: function (stream, buffer, length, position, flags) {
                     if (!FS.isFile(stream.node.mode)) {
                         throw new FS.ErrnoError(ERRNO_CODES.ENODEV);
                     }
@@ -1843,12 +1843,12 @@ class LibTiMidity {
                 this.message = ERRNO_MESSAGES[errorNumber];
                 this.details = details || '';
             },
-            handleFSError: function(e) {
+            handleFSError: function (e) {
                 if (!(e instanceof FS.ErrnoError))
                     throw e + ' : ' + new Error().stack;
                 return ___setErrNo(e.errno);
             },
-            lookupPath: function(path, opts) {
+            lookupPath: function (path, opts) {
                 path = PATH.resolve(FS.cwd(), path);
                 opts = opts || { recurse_count: 0 };
                 if (opts.recurse_count > 8) {
@@ -1857,7 +1857,7 @@ class LibTiMidity {
                 }
                 // split the path
                 const parts = PATH.normalizeArray(
-                    path.split('/').filter(function(p) {
+                    path.split('/').filter(function (p) {
                         return !!p;
                     }),
                     false
@@ -1901,7 +1901,7 @@ class LibTiMidity {
                 }
                 return { path: current_path, node: current };
             },
-            getPath: function(node) {
+            getPath: function (node) {
                 let path;
                 while (true) {
                     if (FS.isRoot(node)) {
@@ -1913,19 +1913,19 @@ class LibTiMidity {
                     node = node.parent;
                 }
             },
-            hashName: function(parentid, name) {
+            hashName: function (parentid, name) {
                 let hash = 0;
                 for (let i = 0; i < name.length; i++) {
                     hash = ((hash << 5) - hash + name.charCodeAt(i)) | 0;
                 }
                 return ((parentid + hash) >>> 0) % FS.nameTable.length;
             },
-            hashAddNode: function(node) {
+            hashAddNode: function (node) {
                 const hash = FS.hashName(node.parent.id, node.name);
                 node.name_next = FS.nameTable[hash];
                 FS.nameTable[hash] = node;
             },
-            hashRemoveNode: function(node) {
+            hashRemoveNode: function (node) {
                 const hash = FS.hashName(node.parent.id, node.name);
                 if (FS.nameTable[hash] === node) {
                     FS.nameTable[hash] = node.name_next;
@@ -1940,7 +1940,7 @@ class LibTiMidity {
                     }
                 }
             },
-            lookupNode: function(parent, name) {
+            lookupNode: function (parent, name) {
                 const err = FS.mayLookup(parent);
                 if (err) {
                     throw new FS.ErrnoError(err, name);
@@ -1959,7 +1959,7 @@ class LibTiMidity {
                 // if we failed to find it in the cache, call into the VFS
                 return FS.lookup(parent, name);
             },
-            createNode: function(parent, name, mode, rdev) {
+            createNode: function (parent, name, mode, rdev) {
                 const node = {
                     id: FS.nextInode++,
                     name: name,
@@ -1982,32 +1982,32 @@ class LibTiMidity {
                 // Object.defineProperty in order to make closure compiler happy
                 Object.defineProperties(node, {
                     read: {
-                        get: function() {
+                        get: function () {
                             return (node.mode & readMode) === readMode;
                         },
-                        set: function(val) {
+                        set: function (val) {
                             val
                                 ? (node.mode |= readMode)
                                 : (node.mode &= ~readMode);
                         }
                     },
                     write: {
-                        get: function() {
+                        get: function () {
                             return (node.mode & writeMode) === writeMode;
                         },
-                        set: function(val) {
+                        set: function (val) {
                             val
                                 ? (node.mode |= writeMode)
                                 : (node.mode &= ~writeMode);
                         }
                     },
                     isFolder: {
-                        get: function() {
+                        get: function () {
                             return FS.isDir(node.mode);
                         }
                     },
                     isDevice: {
-                        get: function() {
+                        get: function () {
                             return FS.isChrdev(node.mode);
                         }
                     }
@@ -2015,34 +2015,34 @@ class LibTiMidity {
                 FS.hashAddNode(node);
                 return node;
             },
-            destroyNode: function(node) {
+            destroyNode: function (node) {
                 FS.hashRemoveNode(node);
             },
-            isRoot: function(node) {
+            isRoot: function (node) {
                 return node === node.parent;
             },
-            isMountpoint: function(node) {
+            isMountpoint: function (node) {
                 return node.mounted;
             },
-            isFile: function(mode) {
+            isFile: function (mode) {
                 return (mode & 61440) === 32768;
             },
-            isDir: function(mode) {
+            isDir: function (mode) {
                 return (mode & 61440) === 16384;
             },
-            isLink: function(mode) {
+            isLink: function (mode) {
                 return (mode & 61440) === 40960;
             },
-            isChrdev: function(mode) {
+            isChrdev: function (mode) {
                 return (mode & 61440) === 8192;
             },
-            isBlkdev: function(mode) {
+            isBlkdev: function (mode) {
                 return (mode & 61440) === 24576;
             },
-            isFIFO: function(mode) {
+            isFIFO: function (mode) {
                 return (mode & 61440) === 4096;
             },
-            isSocket: function(mode) {
+            isSocket: function (mode) {
                 return (mode & 49152) === 49152;
             },
             flagModes: {
@@ -2062,14 +2062,14 @@ class LibTiMidity {
                 'ax+': 1218,
                 'xa+': 1218
             },
-            modeStringToFlags: function(str) {
+            modeStringToFlags: function (str) {
                 const flags = FS.flagModes[str];
                 if (typeof flags === 'undefined') {
                     throw new Error('Unknown file open mode: ' + str);
                 }
                 return flags;
             },
-            flagsToPermissionString: function(flag) {
+            flagsToPermissionString: function (flag) {
                 const accmode = flag & 2097155;
                 let perms = ['r', 'w', 'rw'][accmode];
                 if (flag & 512) {
@@ -2077,7 +2077,7 @@ class LibTiMidity {
                 }
                 return perms;
             },
-            nodePermissions: function(node, perms) {
+            nodePermissions: function (node, perms) {
                 if (FS.ignorePermissions) {
                     return 0;
                 }
@@ -2091,17 +2091,17 @@ class LibTiMidity {
                 }
                 return 0;
             },
-            mayLookup: function(dir) {
+            mayLookup: function (dir) {
                 return FS.nodePermissions(dir, 'x');
             },
-            mayCreate: function(dir, name) {
+            mayCreate: function (dir, name) {
                 try {
                     FS.lookupNode(dir, name);
                     return ERRNO_CODES.EEXIST;
-                } catch (e) {}
+                } catch (e) { }
                 return FS.nodePermissions(dir, 'wx');
             },
-            mayDelete: function(dir, name, isdir) {
+            mayDelete: function (dir, name, isdir) {
                 let node;
                 try {
                     node = FS.lookupNode(dir, name);
@@ -2126,7 +2126,7 @@ class LibTiMidity {
                 }
                 return 0;
             },
-            mayOpen: function(node, flags) {
+            mayOpen: function (node, flags) {
                 if (!node) {
                     return ERRNO_CODES.ENOENT;
                 }
@@ -2146,7 +2146,7 @@ class LibTiMidity {
                 );
             },
             MAX_OPEN_FDS: 4096,
-            nextfd: function(fd_start, fd_end) {
+            nextfd: function (fd_start, fd_end) {
                 fd_start = fd_start || 1;
                 fd_end = fd_end || FS.MAX_OPEN_FDS;
                 for (let fd = fd_start; fd <= fd_end; fd++) {
@@ -2156,34 +2156,34 @@ class LibTiMidity {
                 }
                 throw new FS.ErrnoError(ERRNO_CODES.EMFILE);
             },
-            getStream: function(fd) {
+            getStream: function (fd) {
                 return FS.streams[fd];
             },
-            createStream: function(stream, fd_start, fd_end) {
+            createStream: function (stream, fd_start, fd_end) {
                 const fd = FS.nextfd(fd_start, fd_end);
                 stream.fd = fd;
                 // compatibility
                 Object.defineProperties(stream, {
                     object: {
-                        get: function() {
+                        get: function () {
                             return stream.node;
                         },
-                        set: function(val) {
+                        set: function (val) {
                             stream.node = val;
                         }
                     },
                     isRead: {
-                        get: function() {
+                        get: function () {
                             return (stream.flags & 2097155) !== 1;
                         }
                     },
                     isWrite: {
-                        get: function() {
+                        get: function () {
                             return (stream.flags & 2097155) !== 0;
                         }
                     },
                     isAppend: {
-                        get: function() {
+                        get: function () {
                             return stream.flags & 1024;
                         }
                     }
@@ -2191,11 +2191,11 @@ class LibTiMidity {
                 FS.streams[fd] = stream;
                 return stream;
             },
-            closeStream: function(fd) {
+            closeStream: function (fd) {
                 FS.streams[fd] = null;
             },
             chrdev_stream_ops: {
-                open: function(stream) {
+                open: function (stream) {
                     const device = FS.getDevice(stream.node.rdev);
                     // override node's stream ops with the device's
                     stream.stream_ops = device.stream_ops;
@@ -2204,33 +2204,33 @@ class LibTiMidity {
                         stream.stream_ops.open(stream);
                     }
                 },
-                llseek: function() {
+                llseek: function () {
                     throw new FS.ErrnoError(ERRNO_CODES.ESPIPE);
                 }
             },
-            major: function(dev) {
+            major: function (dev) {
                 return dev >> 8;
             },
-            minor: function(dev) {
+            minor: function (dev) {
                 return dev & 0xff;
             },
-            makedev: function(ma, mi) {
+            makedev: function (ma, mi) {
                 return (ma << 8) | mi;
             },
-            registerDevice: function(dev, ops) {
+            registerDevice: function (dev, ops) {
                 FS.devices[dev] = { stream_ops: ops };
             },
-            getDevice: function(dev) {
+            getDevice: function (dev) {
                 return FS.devices[dev];
             },
-            syncfs: function(populate, callback) {
+            syncfs: function (populate, callback) {
                 if (typeof populate === 'function') {
                     callback = populate;
                     populate = false;
                 }
                 let completed = 0;
                 const total = FS.mounts.length;
-                const done = function(err) {
+                const done = function (err) {
                     if (err) {
                         return callback(err);
                     }
@@ -2248,7 +2248,7 @@ class LibTiMidity {
                     mount.type.syncfs(mount, populate, done);
                 }
             },
-            mount: function(type, opts, mountpoint) {
+            mount: function (type, opts, mountpoint) {
                 let lookup;
                 if (mountpoint) {
                     lookup = FS.lookupPath(mountpoint, { follow: false });
@@ -2277,10 +2277,10 @@ class LibTiMidity {
                 FS.mounts.push(mount);
                 return root;
             },
-            lookup: function(parent, name) {
+            lookup: function (parent, name) {
                 return parent.node_ops.lookup(parent, name);
             },
-            mknod: function(path, mode, dev, throwError = true) {
+            mknod: function (path, mode, dev, throwError = true) {
                 const lookup = FS.lookupPath(path, { parent: true });
                 const parent = lookup.node;
                 const name = PATH.basename(path);
@@ -2299,19 +2299,19 @@ class LibTiMidity {
                 }
                 return parent.node_ops.mknod(parent, name, mode, dev);
             },
-            create: function(path, mode, throwError = true) {
+            create: function (path, mode, throwError = true) {
                 mode = mode !== undefined ? mode : 0o666;
                 mode &= 4095;
                 mode |= 32768;
                 return FS.mknod(path, mode, 0, throwError);
             },
-            mkdir: function(path, mode, throwError = true) {
+            mkdir: function (path, mode, throwError = true) {
                 mode = mode !== undefined ? mode : 0o777;
                 mode &= 511 | 512;
                 mode |= 16384;
                 return FS.mknod(path, mode, 0, throwError);
             },
-            mkdev: function(path, mode, dev) {
+            mkdev: function (path, mode, dev) {
                 if (typeof dev === 'undefined') {
                     dev = mode;
                     mode = 0o666;
@@ -2319,7 +2319,7 @@ class LibTiMidity {
                 mode |= 8192;
                 return FS.mknod(path, mode, dev);
             },
-            symlink: function(oldpath, newpath) {
+            symlink: function (oldpath, newpath) {
                 const lookup = FS.lookupPath(newpath, { parent: true });
                 var parent = lookup.node;
                 const newname = PATH.basename(newpath);
@@ -2332,7 +2332,7 @@ class LibTiMidity {
                 }
                 return parent.node_ops.symlink(parent, newname, oldpath);
             },
-            rename: function(old_path, new_path) {
+            rename: function (old_path, new_path) {
                 const old_dirname = PATH.dirname(old_path);
                 const new_dirname = PATH.dirname(new_path);
                 const old_name = PATH.basename(old_path);
@@ -2417,7 +2417,7 @@ class LibTiMidity {
                     FS.hashAddNode(old_node);
                 }
             },
-            rmdir: function(path) {
+            rmdir: function (path) {
                 const lookup = FS.lookupPath(path, { parent: true });
                 var parent = lookup.node;
                 const name = PATH.basename(path);
@@ -2435,7 +2435,7 @@ class LibTiMidity {
                 parent.node_ops.rmdir(parent, name);
                 FS.destroyNode(node);
             },
-            readdir: function(path) {
+            readdir: function (path) {
                 const lookup = FS.lookupPath(path, { follow: true });
                 const node = lookup.node;
                 if (!node.node_ops.readdir) {
@@ -2443,7 +2443,7 @@ class LibTiMidity {
                 }
                 return node.node_ops.readdir(node);
             },
-            unlink: function(path) {
+            unlink: function (path) {
                 const lookup = FS.lookupPath(path, { parent: true });
                 var parent = lookup.node;
                 const name = PATH.basename(path);
@@ -2463,7 +2463,7 @@ class LibTiMidity {
                 parent.node_ops.unlink(parent, name);
                 FS.destroyNode(node);
             },
-            readlink: function(path) {
+            readlink: function (path) {
                 const lookup = FS.lookupPath(path, { follow: false });
                 const link = lookup.node;
                 if (!link.node_ops.readlink) {
@@ -2471,7 +2471,7 @@ class LibTiMidity {
                 }
                 return link.node_ops.readlink(link);
             },
-            stat: function(path, dontFollow) {
+            stat: function (path, dontFollow) {
                 const lookup = FS.lookupPath(path, { follow: !dontFollow });
                 const node = lookup.node;
                 if (!node.node_ops.getattr) {
@@ -2479,10 +2479,10 @@ class LibTiMidity {
                 }
                 return node.node_ops.getattr(node);
             },
-            lstat: function(path) {
+            lstat: function (path) {
                 return FS.stat(path, true);
             },
-            chmod: function(path, mode, dontFollow) {
+            chmod: function (path, mode, dontFollow) {
                 let node;
                 if (typeof path === 'string') {
                     const lookup = FS.lookupPath(path, { follow: !dontFollow });
@@ -2498,17 +2498,17 @@ class LibTiMidity {
                     timestamp: Date.now()
                 });
             },
-            lchmod: function(path, mode) {
+            lchmod: function (path, mode) {
                 FS.chmod(path, mode, true);
             },
-            fchmod: function(fd, mode) {
+            fchmod: function (fd, mode) {
                 const stream = FS.getStream(fd);
                 if (!stream) {
                     throw new FS.ErrnoError(ERRNO_CODES.EBADF);
                 }
                 FS.chmod(stream.node, mode);
             },
-            chown: function(path, uid, gid, dontFollow) {
+            chown: function (path, uid, gid, dontFollow) {
                 let node;
                 if (typeof path === 'string') {
                     const lookup = FS.lookupPath(path, { follow: !dontFollow });
@@ -2524,17 +2524,17 @@ class LibTiMidity {
                     // we ignore the uid / gid for now
                 });
             },
-            lchown: function(path, uid, gid) {
+            lchown: function (path, uid, gid) {
                 FS.chown(path, uid, gid, true);
             },
-            fchown: function(fd, uid, gid) {
+            fchown: function (fd, uid, gid) {
                 const stream = FS.getStream(fd);
                 if (!stream) {
                     throw new FS.ErrnoError(ERRNO_CODES.EBADF);
                 }
                 FS.chown(stream.node, uid, gid);
             },
-            truncate: function(path, len) {
+            truncate: function (path, len) {
                 if (len < 0) {
                     throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
                 }
@@ -2563,7 +2563,7 @@ class LibTiMidity {
                     timestamp: Date.now()
                 });
             },
-            ftruncate: function(fd, len) {
+            ftruncate: function (fd, len) {
                 const stream = FS.getStream(fd);
                 if (!stream) {
                     throw new FS.ErrnoError(ERRNO_CODES.EBADF);
@@ -2573,14 +2573,14 @@ class LibTiMidity {
                 }
                 FS.truncate(stream.node, len);
             },
-            utime: function(path, atime, mtime) {
+            utime: function (path, atime, mtime) {
                 const lookup = FS.lookupPath(path, { follow: true });
                 const node = lookup.node;
                 node.node_ops.setattr(node, {
                     timestamp: Math.max(atime, mtime)
                 });
             },
-            open: function(path, flags, mode, fd_start, fd_end) {
+            open: function (path, flags, mode, fd_start, fd_end) {
                 path = PATH.normalize(path);
                 flags =
                     typeof flags === 'string'
@@ -2660,7 +2660,7 @@ class LibTiMidity {
                 }
                 return stream;
             },
-            close: function(stream) {
+            close: function (stream) {
                 try {
                     if (stream.stream_ops.close) {
                         stream.stream_ops.close(stream);
@@ -2671,13 +2671,13 @@ class LibTiMidity {
                     FS.closeStream(stream.fd);
                 }
             },
-            llseek: function(stream, offset, whence) {
+            llseek: function (stream, offset, whence) {
                 if (!stream.seekable || !stream.stream_ops.llseek) {
                     throw new FS.ErrnoError(ERRNO_CODES.ESPIPE);
                 }
                 return stream.stream_ops.llseek(stream, offset, whence);
             },
-            read: function(stream, buffer, offset, length, position) {
+            read: function (stream, buffer, offset, length, position) {
                 if (length < 0 || position < 0) {
                     throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
                 }
@@ -2707,7 +2707,7 @@ class LibTiMidity {
                 if (!seeking) stream.position += bytesRead;
                 return bytesRead;
             },
-            write: function(stream, buffer, offset, length, position, canOwn) {
+            write: function (stream, buffer, offset, length, position, canOwn) {
                 if (length < 0 || position < 0) {
                     throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
                 }
@@ -2742,7 +2742,7 @@ class LibTiMidity {
                 if (!seeking) stream.position += bytesWritten;
                 return bytesWritten;
             },
-            allocate: function(stream, offset, length) {
+            allocate: function (stream, offset, length) {
                 if (offset < 0 || length <= 0) {
                     throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
                 }
@@ -2757,7 +2757,7 @@ class LibTiMidity {
                 }
                 stream.stream_ops.allocate(stream, offset, length);
             },
-            mmap: function(
+            mmap: function (
                 stream,
                 buffer,
                 offset,
@@ -2783,13 +2783,13 @@ class LibTiMidity {
                     flags
                 );
             },
-            ioctl: function(stream, cmd, arg) {
+            ioctl: function (stream, cmd, arg) {
                 if (!stream.stream_ops.ioctl) {
                     throw new FS.ErrnoError(ERRNO_CODES.ENOTTY);
                 }
                 return stream.stream_ops.ioctl(stream, cmd, arg);
             },
-            readFile: function(path, opts) {
+            readFile: function (path, opts) {
                 opts = opts || {};
                 opts.flags = opts.flags || 'r';
                 opts.encoding = opts.encoding || 'binary';
@@ -2815,7 +2815,7 @@ class LibTiMidity {
                 FS.close(stream);
                 return ret;
             },
-            writeFile: function(path, data, opts) {
+            writeFile: function (path, data, opts) {
                 opts = opts || {};
                 opts.flags = opts.flags || 'w';
                 opts.encoding = opts.encoding || 'utf8';
@@ -2833,10 +2833,10 @@ class LibTiMidity {
                 }
                 FS.close(stream);
             },
-            cwd: function() {
+            cwd: function () {
                 return FS.currentPath;
             },
-            chdir: function(path) {
+            chdir: function (path) {
                 const lookup = FS.lookupPath(path, { follow: true });
                 if (!FS.isDir(lookup.node.mode)) {
                     throw new FS.ErrnoError(ERRNO_CODES.ENOTDIR);
@@ -2847,18 +2847,18 @@ class LibTiMidity {
                 }
                 FS.currentPath = lookup.path;
             },
-            createDefaultDirectories: function() {
+            createDefaultDirectories: function () {
                 FS.mkdir('/tmp');
             },
-            createDefaultDevices: function() {
+            createDefaultDevices: function () {
                 // create /dev
                 FS.mkdir('/dev');
                 // setup /dev/null
                 FS.registerDevice(FS.makedev(1, 3), {
-                    read: function() {
+                    read: function () {
                         return 0;
                     },
-                    write: function() {
+                    write: function () {
                         return 0;
                     }
                 });
@@ -2875,7 +2875,7 @@ class LibTiMidity {
                 FS.mkdir('/dev/shm');
                 FS.mkdir('/dev/shm/tmp');
             },
-            createStandardStreams: function() {
+            createStandardStreams: function () {
                 // TODO deprecate the old functionality of a single
                 // input / output callback and that utilizes FS.createDevice
                 // and instead require a unique set of stream ops
@@ -2918,14 +2918,14 @@ class LibTiMidity {
                     'invalid handle for stderr (' + stderr.fd + ')'
                 );
             },
-            staticInit: function() {
+            staticInit: function () {
                 FS.nameTable = new Array(4096);
                 FS.root = FS.createNode(null, '/', 16384 | 0o777, 0);
                 FS.mount(MEMFS, {}, '/');
                 FS.createDefaultDirectories();
                 FS.createDefaultDevices();
             },
-            init: function(input, output, error) {
+            init: function (input, output, error) {
                 assert(
                     !FS.init.initialized,
                     'FS.init was previously called. If you want to initialize later with custom parameters, remove any earlier calls (note that one is automatically added to the generated code)'
@@ -2937,7 +2937,7 @@ class LibTiMidity {
                 Module['stderr'] = error || Module['stderr'];
                 FS.createStandardStreams();
             },
-            quit: function() {
+            quit: function () {
                 FS.init.initialized = false;
                 for (let i = 0; i < FS.streams.length; i++) {
                     const stream = FS.streams[i];
@@ -2947,24 +2947,24 @@ class LibTiMidity {
                     FS.close(stream);
                 }
             },
-            getMode: function(canRead, canWrite) {
+            getMode: function (canRead, canWrite) {
                 let mode = 0;
                 if (canRead) mode |= 292 | 73;
                 if (canWrite) mode |= 146;
                 return mode;
             },
-            joinPath: function(parts, forceRelative) {
+            joinPath: function (parts, forceRelative) {
                 let path = PATH.join.apply(null, parts);
                 if (forceRelative && path[0] == '/') path = path.substr(1);
                 return path;
             },
-            absolutePath: function(relative, base) {
+            absolutePath: function (relative, base) {
                 return PATH.resolve(base, relative);
             },
-            standardizePath: function(path) {
+            standardizePath: function (path) {
                 return PATH.normalize(path);
             },
-            findObject: function(path, dontResolveLastLink) {
+            findObject: function (path, dontResolveLastLink) {
                 const ret = FS.analyzePath(path, dontResolveLastLink);
                 if (ret.exists) {
                     return ret.object;
@@ -2973,14 +2973,14 @@ class LibTiMidity {
                     return null;
                 }
             },
-            analyzePath: function(path, dontResolveLastLink) {
+            analyzePath: function (path, dontResolveLastLink) {
                 // operate from within the context of the symlink's target
                 try {
                     var lookup = FS.lookupPath(path, {
                         follow: !dontResolveLastLink
                     });
                     path = lookup.path;
-                } catch (e) {}
+                } catch (e) { }
                 const ret = {
                     isRoot: false,
                     exists: false,
@@ -3011,7 +3011,7 @@ class LibTiMidity {
                 }
                 return ret;
             },
-            createFolder: function(parent, name, canRead, canWrite) {
+            createFolder: function (parent, name, canRead, canWrite) {
                 const path = PATH.join(
                     typeof parent === 'string' ? parent : FS.getPath(parent),
                     name
@@ -3029,7 +3029,7 @@ class LibTiMidity {
              * @param {string} path The path to create.
              * @param {boolean} [throwError = true] If directory creation failed, throw an error.
              */
-            createPath: function(parent, path, throwError = true) {
+            createPath: function (parent, path, throwError = true) {
                 const parts = path.split('/').reverse();
                 while (parts.length) {
                     const part = parts.pop();
@@ -3056,7 +3056,7 @@ class LibTiMidity {
              * @param {boolean} canRead
              * @param {boolean} canWrite
              */
-            createFile: function(parent, name, canRead, canWrite) {
+            createFile: function (parent, name, canRead, canWrite) {
                 const path = PATH.join(
                     typeof parent === 'string' ? parent : FS.getPath(parent),
                     name
@@ -3079,7 +3079,7 @@ class LibTiMidity {
              * @param {boolean} [throwError = true] If file creation failed, throw an error.
              */
 
-            createDataFile: function(
+            createDataFile: function (
                 parent,
                 name,
                 data,
@@ -3090,11 +3090,11 @@ class LibTiMidity {
             ) {
                 const path = name
                     ? PATH.join(
-                          typeof parent === 'string'
-                              ? parent
-                              : FS.getPath(parent),
-                          name
-                      )
+                        typeof parent === 'string'
+                            ? parent
+                            : FS.getPath(parent),
+                        name
+                    )
                     : parent;
                 const mode = FS.getMode(canRead, canWrite);
 
@@ -3135,7 +3135,7 @@ class LibTiMidity {
              * @param {string} filename The name of the instrument patch to load (including subfolder for drums).
              */
 
-            loadPatchFromUrl: async function(baseUrl, filename) {
+            loadPatchFromUrl: async function (baseUrl, filename) {
                 const response = await fetch(`${baseUrl}${filename}`);
                 if (response.status !== 200) {
                     throw new Error(JSON.stringify(response));
@@ -3155,7 +3155,7 @@ class LibTiMidity {
                 FS.chmod(path, mode);
             },
 
-            createDevice: function(parent, name, input, output) {
+            createDevice: function (parent, name, input, output) {
                 const path = PATH.join(
                     typeof parent === 'string' ? parent : FS.getPath(parent),
                     name
@@ -3165,16 +3165,16 @@ class LibTiMidity {
                 const dev = FS.makedev(FS.createDevice.major++, 0);
                 // Create a fake device that a set of stream ops to emulate he old behavior.
                 FS.registerDevice(dev, {
-                    open: function(stream) {
+                    open: function (stream) {
                         stream.seekable = false;
                     },
-                    close: function() {
+                    close: function () {
                         // flush any pending line data
                         if (output && output.buffer && output.buffer.length) {
                             output(10);
                         }
                     },
-                    read: function(stream, buffer, offset, length) {
+                    read: function (stream, buffer, offset, length) {
                         let bytesRead = 0;
                         for (let i = 0; i < length; i++) {
                             let result;
@@ -3195,7 +3195,7 @@ class LibTiMidity {
                         }
                         return bytesRead;
                     },
-                    write: function(stream, buffer, offset, length) {
+                    write: function (stream, buffer, offset, length) {
                         for (var i = 0; i < length; i++) {
                             try {
                                 output(buffer[offset + i]);
@@ -3211,14 +3211,14 @@ class LibTiMidity {
                 });
                 return FS.mkdev(path, mode, dev);
             },
-            createLink: function(parent, name, target) {
+            createLink: function (parent, name, target) {
                 const path = PATH.join(
                     typeof parent === 'string' ? parent : FS.getPath(parent),
                     name
                 );
                 return FS.symlink(target, path);
             },
-            createPreloadedFile: function(
+            createPreloadedFile: function (
                 parent,
                 name,
                 url,
@@ -3252,7 +3252,7 @@ class LibTiMidity {
                 addRunDependency('cp ' + fullname);
                 processData(url);
             },
-            indexedDB: function() {
+            indexedDB: function () {
                 return (
                     window.indexedDB ||
                     window.mozIndexedDB ||
@@ -3260,14 +3260,14 @@ class LibTiMidity {
                     window.msIndexedDB
                 );
             },
-            DB_NAME: function() {
+            DB_NAME: function () {
                 return 'EM_FS_' + window.location.pathname;
             },
             DB_VERSION: 20,
             DB_STORE_NAME: 'FILE_DATA',
-            saveFilesToDB: function(paths, onload, onerror) {
-                onload = onload || function() {};
-                onerror = onerror || function() {};
+            saveFilesToDB: function (paths, onload, onerror) {
+                onload = onload || function () { };
+                onerror = onerror || function () { };
                 const indexedDB = FS.indexedDB();
                 try {
                     var openRequest = indexedDB.open(
@@ -3277,11 +3277,11 @@ class LibTiMidity {
                 } catch (e) {
                     return onerror(e);
                 }
-                openRequest.onupgradeneeded = function() {
+                openRequest.onupgradeneeded = function () {
                     const db = openRequest.result;
                     db.createObjectStore(FS.DB_STORE_NAME);
                 };
-                openRequest.onsuccess = function() {
+                openRequest.onsuccess = function () {
                     const db = openRequest.result;
                     const transaction = db.transaction(
                         [FS.DB_STORE_NAME],
@@ -3295,16 +3295,16 @@ class LibTiMidity {
                         if (fail == 0) onload();
                         else onerror();
                     }
-                    paths.forEach(function(path) {
+                    paths.forEach(function (path) {
                         const putRequest = files.put(
                             FS.analyzePath(path).object.contents,
                             path
                         );
-                        putRequest.onsuccess = function() {
+                        putRequest.onsuccess = function () {
                             ok++;
                             if (ok + fail == total) finish();
                         };
-                        putRequest.onerror = function() {
+                        putRequest.onerror = function () {
                             fail++;
                             if (ok + fail == total) finish();
                         };
@@ -3313,9 +3313,9 @@ class LibTiMidity {
                 };
                 openRequest.onerror = onerror;
             },
-            loadFilesFromDB: function(paths, onload, onerror) {
-                onload = onload || function() {};
-                onerror = onerror || function() {};
+            loadFilesFromDB: function (paths, onload, onerror) {
+                onload = onload || function () { };
+                onerror = onerror || function () { };
                 const indexedDB = FS.indexedDB();
                 try {
                     var openRequest = indexedDB.open(
@@ -3326,7 +3326,7 @@ class LibTiMidity {
                     return onerror(e);
                 }
                 openRequest.onupgradeneeded = onerror; // no database to load from
-                openRequest.onsuccess = function() {
+                openRequest.onsuccess = function () {
                     const db = openRequest.result;
                     try {
                         var transaction = db.transaction(
@@ -3345,9 +3345,9 @@ class LibTiMidity {
                         if (fail == 0) onload();
                         else onerror();
                     }
-                    paths.forEach(function(path) {
+                    paths.forEach(function (path) {
                         const getRequest = files.get(path);
-                        getRequest.onsuccess = function() {
+                        getRequest.onsuccess = function () {
                             if (FS.analyzePath(path).exists) {
                                 FS.unlink(path);
                             }
@@ -3362,7 +3362,7 @@ class LibTiMidity {
                             ok++;
                             if (ok + fail == total) finish();
                         };
-                        getRequest.onerror = function() {
+                        getRequest.onerror = function () {
                             fail++;
                             if (ok + fail == total) finish();
                         };
@@ -3427,10 +3427,10 @@ class LibTiMidity {
         Module['_strcpy'] = _strcpy;
         Module['_strcat'] = _strcat;
         const SOCKFS = {
-            mount: function() {
+            mount: function () {
                 return FS.createNode(null, '/', 16384 | 0o777, 0);
             },
-            createSocket: function(family, type, protocol) {
+            createSocket: function (family, type, protocol) {
                 const streaming = type == 1;
                 if (protocol) {
                     assert(streaming == (protocol == 6)); // if SOCK_STREAM, must be tcp
@@ -3462,7 +3462,7 @@ class LibTiMidity {
                 sock.stream = stream;
                 return sock;
             },
-            getSocket: function(fd) {
+            getSocket: function (fd) {
                 const stream = FS.getStream(fd);
                 if (!stream || !FS.isSocket(stream.node.mode)) {
                     return null;
@@ -3470,15 +3470,15 @@ class LibTiMidity {
                 return stream.node.sock;
             },
             stream_ops: {
-                poll: function(stream) {
+                poll: function (stream) {
                     const sock = stream.node.sock;
                     return sock.sock_ops.poll(sock);
                 },
-                ioctl: function(stream, request, varargs) {
+                ioctl: function (stream, request, varargs) {
                     const sock = stream.node.sock;
                     return sock.sock_ops.ioctl(sock, request, varargs);
                 },
-                read: function(stream, buffer, offset, length) {
+                read: function (stream, buffer, offset, length) {
                     const sock = stream.node.sock;
                     const msg = sock.sock_ops.recvmsg(sock, length);
                     if (!msg) {
@@ -3488,23 +3488,23 @@ class LibTiMidity {
                     buffer.set(msg.buffer, offset);
                     return msg.buffer.length;
                 },
-                write: function(stream, buffer, offset, length) {
+                write: function (stream, buffer, offset, length) {
                     const sock = stream.node.sock;
                     return sock.sock_ops.sendmsg(sock, buffer, offset, length);
                 },
-                close: function(stream) {
+                close: function (stream) {
                     const sock = stream.node.sock;
                     sock.sock_ops.close(sock);
                 }
             },
-            nextname: function() {
+            nextname: function () {
                 if (!SOCKFS.nextname.current) {
                     SOCKFS.nextname.current = 0;
                 }
                 return 'socket[' + SOCKFS.nextname.current++ + ']';
             },
             websocket_sock_ops: {
-                createPeer: function(sock, addr, port) {
+                createPeer: function (sock, addr, port) {
                     let ws;
                     if (typeof addr === 'object') {
                         ws = addr;
@@ -3571,18 +3571,18 @@ class LibTiMidity {
                     }
                     return peer;
                 },
-                getPeer: function(sock, addr, port) {
+                getPeer: function (sock, addr, port) {
                     return sock.peers[addr + ':' + port];
                 },
-                addPeer: function(sock, peer) {
+                addPeer: function (sock, peer) {
                     sock.peers[peer.addr + ':' + peer.port] = peer;
                 },
-                removePeer: function(sock, peer) {
+                removePeer: function (sock, peer) {
                     delete sock.peers[peer.addr + ':' + peer.port];
                 },
-                handlePeerEvents: function(sock, peer) {
+                handlePeerEvents: function (sock, peer) {
                     let first = true;
-                    const handleOpen = function() {
+                    const handleOpen = function () {
                         try {
                             let queued = peer.dgram_send_queue.shift();
                             while (queued) {
@@ -3595,10 +3595,10 @@ class LibTiMidity {
                             peer.socket.close();
                         }
                     };
-                    const handleMessage = function(data) {
+                    const handleMessage = function (data) {
                         assert(
                             typeof data !== 'string' &&
-                                data.byteLength !== undefined
+                            data.byteLength !== undefined
                         ); // must receive an ArrayBuffer
                         data = new Uint8Array(data); // make a typed array view on the array buffer
                         // if this is the port message, override the peer's port with it
@@ -3630,11 +3630,11 @@ class LibTiMidity {
                         });
                     };
                     peer.socket.onopen = handleOpen;
-                    peer.socket.onmessage = function(event) {
+                    peer.socket.onmessage = function (event) {
                         handleMessage(event.data);
                     };
                 },
-                poll: function(sock) {
+                poll: function (sock) {
                     if (sock.type === 1 && sock.server) {
                         // listen sockets should only say they're available for reading
                         // if there are pending clients.
@@ -3644,10 +3644,10 @@ class LibTiMidity {
                     const dest =
                         sock.type === 1 // we only care about the socket state for connection-based sockets
                             ? SOCKFS.websocket_sock_ops.getPeer(
-                                  sock,
-                                  sock.daddr,
-                                  sock.dport
-                              )
+                                sock,
+                                sock.daddr,
+                                sock.dport
+                            )
                             : null;
                     if (
                         sock.recv_queue.length ||
@@ -3674,7 +3674,7 @@ class LibTiMidity {
                     }
                     return mask;
                 },
-                ioctl: function(sock, request, arg) {
+                ioctl: function (sock, request, arg) {
                     switch (request) {
                         case 21531:
                             let bytes = 0;
@@ -3687,12 +3687,12 @@ class LibTiMidity {
                             return ERRNO_CODES.EINVAL;
                     }
                 },
-                close: function(sock) {
+                close: function (sock) {
                     // if we've spawned a listen server, close it
                     if (sock.server) {
                         try {
                             sock.server.close();
-                        } catch (e) {}
+                        } catch (e) { }
                         sock.server = null;
                     }
                     // close any peer connections
@@ -3701,12 +3701,12 @@ class LibTiMidity {
                         const peer = sock.peers[peers[i]];
                         try {
                             peer.socket.close();
-                        } catch (e) {}
+                        } catch (e) { }
                         SOCKFS.websocket_sock_ops.removePeer(sock, peer);
                     }
                     return 0;
                 },
-                bind: function(sock, addr, port) {
+                bind: function (sock, addr, port) {
                     if (
                         typeof sock.saddr !== 'undefined' ||
                         typeof sock.sport !== 'undefined'
@@ -3733,7 +3733,7 @@ class LibTiMidity {
                         }
                     }
                 },
-                connect: function(sock, addr, port) {
+                connect: function (sock, addr, port) {
                     if (sock.server) {
                         throw new FS.ErrnoError(ERRNO_CODS.EOPNOTSUPP);
                     }
@@ -3768,7 +3768,7 @@ class LibTiMidity {
                     // always "fail" in non-blocking mode
                     throw new FS.ErrnoError(ERRNO_CODES.EINPROGRESS);
                 },
-                listen: function(sock) {
+                listen: function (sock) {
                     if (sock.server) {
                         throw new FS.ErrnoError(ERRNO_CODES.EINVAL); // already listening
                     }
@@ -3778,7 +3778,7 @@ class LibTiMidity {
                         host: host,
                         port: sock.sport
                     });
-                    sock.server.on('connection', function(ws) {
+                    sock.server.on('connection', function (ws) {
                         if (sock.type === 1) {
                             const newsock = SOCKFS.createSocket(
                                 sock.family,
@@ -3799,14 +3799,14 @@ class LibTiMidity {
                             SOCKFS.websocket_sock_ops.createPeer(sock, ws);
                         }
                     });
-                    sock.server.on('closed', function() {
+                    sock.server.on('closed', function () {
                         sock.server = null;
                     });
-                    sock.server.on('error', function() {
+                    sock.server.on('error', function () {
                         // don't throw
                     });
                 },
-                accept: function(listensock) {
+                accept: function (listensock) {
                     if (!listensock.server) {
                         throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
                     }
@@ -3814,7 +3814,7 @@ class LibTiMidity {
                     newsock.stream.flags = listensock.stream.flags;
                     return newsock;
                 },
-                getname: function(sock, peer) {
+                getname: function (sock, peer) {
                     let addr, port;
                     if (peer) {
                         if (
@@ -3831,7 +3831,7 @@ class LibTiMidity {
                     }
                     return { addr: addr, port: port };
                 },
-                sendmsg: function(sock, buffer, offset, length, addr, port) {
+                sendmsg: function (sock, buffer, offset, length, addr, port) {
                     if (sock.type === 2) {
                         // connection-less sockets will honor the message address, and otherwise fall back to the bound destination address
                         if (addr === undefined || port === undefined) {
@@ -3891,7 +3891,7 @@ class LibTiMidity {
                             if (
                                 !dest ||
                                 dest.socket.readyState ===
-                                    dest.socket.CLOSING ||
+                                dest.socket.CLOSING ||
                                 dest.socket.readyState === dest.socket.CLOSED
                             ) {
                                 dest = SOCKFS.websocket_sock_ops.createPeer(
@@ -3912,7 +3912,7 @@ class LibTiMidity {
                         throw new FS.ErrnoError(ERRNO_CODES.EINVAL);
                     }
                 },
-                recvmsg: function(sock, length) {
+                recvmsg: function (sock, length) {
                     // http://pubs.opengroup.org/onlinepubs/7908799/xns/recvmsg.html
                     if (sock.type === 1 && sock.server) {
                         // tcp servers should not be recv()'ing on the listen socket
@@ -3931,7 +3931,7 @@ class LibTiMidity {
                                 throw new FS.ErrnoError(ERRNO_CODES.ENOTCONN);
                             } else if (
                                 dest.socket.readyState ===
-                                    dest.socket.CLOSING ||
+                                dest.socket.CLOSING ||
                                 dest.socket.readyState === dest.socket.CLOSED
                             ) {
                                 // return null if the socket has closed
@@ -4315,7 +4315,7 @@ class LibTiMidity {
                             }
                             // Insert the result into the buffer.
                             argText = prefix + argText;
-                            argText.split('').forEach(function(chr) {
+                            argText.split('').forEach(function (chr) {
                                 ret.push(chr.charCodeAt(0));
                             });
                             break;
@@ -4451,7 +4451,7 @@ class LibTiMidity {
                             // Adjust case.
                             if (next < 97) argText = argText.toUpperCase();
                             // Insert the result into the buffer.
-                            argText.split('').forEach(function(chr) {
+                            argText.split('').forEach(function (chr) {
                                 ret.push(chr.charCodeAt(0));
                             });
                             break;
@@ -4694,7 +4694,7 @@ class LibTiMidity {
             }
             cont: while (1) {
                 c = getValue(s++, 'i8');
-                for (spanp = delim; (sc = getValue(spanp++, 'i8')) != 0; ) {
+                for (spanp = delim; (sc = getValue(spanp++, 'i8')) != 0;) {
                     if (c == sc) {
                         if (skip_leading_delim) {
                             continue cont;
@@ -4712,7 +4712,7 @@ class LibTiMidity {
                 return 0;
             }
             tok = s - 1;
-            for (;;) {
+            for (; ;) {
                 c = getValue(s++, 'i8');
                 spanp = delim;
                 do {
@@ -4829,21 +4829,21 @@ class LibTiMidity {
                 return (
                     (asm['setTempRet0'](
                         ((tempDouble = ret),
-                        +Math_abs(tempDouble) >= +1
-                            ? tempDouble > +0
-                                ? (Math_min(
-                                      +Math_floor(tempDouble / +4294967296),
-                                      +4294967295
-                                  ) |
-                                      0) >>>
-                                  0
-                                : ~~+Math_ceil(
-                                      (tempDouble - +(~~tempDouble >>> 0)) /
-                                          +4294967296
-                                  ) >>> 0
-                            : 0)
+                            +Math_abs(tempDouble) >= +1
+                                ? tempDouble > +0
+                                    ? (Math_min(
+                                        +Math_floor(tempDouble / +4294967296),
+                                        +4294967295
+                                    ) |
+                                        0) >>>
+                                    0
+                                    : ~~+Math_ceil(
+                                        (tempDouble - +(~~tempDouble >>> 0)) /
+                                        +4294967296
+                                    ) >>> 0
+                                : 0)
                     ),
-                    ret >>> 0) | 0
+                        ret >>> 0) | 0
                 );
             }
             return ret;
@@ -4882,7 +4882,7 @@ class LibTiMidity {
                 self.called = true;
                 assert(Runtime.dynamicAlloc);
                 self.alloc = Runtime.dynamicAlloc;
-                Runtime.dynamicAlloc = function() {
+                Runtime.dynamicAlloc = function () {
                     abort('cannot dynamically allocate, sbrk now has control');
                 };
             }
@@ -5056,17 +5056,17 @@ class LibTiMidity {
 
         FS.staticInit();
         __ATINIT__.unshift({
-            func: function() {
+            func: function () {
                 if (!Module['noFSInit'] && !FS.init.initialized) FS.init();
             }
         });
         __ATMAIN__.push({
-            func: function() {
+            func: function () {
                 FS.ignorePermissions = false;
             }
         });
         __ATEXIT__.push({
-            func: function() {
+            func: function () {
                 FS.quit();
             }
         });
@@ -5082,18 +5082,18 @@ class LibTiMidity {
         ___errno_state = Runtime.staticAlloc(4);
         HEAP32[___errno_state >> 2] = 0;
         __ATINIT__.unshift({
-            func: function() {
+            func: function () {
                 TTY.init();
             }
         });
         __ATEXIT__.push({
-            func: function() {
+            func: function () {
                 TTY.shutdown();
             }
         });
         TTY.utf8 = new Runtime.UTF8Processor();
         __ATINIT__.push({
-            func: function() {
+            func: function () {
                 SOCKFS.root = FS.mount(SOCKFS, {}, null);
             }
         });
@@ -5168,7 +5168,7 @@ class LibTiMidity {
 
         // EMSCRIPTEN_START_ASM
 
-        var asm = (function(global, env, buffer) {
+        var asm = (function (global, env, buffer) {
             'use asm';
             let a = new global.Int8Array(buffer);
             let b = new global.Int16Array(buffer);
@@ -5337,7 +5337,7 @@ class LibTiMidity {
                 a = a | 0;
                 L = a;
             }
-            function bg() {}
+            function bg() { }
             function bh(b) {
                 b = b | 0;
                 let d = 0,
@@ -5517,10 +5517,10 @@ class LibTiMidity {
                     ar(
                         6512,
                         ((z = i),
-                        (i = (i + 1) | 0),
-                        (i = (i + 7) & -8),
-                        (c[z >> 2] = 0),
-                        z) | 0
+                            (i = (i + 1) | 0),
+                            (i = (i + 7) & -8),
+                            (c[z >> 2] = 0),
+                            z) | 0
                     ) | 0;
                     i = z;
                     q = 1;
@@ -5533,7 +5533,7 @@ class LibTiMidity {
                         if (
                             ((z + (c1(c[(1048 + (B << 2)) >> 2] | 0) | 0)) |
                                 0) >>>
-                                0 <
+                            0 <
                             1024
                         ) {
                             z = r | 0;
@@ -5933,7 +5933,7 @@ class LibTiMidity {
                                                                         ) {
                                                                             ao(
                                                                                 A |
-                                                                                    0
+                                                                                0
                                                                             ) |
                                                                                 0;
                                                                             x = q;
@@ -5951,10 +5951,10 @@ class LibTiMidity {
                             }
                             c0(
                                 c[
-                                    ((c[(q + 4) >> 2] | 0) +
-                                        ((E * 116) | 0) +
-                                        88) >>
-                                        2
+                                ((c[(q + 4) >> 2] | 0) +
+                                    ((E * 116) | 0) +
+                                    88) >>
+                                2
                                 ] | 0
                             );
                             E = (E + 1) | 0;
@@ -6205,34 +6205,34 @@ class LibTiMidity {
                                 o = (a | 0) != 0 ? 1 : 0;
                                 p =
                                     c[
-                                        ((c[h >> 2] | 0) +
-                                            ((g * 28) | 0) +
-                                            12) >>
-                                            2
+                                    ((c[h >> 2] | 0) +
+                                        ((g * 28) | 0) +
+                                        12) >>
+                                    2
                                     ] | 0;
                                 q =
                                     c[
-                                        ((c[h >> 2] | 0) +
-                                            ((g * 28) | 0) +
-                                            8) >>
-                                            2
+                                    ((c[h >> 2] | 0) +
+                                        ((g * 28) | 0) +
+                                        8) >>
+                                    2
                                     ] | 0;
                                 if (
                                     (c[
                                         ((c[h >> 2] | 0) +
                                             ((g * 28) | 0) +
                                             4) >>
-                                            2
+                                        2
                                     ] |
                                         0) !=
                                     -1
                                 ) {
                                     r =
                                         c[
-                                            ((c[h >> 2] | 0) +
-                                                ((g * 28) | 0) +
-                                                4) >>
-                                                2
+                                        ((c[h >> 2] | 0) +
+                                            ((g * 28) | 0) +
+                                            4) >>
+                                        2
                                         ] | 0;
                                 } else {
                                     if ((a | 0) != 0) {
@@ -6247,17 +6247,17 @@ class LibTiMidity {
                                         ((c[h >> 2] | 0) +
                                             ((g * 28) | 0) +
                                             16) >>
-                                            2
+                                        2
                                     ] |
                                         0) !=
                                     -1
                                 ) {
                                     t =
                                         c[
-                                            ((c[h >> 2] | 0) +
-                                                ((g * 28) | 0) +
-                                                16) >>
-                                                2
+                                        ((c[h >> 2] | 0) +
+                                            ((g * 28) | 0) +
+                                            16) >>
+                                        2
                                         ] | 0;
                                 } else {
                                     t = (a | 0) != 0 ? 1 : -1;
@@ -6267,17 +6267,17 @@ class LibTiMidity {
                                         ((c[h >> 2] | 0) +
                                             ((g * 28) | 0) +
                                             20) >>
-                                            2
+                                        2
                                     ] |
                                         0) !=
                                     -1
                                 ) {
                                     u =
                                         c[
-                                            ((c[h >> 2] | 0) +
-                                                ((g * 28) | 0) +
-                                                20) >>
-                                                2
+                                        ((c[h >> 2] | 0) +
+                                            ((g * 28) | 0) +
+                                            20) >>
+                                        2
                                         ] | 0;
                                 } else {
                                     u = (a | 0) != 0 ? 1 : -1;
@@ -6293,10 +6293,10 @@ class LibTiMidity {
                                         t,
                                         u,
                                         c[
-                                            ((c[h >> 2] | 0) +
-                                                ((g * 28) | 0) +
-                                                24) >>
-                                                2
+                                        ((c[h >> 2] | 0) +
+                                            ((g * 28) | 0) +
+                                            24) >>
+                                        2
                                         ] | 0
                                     ) | 0;
                                 c[(h + 4 + (g << 2)) >> 2] = v;
@@ -6304,18 +6304,18 @@ class LibTiMidity {
                                     v = c[m >> 2] | 0;
                                     q =
                                         c[
-                                            ((c[h >> 2] | 0) +
-                                                ((g * 28) | 0)) >>
-                                                2
+                                        ((c[h >> 2] | 0) +
+                                            ((g * 28) | 0)) >>
+                                        2
                                         ] | 0;
                                     // prints 'Missing patch: arachno-88.pat' or 'Missing patch: MT32Drums/mt32drum-6.pat'
                                     ar(
                                         v | 0,
                                         5120,
                                         ((v = i),
-                                        (i = (i + 8) | 0),
-                                        (c[v >> 2] = q),
-                                        v) | 0
+                                            (i = (i + 8) | 0),
+                                            (c[v >> 2] = q),
+                                            v) | 0
                                     ) | 0;
                                     i = v;
                                     if ((c[(f + 13136) >> 2] | 0) < 256) {
@@ -6326,12 +6326,12 @@ class LibTiMidity {
                                             (f +
                                                 13140 +
                                                 (c[(f + 13136) >> 2] << 2)) >>
-                                                2
+                                            2
                                         ] =
                                             c[
-                                                ((c[h >> 2] | 0) +
-                                                    ((g * 28) | 0)) >>
-                                                    2
+                                            ((c[h >> 2] | 0) +
+                                                ((g * 28) | 0)) >>
+                                            2
                                             ];
                                         v = (f + 13136) | 0;
                                         c[v >> 2] = (c[v >> 2] | 0) + 1;
@@ -6346,7 +6346,7 @@ class LibTiMidity {
                                                 ((c[(f + 540) >> 2] | 0) +
                                                     4 +
                                                     (g << 2)) >>
-                                                    2
+                                                2
                                             ] |
                                                 0) ==
                                             0
@@ -6355,7 +6355,7 @@ class LibTiMidity {
                                                 ((c[(f + 540) >> 2] | 0) +
                                                     4 +
                                                     (g << 2)) >>
-                                                    2
+                                                2
                                             ] = -1;
                                         }
                                     } else {
@@ -6364,7 +6364,7 @@ class LibTiMidity {
                                                 ((c[(f + 28) >> 2] | 0) +
                                                     4 +
                                                     (g << 2)) >>
-                                                    2
+                                                2
                                             ] |
                                                 0) ==
                                             0
@@ -6373,7 +6373,7 @@ class LibTiMidity {
                                                 ((c[(f + 28) >> 2] | 0) +
                                                     4 +
                                                     (g << 2)) >>
-                                                    2
+                                                2
                                             ] = -1;
                                         }
                                     }
@@ -6481,7 +6481,7 @@ class LibTiMidity {
                     }
                     c0(
                         c[((c[(b + 4) >> 2] | 0) + ((a * 116) | 0) + 88) >> 2] |
-                            0
+                        0
                     );
                     a = (a + 1) | 0;
                 }
@@ -6879,7 +6879,7 @@ class LibTiMidity {
                 if (
                     ((a[
                         ((c[(f + 1724 + ((b * 236) | 0) + 4) >> 2] | 0) + 110) |
-                            0
+                        0
                     ] &
                         64) |
                         0) !=
@@ -6914,7 +6914,7 @@ class LibTiMidity {
                         ((c[(f + 1724 + ((b * 236) | 0) + 4) >> 2] | 0) +
                             60 +
                             (e << 2)) >>
-                            2
+                        2
                     ] |
                         0)
                 ) {
@@ -6924,17 +6924,17 @@ class LibTiMidity {
                 }
                 c[(f + 1724 + ((b * 236) | 0) + 28) >> 2] =
                     c[
-                        ((c[(f + 1724 + ((b * 236) | 0) + 4) >> 2] | 0) +
-                            60 +
-                            (e << 2)) >>
-                            2
+                    ((c[(f + 1724 + ((b * 236) | 0) + 4) >> 2] | 0) +
+                        60 +
+                        (e << 2)) >>
+                    2
                     ];
                 c[(f + 1724 + ((b * 236) | 0) + 32) >> 2] =
                     c[
-                        ((c[(f + 1724 + ((b * 236) | 0) + 4) >> 2] | 0) +
-                            36 +
-                            (e << 2)) >>
-                            2
+                    ((c[(f + 1724 + ((b * 236) | 0) + 4) >> 2] | 0) +
+                        36 +
+                        (e << 2)) >>
+                    2
                     ];
                 if (
                     (c[(f + 1724 + ((b * 236) | 0) + 28) >> 2] | 0) <
@@ -6966,7 +6966,7 @@ class LibTiMidity {
                         ((a[
                             ((c[(f + 1724 + ((b * 236) | 0) + 4) >> 2] | 0) +
                                 110) |
-                                0
+                            0
                         ] &
                             64) |
                             0) !=
@@ -6985,12 +6985,12 @@ class LibTiMidity {
                                 (d[(e + 1) | 0] << 8) |
                                 (d[(e + 2) | 0] << 16) |
                                 (d[(e + 3) | 0] << 24)),
-                            (c[(k + 4) >> 2] =
-                                d[(e + 4) | 0] |
-                                (d[(e + 5) | 0] << 8) |
-                                (d[(e + 6) | 0] << 16) |
-                                (d[(e + 7) | 0] << 24)),
-                            +h[k >> 3]);
+                                (c[(k + 4) >> 2] =
+                                    d[(e + 4) | 0] |
+                                    (d[(e + 5) | 0] << 8) |
+                                    (d[(e + 6) | 0] << 16) |
+                                    (d[(e + 7) | 0] << 24)),
+                                +h[k >> 3]);
                     }
                     j = ~~(i * 4096.0);
                     if ((j | 0) > 8191) {
@@ -7007,7 +7007,7 @@ class LibTiMidity {
                 if (
                     ((a[
                         ((c[(f + 1724 + ((b * 236) | 0) + 4) >> 2] | 0) + 110) |
-                            0
+                        0
                     ] &
                         64) |
                         0) !=
@@ -7026,12 +7026,12 @@ class LibTiMidity {
                             (d[(e + 1) | 0] << 8) |
                             (d[(e + 2) | 0] << 16) |
                             (d[(e + 3) | 0] << 24)),
-                        (c[(k + 4) >> 2] =
-                            d[(e + 4) | 0] |
-                            (d[(e + 5) | 0] << 8) |
-                            (d[(e + 6) | 0] << 16) |
-                            (d[(e + 7) | 0] << 24)),
-                        +h[k >> 3]);
+                            (c[(k + 4) >> 2] =
+                                d[(e + 4) | 0] |
+                                (d[(e + 5) | 0] << 8) |
+                                (d[(e + 6) | 0] << 16) |
+                                (d[(e + 7) | 0] << 24)),
+                            +h[k >> 3]);
                     e =
                         (8 +
                             ((c[(f + 1724 + ((b * 236) | 0) + 24) >> 2] >>
@@ -7045,12 +7045,12 @@ class LibTiMidity {
                             (d[(e + 1) | 0] << 8) |
                             (d[(e + 2) | 0] << 16) |
                             (d[(e + 3) | 0] << 24)),
-                        (c[(k + 4) >> 2] =
-                            d[(e + 4) | 0] |
-                            (d[(e + 5) | 0] << 8) |
-                            (d[(e + 6) | 0] << 16) |
-                            (d[(e + 7) | 0] << 24)),
-                        +h[k >> 3]);
+                            (c[(k + 4) >> 2] =
+                                d[(e + 4) | 0] |
+                                (d[(e + 5) | 0] << 8) |
+                                (d[(e + 6) | 0] << 16) |
+                                (d[(e + 7) | 0] << 24)),
+                            +h[k >> 3]);
                 }
                 j = ~~(i * 4096.0);
                 if ((j | 0) > 8191) {
@@ -7322,7 +7322,7 @@ class LibTiMidity {
                                                     1724 +
                                                     ((e * 236) | 0) +
                                                     232) >>
-                                                    2
+                                                2
                                             ] |
                                                 0) ==
                                             2
@@ -7940,7 +7940,7 @@ class LibTiMidity {
                 b =
                     (d[
                         ((c[(e + 1724 + ((a * 236) | 0) + 4) >> 2] | 0) + 108) |
-                            0
+                        0
                     ] |
                         0) <<
                     7;
@@ -7979,9 +7979,9 @@ class LibTiMidity {
                         )
                     ) +
                         1.0) *
-                        +(b | 0) *
-                        1.0 *
-                        762939453125.0e-17;
+                    +(b | 0) *
+                    1.0 *
+                    762939453125.0e-17;
                 return;
             }
             function bX(b, d, e) {
@@ -8209,13 +8209,13 @@ class LibTiMidity {
                                                         1724 +
                                                         ((e * 236) | 0) +
                                                         1) |
-                                                        0
+                                                    0
                                                 ] |
                                                     0) *
                                                     40) |
                                                     0) +
                                                 28) >>
-                                                2
+                                            2
                                         ] |
                                             0) ==
                                         0
@@ -8262,7 +8262,7 @@ class LibTiMidity {
                                     if (
                                         (c[
                                             (f + 1724 + ((e * 236) | 0) + 64) >>
-                                                2
+                                            2
                                         ] |
                                             0) <=
                                         (b | 0)
@@ -8271,8 +8271,8 @@ class LibTiMidity {
                                     }
                                     b =
                                         c[
-                                            (f + 1724 + ((e * 236) | 0) + 64) >>
-                                                2
+                                        (f + 1724 + ((e * 236) | 0) + 64) >>
+                                        2
                                         ] | 0;
                                 }
                             } while (0);
@@ -8356,6 +8356,19 @@ class LibTiMidity {
                 }
                 return;
             }
+            /**
+             * Rewind or Fast forward the playback of a song
+             * @param {any} $song
+             * @param {any} $song
+             * Usage: LibTiMidity.call('mid_song_seek', 'void', ['number', 'number'], [this.song, this.sampleRate * milliSeconds]);
+             */
+            function _mid_song_seek(song, ms) {
+                song = song | 0;
+                ms = ms / 1000;
+                console.log(ms);
+                return;
+            }
+            //_mid_song_start
             function b3(a) {
                 a = a | 0;
                 let b = 0;
@@ -8365,6 +8378,7 @@ class LibTiMidity {
                 b5(b, 0);
                 return;
             }
+            //adjust_amplification
             function b4(a) {
                 a = a | 0;
                 let b = 0;
@@ -8372,6 +8386,7 @@ class LibTiMidity {
                 g[(b + 16) >> 2] = +(c[(b + 20) >> 2] | 0) / 100.0;
                 return;
             }
+            //_skip_to
             function b5(a, b) {
                 a = a | 0;
                 b = b | 0;
@@ -8473,7 +8488,7 @@ class LibTiMidity {
                     while (1) {
                         if (
                             ~~(+(c[c[(l + 13080) >> 2] >> 2] | 0) / +g[258]) >>>
-                                0 >
+                            0 >
                             (c[(l + 13088) >> 2] | 0) >>> 0
                         ) {
                             break;
@@ -8497,7 +8512,7 @@ class LibTiMidity {
                                             40) |
                                             0) +
                                         12) >>
-                                        2
+                                    2
                                 ] = d[((c[(l + 13080) >> 2] | 0) + 6) | 0] | 0;
                                 if (
                                     (a[((c[(l + 13080) >> 2] | 0) + 6) | 0] |
@@ -8523,7 +8538,7 @@ class LibTiMidity {
                                             40) |
                                             0) +
                                         32) >>
-                                        2
+                                    2
                                 ] = d[((c[(l + 13080) >> 2] | 0) + 6) | 0] | 0;
                                 g[
                                     (l +
@@ -8535,7 +8550,7 @@ class LibTiMidity {
                                             40) |
                                             0) +
                                         36) >>
-                                        2
+                                    2
                                 ] = 0.0;
                                 break;
                             }
@@ -8559,9 +8574,9 @@ class LibTiMidity {
                                     ((c[(l + 13056) >> 2] &
                                         (1 <<
                                             d[
-                                                ((c[(l + 13080) >> 2] | 0) +
-                                                    4) |
-                                                    0
+                                            ((c[(l + 13080) >> 2] | 0) +
+                                                4) |
+                                            0
                                             ])) |
                                         0) !=
                                     0
@@ -8572,12 +8587,12 @@ class LibTiMidity {
                                             (((d[
                                                 ((c[(l + 13080) >> 2] | 0) +
                                                     4) |
-                                                    0
+                                                0
                                             ] |
                                                 0) *
                                                 40) |
                                                 0)) >>
-                                            2
+                                        2
                                     ] =
                                         d[((c[(l + 13080) >> 2] | 0) + 6) | 0] |
                                         0;
@@ -8588,13 +8603,13 @@ class LibTiMidity {
                                             (((d[
                                                 ((c[(l + 13080) >> 2] | 0) +
                                                     4) |
-                                                    0
+                                                0
                                             ] |
                                                 0) *
                                                 40) |
                                                 0) +
                                             4) >>
-                                            2
+                                        2
                                     ] =
                                         d[((c[(l + 13080) >> 2] | 0) + 6) | 0] |
                                         0;
@@ -8612,7 +8627,7 @@ class LibTiMidity {
                                             40) |
                                             0) +
                                         16) >>
-                                        2
+                                    2
                                 ] = d[((c[(l + 13080) >> 2] | 0) + 6) | 0] | 0;
                                 break;
                             }
@@ -8627,7 +8642,7 @@ class LibTiMidity {
                                             40) |
                                             0) +
                                         24) >>
-                                        2
+                                    2
                                 ] = d[((c[(l + 13080) >> 2] | 0) + 6) | 0] | 0;
                                 b9(l);
                                 break;
@@ -8654,7 +8669,7 @@ class LibTiMidity {
                                             0) *
                                             40) |
                                             0)) >>
-                                        2
+                                    2
                                 ] = d[((c[(l + 13080) >> 2] | 0) + 6) | 0] | 0;
                                 break;
                             }
@@ -8679,7 +8694,7 @@ class LibTiMidity {
                                             40) |
                                             0) +
                                         20) >>
-                                        2
+                                    2
                                 ] =
                                     (d[((c[(l + 13080) >> 2] | 0) + 6) | 0] |
                                         0) +
@@ -8695,7 +8710,7 @@ class LibTiMidity {
                                             40) |
                                             0) +
                                         36) >>
-                                        2
+                                    2
                                 ] = 0.0;
                                 b8(l);
                                 break;
@@ -8711,7 +8726,7 @@ class LibTiMidity {
                                             40) |
                                             0) +
                                         8) >>
-                                        2
+                                    2
                                 ] = d[((c[(l + 13080) >> 2] | 0) + 6) | 0] | 0;
                                 b9(l);
                                 break;
@@ -8737,7 +8752,7 @@ class LibTiMidity {
                             k,
                             (~~(+(c[c[(l + 13080) >> 2] >> 2] | 0) / +g[258]) -
                                 (c[(l + 13088) >> 2] | 0)) |
-                                0
+                            0
                         );
                     }
                 }
@@ -9054,28 +9069,28 @@ class LibTiMidity {
                     _(
                         d[(e + 1724 + ((a * 236) | 0) + 3) | 0] | 0,
                         c[
-                            (e +
-                                1084 +
-                                (((d[(e + 1724 + ((a * 236) | 0) + 1) | 0] |
-                                    0) *
-                                    40) |
-                                    0) +
-                                8) >>
-                                2
+                        (e +
+                            1084 +
+                            (((d[(e + 1724 + ((a * 236) | 0) + 1) | 0] |
+                                0) *
+                                40) |
+                                0) +
+                            8) >>
+                        2
                         ] | 0
                     ) | 0;
                 f =
                     _(
                         b,
                         c[
-                            (e +
-                                1084 +
-                                (((d[(e + 1724 + ((a * 236) | 0) + 1) | 0] |
-                                    0) *
-                                    40) |
-                                    0) +
-                                24) >>
-                                2
+                        (e +
+                            1084 +
+                            (((d[(e + 1724 + ((a * 236) | 0) + 1) | 0] |
+                                0) *
+                                40) |
+                                0) +
+                            24) >>
+                        2
                         ] | 0
                     ) | 0;
                 if (((c[(e + 8) >> 2] & 1) | 0) != 0) {
@@ -9083,9 +9098,9 @@ class LibTiMidity {
                     g[(e + 1724 + ((a * 236) | 0) + 68) >> 2] =
                         +(f | 0) *
                         +g[
-                            ((c[(e + 1724 + ((a * 236) | 0) + 4) >> 2] | 0) +
-                                84) >>
-                                2
+                        ((c[(e + 1724 + ((a * 236) | 0) + 4) >> 2] | 0) +
+                            84) >>
+                        2
                         ] *
                         +g[(e + 16) >> 2] *
                         4.76837158203125e-7;
@@ -9104,10 +9119,10 @@ class LibTiMidity {
                         g[(e + 1724 + ((a * 236) | 0) + 68) >> 2] =
                             +(f | 0) *
                             +g[
-                                ((c[(e + 1724 + ((a * 236) | 0) + 4) >> 2] |
-                                    0) +
-                                    84) >>
-                                    2
+                            ((c[(e + 1724 + ((a * 236) | 0) + 4) >> 2] |
+                                0) +
+                                84) >>
+                            2
                             ] *
                             +g[(e + 16) >> 2] *
                             4.76837158203125e-7;
@@ -9121,10 +9136,10 @@ class LibTiMidity {
                         g[(e + 1724 + ((a * 236) | 0) + 68) >> 2] =
                             +(f | 0) *
                             +g[
-                                ((c[(e + 1724 + ((a * 236) | 0) + 4) >> 2] |
-                                    0) +
-                                    84) >>
-                                    2
+                            ((c[(e + 1724 + ((a * 236) | 0) + 4) >> 2] |
+                                0) +
+                                84) >>
+                            2
                             ] *
                             +g[(e + 16) >> 2] *
                             9.5367431640625e-7;
@@ -9137,10 +9152,10 @@ class LibTiMidity {
                             g[(e + 1724 + ((a * 236) | 0) + 68) >> 2] =
                                 +(f | 0) *
                                 +g[
-                                    ((c[(e + 1724 + ((a * 236) | 0) + 4) >> 2] |
-                                        0) +
-                                        84) >>
-                                        2
+                                ((c[(e + 1724 + ((a * 236) | 0) + 4) >> 2] |
+                                    0) +
+                                    84) >>
+                                2
                                 ] *
                                 +g[(e + 16) >> 2] *
                                 9.5367431640625e-7;
@@ -9149,10 +9164,10 @@ class LibTiMidity {
                             g[(e + 1724 + ((a * 236) | 0) + 68) >> 2] =
                                 +(f | 0) *
                                 +g[
-                                    ((c[(e + 1724 + ((a * 236) | 0) + 4) >> 2] |
-                                        0) +
-                                        84) >>
-                                        2
+                                ((c[(e + 1724 + ((a * 236) | 0) + 4) >> 2] |
+                                    0) +
+                                    84) >>
+                                2
                                 ] *
                                 +g[(e + 16) >> 2] *
                                 7.450580596923828e-9;
@@ -9172,7 +9187,7 @@ class LibTiMidity {
                                                 1724 +
                                                 ((a * 236) | 0) +
                                                 228) >>
-                                                2
+                                            2
                                         ] |
                                             0)) |
                                     0
@@ -9225,7 +9240,7 @@ class LibTiMidity {
                 if (
                     ((a[
                         ((c[(e + 1724 + ((b * 236) | 0) + 4) >> 2] | 0) + 110) |
-                            0
+                        0
                     ] &
                         64) |
                         0) !=
@@ -9257,18 +9272,18 @@ class LibTiMidity {
                 b = ((c[(e + 1724 + ((a * 236) | 0) + 20) >> 2] | 0) < 0) | 0;
                 f =
                     c[
-                        (e +
-                            1084 +
-                            (((d[(e + 1724 + ((a * 236) | 0) + 1) | 0] | 0) *
-                                40) |
-                                0) +
-                            20) >>
-                            2
+                    (e +
+                        1084 +
+                        (((d[(e + 1724 + ((a * 236) | 0) + 1) | 0] | 0) *
+                            40) |
+                            0) +
+                        20) >>
+                    2
                     ] | 0;
                 if (
                     (c[
                         ((c[(e + 1724 + ((a * 236) | 0) + 4) >> 2] | 0) + 12) >>
-                            2
+                        2
                     ] |
                         0) ==
                     0
@@ -9303,34 +9318,34 @@ class LibTiMidity {
                         f = (f - 8192) | 0;
                         if (
                             +g[
-                                (e +
-                                    1084 +
-                                    (((d[(e + 1724 + ((a * 236) | 0) + 1) | 0] |
-                                        0) *
-                                        40) |
-                                        0) +
-                                    36) >>
-                                    2
+                            (e +
+                                1084 +
+                                (((d[(e + 1724 + ((a * 236) | 0) + 1) | 0] |
+                                    0) *
+                                    40) |
+                                    0) +
+                                36) >>
+                            2
                             ] == 0.0
                         ) {
                             i =
                                 _(
                                     f,
                                     c[
-                                        (e +
-                                            1084 +
-                                            (((d[
-                                                (e +
-                                                    1724 +
-                                                    ((a * 236) | 0) +
-                                                    1) |
-                                                    0
-                                            ] |
-                                                0) *
-                                                40) |
-                                                0) +
-                                            32) >>
-                                            2
+                                    (e +
+                                        1084 +
+                                        (((d[
+                                            (e +
+                                                1724 +
+                                                ((a * 236) | 0) +
+                                                1) |
+                                            0
+                                        ] |
+                                            0) *
+                                            40) |
+                                            0) +
+                                        32) >>
+                                    2
                                     ] | 0
                                 ) | 0;
                             if ((f | 0) < 0) {
@@ -9343,12 +9358,12 @@ class LibTiMidity {
                                     (d[(j + 1) | 0] << 8) |
                                     (d[(j + 2) | 0] << 16) |
                                     (d[(j + 3) | 0] << 24)),
-                                (c[(k + 4) >> 2] =
-                                    d[(j + 4) | 0] |
-                                    (d[(j + 5) | 0] << 8) |
-                                    (d[(j + 6) | 0] << 16) |
-                                    (d[(j + 7) | 0] << 24)),
-                                +h[k >> 3]);
+                                    (c[(k + 4) >> 2] =
+                                        d[(j + 4) | 0] |
+                                        (d[(j + 5) | 0] << 8) |
+                                        (d[(j + 6) | 0] << 16) |
+                                        (d[(j + 7) | 0] << 24)),
+                                    +h[k >> 3]);
                             j = (3752 + ((i >> 13) << 3)) | 0;
                             g[
                                 (e +
@@ -9358,7 +9373,7 @@ class LibTiMidity {
                                         40) |
                                         0) +
                                     36) >>
-                                    2
+                                2
                             ] =
                                 m *
                                 ((c[k >> 2] =
@@ -9366,26 +9381,26 @@ class LibTiMidity {
                                     (d[(j + 1) | 0] << 8) |
                                     (d[(j + 2) | 0] << 16) |
                                     (d[(j + 3) | 0] << 24)),
-                                (c[(k + 4) >> 2] =
-                                    d[(j + 4) | 0] |
-                                    (d[(j + 5) | 0] << 8) |
-                                    (d[(j + 6) | 0] << 16) |
-                                    (d[(j + 7) | 0] << 24)),
-                                +h[k >> 3]);
+                                    (c[(k + 4) >> 2] =
+                                        d[(j + 4) | 0] |
+                                        (d[(j + 5) | 0] << 8) |
+                                        (d[(j + 6) | 0] << 16) |
+                                        (d[(j + 7) | 0] << 24)),
+                                    +h[k >> 3]);
                         }
                         if ((f | 0) > 0) {
                             c[(e + 1724 + ((a * 236) | 0) + 12) >> 2] = ~~(
                                 +g[
-                                    (e +
-                                        1084 +
-                                        (((d[
-                                            (e + 1724 + ((a * 236) | 0) + 1) | 0
-                                        ] |
-                                            0) *
-                                            40) |
-                                            0) +
-                                        36) >>
-                                        2
+                                (e +
+                                    1084 +
+                                    (((d[
+                                        (e + 1724 + ((a * 236) | 0) + 1) | 0
+                                    ] |
+                                        0) *
+                                        40) |
+                                        0) +
+                                    36) >>
+                                2
                                 ] *
                                 +(c[(e + 1724 + ((a * 236) | 0) + 8) >> 2] | 0)
                             );
@@ -9395,16 +9410,16 @@ class LibTiMidity {
                                     c[(e + 1724 + ((a * 236) | 0) + 8) >> 2] | 0
                                 ) /
                                 +g[
-                                    (e +
-                                        1084 +
-                                        (((d[
-                                            (e + 1724 + ((a * 236) | 0) + 1) | 0
-                                        ] |
-                                            0) *
-                                            40) |
-                                            0) +
-                                        36) >>
-                                        2
+                                (e +
+                                    1084 +
+                                    (((d[
+                                        (e + 1724 + ((a * 236) | 0) + 1) | 0
+                                    ] |
+                                        0) *
+                                        40) |
+                                        0) +
+                                    36) >>
+                                2
                                 ]
                             );
                         }
@@ -9417,18 +9432,18 @@ class LibTiMidity {
                 m =
                     ((+(
                         c[
-                            ((c[(e + 1724 + ((a * 236) | 0) + 4) >> 2] | 0) +
-                                12) >>
-                                2
+                        ((c[(e + 1724 + ((a * 236) | 0) + 4) >> 2] | 0) +
+                            12) >>
+                        2
                         ] | 0
                     ) *
                         +(c[(e + 1724 + ((a * 236) | 0) + 12) >> 2] | 0)) /
                         (+(
                             c[
-                                ((c[(e + 1724 + ((a * 236) | 0) + 4) >> 2] |
-                                    0) +
-                                    32) >>
-                                    2
+                            ((c[(e + 1724 + ((a * 236) | 0) + 4) >> 2] |
+                                0) +
+                                32) >>
+                            2
                             ] | 0
                         ) *
                             +(c[(e + 4) >> 2] | 0))) *
@@ -9439,6 +9454,7 @@ class LibTiMidity {
                 c[(e + 1724 + ((a * 236) | 0) + 20) >> 2] = ~~m;
                 return;
             }
+            //_reset_midi
             function ck(a) {
                 a = a | 0;
                 let b = 0;
@@ -9459,6 +9475,7 @@ class LibTiMidity {
                 cm(b);
                 return;
             }
+            //_seek_forward
             function cl(a, b) {
                 a = a | 0;
                 b = b | 0;
@@ -9484,7 +9501,7 @@ class LibTiMidity {
                                         40) |
                                         0) +
                                     24) >>
-                                    2
+                                2
                             ] = d[((c[(e + 13080) >> 2] | 0) + 6) | 0] | 0;
                             break;
                         }
@@ -9501,7 +9518,7 @@ class LibTiMidity {
                                         40) |
                                         0) +
                                     8) >>
-                                    2
+                                2
                             ] = d[((c[(e + 13080) >> 2] | 0) + 6) | 0] | 0;
                             break;
                         }
@@ -9514,7 +9531,7 @@ class LibTiMidity {
                                         40) |
                                         0) +
                                     32) >>
-                                    2
+                                2
                             ] = d[((c[(e + 13080) >> 2] | 0) + 6) | 0] | 0;
                             g[
                                 (e +
@@ -9524,7 +9541,7 @@ class LibTiMidity {
                                         40) |
                                         0) +
                                     36) >>
-                                    2
+                                2
                             ] = 0.0;
                             break;
                         }
@@ -9553,7 +9570,7 @@ class LibTiMidity {
                                             0) *
                                             40) |
                                             0)) >>
-                                        2
+                                    2
                                 ] = d[((c[(e + 13080) >> 2] | 0) + 6) | 0] | 0;
                             } else {
                                 c[
@@ -9566,7 +9583,7 @@ class LibTiMidity {
                                             40) |
                                             0) +
                                         4) >>
-                                        2
+                                    2
                                 ] = d[((c[(e + 13080) >> 2] | 0) + 6) | 0] | 0;
                             }
                             break;
@@ -9580,7 +9597,7 @@ class LibTiMidity {
                                         40) |
                                         0) +
                                     20) >>
-                                    2
+                                2
                             ] =
                                 (d[((c[(e + 13080) >> 2] | 0) + 6) | 0] | 0) +
                                 ((d[((c[(e + 13080) >> 2] | 0) + 7) | 0] | 0) <<
@@ -9593,7 +9610,7 @@ class LibTiMidity {
                                         40) |
                                         0) +
                                     36) >>
-                                    2
+                                2
                             ] = 0.0;
                             break;
                         }
@@ -9605,7 +9622,7 @@ class LibTiMidity {
                                         0) *
                                         40) |
                                         0)) >>
-                                    2
+                                2
                             ] = d[((c[(e + 13080) >> 2] | 0) + 6) | 0] | 0;
                             break;
                         }
@@ -9627,7 +9644,7 @@ class LibTiMidity {
                                         40) |
                                         0) +
                                     16) >>
-                                    2
+                                2
                             ] = d[((c[(e + 13080) >> 2] | 0) + 6) | 0] | 0;
                             break;
                         }
@@ -9640,7 +9657,7 @@ class LibTiMidity {
                                         40) |
                                         0) +
                                     12) >>
-                                    2
+                                2
                             ] = d[((c[(e + 13080) >> 2] | 0) + 6) | 0] | 0;
                             break;
                         }
@@ -9700,33 +9717,33 @@ class LibTiMidity {
                 if (((c[(h + 13056) >> 2] & (1 << d[(b + 4) | 0])) | 0) != 0) {
                     f =
                         c[
-                            ((c[
-                                (h +
-                                    540 +
-                                    (c[
-                                        (h +
-                                            1084 +
-                                            (((d[(b + 4) | 0] | 0) * 40) |
-                                                0)) >>
-                                            2
-                                    ] <<
-                                        2)) >>
+                        ((c[
+                            (h +
+                                540 +
+                                (c[
+                                    (h +
+                                        1084 +
+                                        (((d[(b + 4) | 0] | 0) * 40) |
+                                            0)) >>
                                     2
-                            ] |
-                                0) +
-                                4 +
-                                (d[(b + 6) | 0] << 2)) >>
-                                2
+                                ] <<
+                                    2)) >>
+                            2
+                        ] |
+                            0) +
+                            4 +
+                            (d[(b + 6) | 0] << 2)) >>
+                        2
                         ] | 0;
                     i = f;
                     do {
                         if ((f | 0) == 0) {
                             j =
                                 c[
-                                    ((c[(h + 540) >> 2] | 0) +
-                                        4 +
-                                        (d[(b + 6) | 0] << 2)) >>
-                                        2
+                                ((c[(h + 540) >> 2] | 0) +
+                                    4 +
+                                    (d[(b + 6) | 0] << 2)) >>
+                                2
                                 ] | 0;
                             i = j;
                             if ((j | 0) != 0) {
@@ -9759,17 +9776,17 @@ class LibTiMidity {
                     if (-1 != (c[(1640 + (d[(b + 4) | 0] << 2)) >> 2] | 0)) {
                         f =
                             c[
-                                (h +
-                                    28 +
-                                    (c[
-                                        (h +
-                                            1084 +
-                                            (((d[(b + 4) | 0] | 0) * 40) |
-                                                0)) >>
-                                            2
-                                    ] <<
-                                        2)) >>
+                            (h +
+                                28 +
+                                (c[
+                                    (h +
+                                        1084 +
+                                        (((d[(b + 4) | 0] | 0) * 40) |
+                                            0)) >>
                                     2
+                                ] <<
+                                    2)) >>
+                            2
                             ] | 0;
                         j = c[(1640 + (d[(b + 4) | 0] << 2)) >> 2] | 0;
                         if (0 == (c[(f + 4 + (j << 2)) >> 2] | 0)) {
@@ -9779,7 +9796,7 @@ class LibTiMidity {
                             n = (k | 0) != 0 ? 1 : 0;
                             o =
                                 c[
-                                    ((c[f >> 2] | 0) + ((j * 28) | 0) + 12) >> 2
+                                ((c[f >> 2] | 0) + ((j * 28) | 0) + 12) >> 2
                                 ] | 0;
                             p =
                                 c[((c[f >> 2] | 0) + ((j * 28) | 0) + 8) >> 2] |
@@ -9793,10 +9810,10 @@ class LibTiMidity {
                             ) {
                                 q =
                                     c[
-                                        ((c[f >> 2] | 0) +
-                                            ((j * 28) | 0) +
-                                            4) >>
-                                            2
+                                    ((c[f >> 2] | 0) +
+                                        ((j * 28) | 0) +
+                                        4) >>
+                                    2
                                     ] | 0;
                             } else {
                                 if ((k | 0) != 0) {
@@ -9815,10 +9832,10 @@ class LibTiMidity {
                             ) {
                                 s =
                                     c[
-                                        ((c[f >> 2] | 0) +
-                                            ((j * 28) | 0) +
-                                            16) >>
-                                            2
+                                    ((c[f >> 2] | 0) +
+                                        ((j * 28) | 0) +
+                                        16) >>
+                                    2
                                     ] | 0;
                             } else {
                                 s = (k | 0) != 0 ? 1 : -1;
@@ -9832,10 +9849,10 @@ class LibTiMidity {
                             ) {
                                 t =
                                     c[
-                                        ((c[f >> 2] | 0) +
-                                            ((j * 28) | 0) +
-                                            20) >>
-                                            2
+                                    ((c[f >> 2] | 0) +
+                                        ((j * 28) | 0) +
+                                        20) >>
+                                    2
                                     ] | 0;
                             } else {
                                 t = (k | 0) != 0 ? 1 : -1;
@@ -9851,10 +9868,10 @@ class LibTiMidity {
                                     s,
                                     t,
                                     c[
-                                        ((c[f >> 2] | 0) +
-                                            ((j * 28) | 0) +
-                                            24) >>
-                                            2
+                                    ((c[f >> 2] | 0) +
+                                        ((j * 28) | 0) +
+                                        24) >>
+                                    2
                                     ] | 0
                                 ) | 0;
                         }
@@ -9866,7 +9883,7 @@ class LibTiMidity {
                                     1084 +
                                     (((d[(b + 4) | 0] | 0) * 40) | 0) +
                                     4) >>
-                                    2
+                                2
                             ] |
                                 0) ==
                             -1
@@ -9875,51 +9892,51 @@ class LibTiMidity {
                         } else {
                             j =
                                 c[
-                                    ((c[
-                                        (h +
-                                            28 +
-                                            (c[
-                                                (h +
-                                                    1084 +
-                                                    (((d[(b + 4) | 0] | 0) *
-                                                        40) |
-                                                        0)) >>
-                                                    2
-                                            ] <<
-                                                2)) >>
-                                            2
-                                    ] |
-                                        0) +
-                                        4 +
+                                ((c[
+                                    (h +
+                                        28 +
                                         (c[
                                             (h +
                                                 1084 +
-                                                (((d[(b + 4) | 0] | 0) * 40) |
-                                                    0) +
-                                                4) >>
-                                                2
+                                                (((d[(b + 4) | 0] | 0) *
+                                                    40) |
+                                                    0)) >>
+                                            2
                                         ] <<
                                             2)) >>
+                                    2
+                                ] |
+                                    0) +
+                                    4 +
+                                    (c[
+                                        (h +
+                                            1084 +
+                                            (((d[(b + 4) | 0] | 0) * 40) |
+                                                0) +
+                                            4) >>
                                         2
+                                    ] <<
+                                        2)) >>
+                                2
                                 ] | 0;
                             i = j;
                             do {
                                 if ((j | 0) == 0) {
                                     f =
                                         c[
-                                            ((c[(h + 28) >> 2] | 0) +
-                                                4 +
-                                                (c[
-                                                    (h +
-                                                        1084 +
-                                                        (((d[(b + 4) | 0] | 0) *
-                                                            40) |
-                                                            0) +
-                                                        4) >>
-                                                        2
-                                                ] <<
-                                                    2)) >>
+                                        ((c[(h + 28) >> 2] | 0) +
+                                            4 +
+                                            (c[
+                                                (h +
+                                                    1084 +
+                                                    (((d[(b + 4) | 0] | 0) *
+                                                        40) |
+                                                        0) +
+                                                    4) >>
                                                 2
+                                            ] <<
+                                                2)) >>
+                                        2
                                         ] | 0;
                                     i = f;
                                     if ((f | 0) != 0) {
@@ -9973,27 +9990,27 @@ class LibTiMidity {
                 c[(h + 1724 + ((e * 236) | 0) + 44) >> 2] = 0;
                 c[(h + 1724 + ((e * 236) | 0) + 48) >> 2] =
                     c[
-                        ((c[(h + 1724 + ((e * 236) | 0) + 4) >> 2] | 0) + 96) >>
-                            2
+                    ((c[(h + 1724 + ((e * 236) | 0) + 4) >> 2] | 0) + 96) >>
+                    2
                     ];
                 c[(h + 1724 + ((e * 236) | 0) + 36) >> 2] =
                     c[
-                        ((c[(h + 1724 + ((e * 236) | 0) + 4) >> 2] | 0) + 92) >>
-                            2
+                    ((c[(h + 1724 + ((e * 236) | 0) + 4) >> 2] | 0) + 92) >>
+                    2
                     ];
                 c[(h + 1724 + ((e * 236) | 0) + 40) >> 2] = 0;
                 c[(h + 1724 + ((e * 236) | 0) + 52) >> 2] =
                     c[
-                        ((c[(h + 1724 + ((e * 236) | 0) + 4) >> 2] | 0) +
-                            100) >>
-                            2
+                    ((c[(h + 1724 + ((e * 236) | 0) + 4) >> 2] | 0) +
+                        100) >>
+                    2
                     ];
                 c[(h + 1724 + ((e * 236) | 0) + 56) >> 2] = 0;
                 c[(h + 1724 + ((e * 236) | 0) + 212) >> 2] =
                     c[
-                        ((c[(h + 1724 + ((e * 236) | 0) + 4) >> 2] | 0) +
-                            104) >>
-                            2
+                    ((c[(h + 1724 + ((e * 236) | 0) + 4) >> 2] | 0) +
+                        104) >>
+                    2
                     ];
                 c[(h + 1724 + ((e * 236) | 0) + 208) >> 2] = 0;
                 c[(h + 1724 + ((e * 236) | 0) + 216) >> 2] = 0;
@@ -10014,18 +10031,18 @@ class LibTiMidity {
                 ) {
                     c[(h + 1724 + ((e * 236) | 0) + 228) >> 2] =
                         c[
-                            (h +
-                                1084 +
-                                (((d[(b + 4) | 0] | 0) * 40) | 0) +
-                                16) >>
-                                2
+                        (h +
+                            1084 +
+                            (((d[(b + 4) | 0] | 0) * 40) | 0) +
+                            16) >>
+                        2
                         ];
                 } else {
                     c[(h + 1724 + ((e * 236) | 0) + 228) >> 2] =
                         a[
-                            ((c[(h + 1724 + ((e * 236) | 0) + 4) >> 2] | 0) +
-                                111) |
-                                0
+                        ((c[(h + 1724 + ((e * 236) | 0) + 4) >> 2] | 0) +
+                            111) |
+                        0
                         ] | 0;
                 }
                 cj(h, e);
@@ -10033,7 +10050,7 @@ class LibTiMidity {
                 if (
                     ((a[
                         ((c[(h + 1724 + ((e * 236) | 0) + 4) >> 2] | 0) + 110) |
-                            0
+                        0
                     ] &
                         64) |
                         0) !=
@@ -10151,10 +10168,10 @@ class LibTiMidity {
                     aG(
                         4784,
                         ((k = i),
-                        (i = (i + 16) | 0),
-                        (c[k >> 2] = j),
-                        (c[(k + 8) >> 2] = e),
-                        k) | 0
+                            (i = (i + 16) | 0),
+                            (c[k >> 2] = j),
+                            (c[(k + 8) >> 2] = e),
+                            k) | 0
                     ) | 0;
                     i = k;
                     g = a;
@@ -10548,7 +10565,7 @@ class LibTiMidity {
                                         (m +
                                             540 +
                                             ((d[(o + 6) | 0] | 0) << 2)) >>
-                                            2
+                                        2
                                     ] |
                                         0) !=
                                     0
@@ -10575,7 +10592,7 @@ class LibTiMidity {
                                     if (
                                         (c[
                                             (l + ((d[(o + 4) | 0] | 0) << 2)) >>
-                                                2
+                                            2
                                         ] |
                                             0) !=
                                         -1
@@ -10585,7 +10602,7 @@ class LibTiMidity {
                                                 (l +
                                                     ((d[(o + 4) | 0] | 0) <<
                                                         2)) >>
-                                                    2
+                                                2
                                             ] |
                                                 0) ==
                                             (y | 0)
@@ -10595,7 +10612,7 @@ class LibTiMidity {
                                         }
                                         c[
                                             (l + ((d[(o + 4) | 0] | 0) << 2)) >>
-                                                2
+                                            2
                                         ] = y;
                                     } else {
                                         z = 1096;
@@ -10656,15 +10673,15 @@ class LibTiMidity {
                                                     (k +
                                                         ((d[(o + 4) | 0] | 0) <<
                                                             2)) >>
-                                                        2
+                                                    2
                                                 ] <<
                                                     2)) >>
-                                                2
+                                            2
                                         ] |
                                             0) +
                                             4 +
                                             ((d[(o + 6) | 0] | 0) << 2)) >>
-                                            2
+                                        2
                                     ] |
                                         0) ==
                                     0
@@ -10677,15 +10694,15 @@ class LibTiMidity {
                                                     (k +
                                                         ((d[(o + 4) | 0] | 0) <<
                                                             2)) >>
-                                                        2
+                                                    2
                                                 ] <<
                                                     2)) >>
-                                                2
+                                            2
                                         ] |
                                             0) +
                                             4 +
                                             ((d[(o + 6) | 0] | 0) << 2)) >>
-                                            2
+                                        2
                                     ] = -1;
                                 }
                             } else {
@@ -10705,10 +10722,10 @@ class LibTiMidity {
                                                     (j +
                                                         ((d[(o + 4) | 0] | 0) <<
                                                             2)) >>
-                                                        2
+                                                    2
                                                 ] <<
                                                     2)) >>
-                                                2
+                                            2
                                         ] |
                                             0) +
                                             4 +
@@ -10716,10 +10733,10 @@ class LibTiMidity {
                                                 (l +
                                                     ((d[(o + 4) | 0] | 0) <<
                                                         2)) >>
-                                                    2
+                                                2
                                             ] <<
                                                 2)) >>
-                                            2
+                                        2
                                     ] |
                                         0) ==
                                     0
@@ -10732,10 +10749,10 @@ class LibTiMidity {
                                                     (j +
                                                         ((d[(o + 4) | 0] | 0) <<
                                                             2)) >>
-                                                        2
+                                                    2
                                                 ] <<
                                                     2)) >>
-                                                2
+                                            2
                                         ] |
                                             0) +
                                             4 +
@@ -10743,10 +10760,10 @@ class LibTiMidity {
                                                 (l +
                                                     ((d[(o + 4) | 0] | 0) <<
                                                         2)) >>
-                                                    2
+                                                2
                                             ] <<
                                                 2)) >>
-                                            2
+                                        2
                                     ] = -1;
                                 }
                             }
@@ -10942,7 +10959,7 @@ class LibTiMidity {
                                                     a[6616] = 1;
                                                     a[
                                                         (6600 + (d[6632] | 0)) |
-                                                            0
+                                                        0
                                                     ] = a[k] | 0;
                                                     break;
                                                 }
@@ -10954,13 +10971,13 @@ class LibTiMidity {
                                                         (d[
                                                             (6584 +
                                                                 (d[6632] | 0)) |
-                                                                0
+                                                            0
                                                         ] <<
                                                             8) |
                                                         d[
-                                                            (6600 +
-                                                                (d[6632] | 0)) |
-                                                                0
+                                                        (6600 +
+                                                            (d[6632] | 0)) |
+                                                        0
                                                         ];
                                                     if ((r | 0) == 0) {
                                                         s = 11;
@@ -11015,7 +11032,7 @@ class LibTiMidity {
                                                     a[6616] = 0;
                                                     a[
                                                         (6584 + (d[6632] | 0)) |
-                                                            0
+                                                        0
                                                     ] = a[k] | 0;
                                                     break;
                                                 }
@@ -11023,7 +11040,7 @@ class LibTiMidity {
                                                     a[6616] = 0;
                                                     a[
                                                         (6600 + (d[6632] | 0)) |
-                                                            0
+                                                        0
                                                     ] = a[k] | 0;
                                                     break;
                                                 }
@@ -11031,7 +11048,7 @@ class LibTiMidity {
                                                     a[6616] = 1;
                                                     a[
                                                         (6584 + (d[6632] | 0)) |
-                                                            0
+                                                        0
                                                     ] = a[k] | 0;
                                                     break;
                                                 }
@@ -11541,7 +11558,7 @@ class LibTiMidity {
                                     ((b[(k + (((e >> 12) + 1) << 1)) >> 1] |
                                         0) -
                                         ((o << 16) >> 16)) |
-                                        0,
+                                    0,
                                     e & 4095
                                 ) |
                                     0) >>>
@@ -11620,7 +11637,7 @@ class LibTiMidity {
                             ((_(
                                 ((b[(h + (((j >> 12) + 1) << 1)) >> 1] | 0) -
                                     ((n << 16) >> 16)) |
-                                    0,
+                                0,
                                 j & 4095
                             ) |
                                 0) >>>
@@ -11831,7 +11848,7 @@ class LibTiMidity {
                                     ((b[(k + (((e >> 12) + 1) << 1)) >> 1] |
                                         0) -
                                         ((m << 16) >> 16)) |
-                                        0,
+                                    0,
                                     e & 4095
                                 ) |
                                     0) >>>
@@ -11895,7 +11912,7 @@ class LibTiMidity {
                             ((_(
                                 ((b[(h + (((i >> 12) + 1) << 1)) >> 1] | 0) -
                                     ((n << 16) >> 16)) |
-                                    0,
+                                0,
                                 i & 4095
                             ) |
                                 0) >>>
@@ -12027,34 +12044,34 @@ class LibTiMidity {
                     b[l >> 1] = ~~(
                         +(((q << 16) >> 16) | 0) +
                         (t / 6.0) *
+                        (+(
+                            (((((p << 16) >> 16) * -2) | 0) -
+                                ((((q << 16) >> 16) * 3) | 0) +
+                                ((((r << 16) >> 16) * 6) | 0) -
+                                ((s << 16) >> 16)) |
+                            0
+                        ) +
+                            t *
                             (+(
-                                (((((p << 16) >> 16) * -2) | 0) -
-                                    ((((q << 16) >> 16) * 3) | 0) +
-                                    ((((r << 16) >> 16) * 6) | 0) -
-                                    ((s << 16) >> 16)) |
+                                (((((p << 16) >> 16) -
+                                    (((q << 16) >> 16) << 1) +
+                                    ((r << 16) >> 16)) |
+                                    0) *
+                                    3) |
+                                0 |
                                 0
                             ) +
                                 t *
-                                    (+(
-                                        (((((p << 16) >> 16) -
-                                            (((q << 16) >> 16) << 1) +
+                                +(
+                                    ((-((p << 16) >> 16) | 0) +
+                                        ((((((q << 16) >> 16) -
                                             ((r << 16) >> 16)) |
                                             0) *
                                             3) |
-                                        0 |
-                                        0
-                                    ) +
-                                        t *
-                                            +(
-                                                ((-((p << 16) >> 16) | 0) +
-                                                    ((((((q << 16) >> 16) -
-                                                        ((r << 16) >> 16)) |
-                                                        0) *
-                                                        3) |
-                                                        0) +
-                                                    ((s << 16) >> 16)) |
-                                                0
-                                            )))
+                                            0) +
+                                        ((s << 16) >> 16)) |
+                                    0
+                                )))
                     );
                     n = (n + m) | 0;
                 }
@@ -12220,12 +12237,12 @@ class LibTiMidity {
                             (d[(e + 1) | 0] << 8) |
                             (d[(e + 2) | 0] << 16) |
                             (d[(e + 3) | 0] << 24)),
-                        (c[(k + 4) >> 2] =
-                            d[(e + 4) | 0] |
-                            (d[(e + 5) | 0] << 8) |
-                            (d[(e + 6) | 0] << 16) |
-                            (d[(e + 7) | 0] << 24)),
-                        +h[k >> 3]);
+                            (c[(k + 4) >> 2] =
+                                d[(e + 4) | 0] |
+                                (d[(e + 5) | 0] << 8) |
+                                (d[(e + 6) | 0] << 16) |
+                                (d[(e + 7) | 0] << 24)),
+                            +h[k >> 3]);
                     e = (3752 + ((f >> 13) << 3)) | 0;
                     m =
                         m /
@@ -12235,12 +12252,12 @@ class LibTiMidity {
                                 (d[(e + 1) | 0] << 8) |
                                 (d[(e + 2) | 0] << 16) |
                                 (d[(e + 3) | 0] << 24)),
-                            (c[(k + 4) >> 2] =
-                                d[(e + 4) | 0] |
-                                (d[(e + 5) | 0] << 8) |
-                                (d[(e + 6) | 0] << 16) |
-                                (d[(e + 7) | 0] << 24)),
-                            +h[k >> 3]));
+                                (c[(k + 4) >> 2] =
+                                    d[(e + 4) | 0] |
+                                    (d[(e + 5) | 0] << 8) |
+                                    (d[(e + 6) | 0] << 16) |
+                                    (d[(e + 7) | 0] << 24)),
+                                +h[k >> 3]));
                 } else {
                     e = (1704 + (((f >> 5) & 255) << 3)) | 0;
                     n =
@@ -12249,12 +12266,12 @@ class LibTiMidity {
                             (d[(e + 1) | 0] << 8) |
                             (d[(e + 2) | 0] << 16) |
                             (d[(e + 3) | 0] << 24)),
-                        (c[(k + 4) >> 2] =
-                            d[(e + 4) | 0] |
-                            (d[(e + 5) | 0] << 8) |
-                            (d[(e + 6) | 0] << 16) |
-                            (d[(e + 7) | 0] << 24)),
-                        +h[k >> 3]);
+                            (c[(k + 4) >> 2] =
+                                d[(e + 4) | 0] |
+                                (d[(e + 5) | 0] << 8) |
+                                (d[(e + 6) | 0] << 16) |
+                                (d[(e + 7) | 0] << 24)),
+                            +h[k >> 3]);
                     e = (3752 + ((f >> 13) << 3)) | 0;
                     m =
                         m *
@@ -12264,12 +12281,12 @@ class LibTiMidity {
                             (d[(e + 1) | 0] << 8) |
                             (d[(e + 2) | 0] << 16) |
                             (d[(e + 3) | 0] << 24)),
-                        (c[(k + 4) >> 2] =
-                            d[(e + 4) | 0] |
-                            (d[(e + 5) | 0] << 8) |
-                            (d[(e + 6) | 0] << 16) |
-                            (d[(e + 7) | 0] << 24)),
-                        +h[k >> 3]);
+                            (c[(k + 4) >> 2] =
+                                d[(e + 4) | 0] |
+                                (d[(e + 5) | 0] << 8) |
+                                (d[(e + 6) | 0] << 16) |
+                                (d[(e + 7) | 0] << 24)),
+                            +h[k >> 3]);
                 }
                 if ((c[(a + 52) >> 2] | 0) == 0) {
                     c[(a + 80 + (g << 2)) >> 2] = ~~m;
@@ -12539,9 +12556,9 @@ class LibTiMidity {
                                 g | 0,
                                 6480,
                                 ((g = i),
-                                (i = (i + 8) | 0),
-                                (c[g >> 2] = b),
-                                g) | 0
+                                    (i = (i + 8) | 0),
+                                    (c[g >> 2] = b),
+                                    g) | 0
                             ) | 0;
                             i = g;
                             bj(e | 0);
@@ -12599,10 +12616,10 @@ class LibTiMidity {
                         j | 0,
                         5792,
                         ((k = i),
-                        (i = (i + 1) | 0),
-                        (i = (i + 7) & -8),
-                        (c[k >> 2] = 0),
-                        k) | 0
+                            (i = (i + 1) | 0),
+                            (i = (i + 7) & -8),
+                            (c[k >> 2] = 0),
+                            k) | 0
                     ) | 0;
                     i = k;
                     l = -1;
@@ -12734,7 +12751,7 @@ class LibTiMidity {
                                                             if (
                                                                 (aV(
                                                                     c[f >> 2] |
-                                                                        0,
+                                                                    0,
                                                                     6008
                                                                 ) |
                                                                     0) !=
@@ -12743,8 +12760,8 @@ class LibTiMidity {
                                                                 if (
                                                                     (aV(
                                                                         c[
-                                                                            f >>
-                                                                                2
+                                                                        f >>
+                                                                        2
                                                                         ] | 0,
                                                                         5952
                                                                     ) |
@@ -12754,10 +12771,10 @@ class LibTiMidity {
                                                                     if (
                                                                         (aV(
                                                                             c[
-                                                                                f >>
-                                                                                    2
+                                                                            f >>
+                                                                            2
                                                                             ] |
-                                                                                0,
+                                                                            0,
                                                                             5880
                                                                         ) |
                                                                             0) !=
@@ -12766,10 +12783,10 @@ class LibTiMidity {
                                                                         if (
                                                                             (aV(
                                                                                 c[
-                                                                                    f >>
-                                                                                        2
+                                                                                f >>
+                                                                                2
                                                                                 ] |
-                                                                                    0,
+                                                                                0,
                                                                                 5784
                                                                             ) |
                                                                                 0) !=
@@ -12778,10 +12795,10 @@ class LibTiMidity {
                                                                             if (
                                                                                 (aV(
                                                                                     c[
-                                                                                        f >>
-                                                                                            2
+                                                                                    f >>
+                                                                                    2
                                                                                     ] |
-                                                                                        0,
+                                                                                    0,
                                                                                     5720
                                                                                 ) |
                                                                                     0) !=
@@ -12790,10 +12807,10 @@ class LibTiMidity {
                                                                                 if (
                                                                                     (aV(
                                                                                         c[
-                                                                                            f >>
-                                                                                                2
+                                                                                        f >>
+                                                                                        2
                                                                                         ] |
-                                                                                            0,
+                                                                                        0,
                                                                                         5616
                                                                                     ) |
                                                                                         0) !=
@@ -12810,10 +12827,10 @@ class LibTiMidity {
                                                                                     if (
                                                                                         (a[
                                                                                             c[
-                                                                                                f >>
-                                                                                                    2
+                                                                                            f >>
+                                                                                            2
                                                                                             ] |
-                                                                                                0
+                                                                                            0
                                                                                         ] |
                                                                                             0) <
                                                                                         48
@@ -12824,10 +12841,10 @@ class LibTiMidity {
                                                                                     if (
                                                                                         (a[
                                                                                             c[
-                                                                                                f >>
-                                                                                                    2
+                                                                                            f >>
+                                                                                            2
                                                                                             ] |
-                                                                                                0
+                                                                                            0
                                                                                         ] |
                                                                                             0) >
                                                                                         57
@@ -12838,10 +12855,10 @@ class LibTiMidity {
                                                                                     s =
                                                                                         aL(
                                                                                             c[
-                                                                                                f >>
-                                                                                                    2
+                                                                                            f >>
+                                                                                            2
                                                                                             ] |
-                                                                                                0
+                                                                                            0
                                                                                         ) |
                                                                                         0;
                                                                                     if (
@@ -12872,143 +12889,143 @@ class LibTiMidity {
                                                                                         (c[
                                                                                             ((c[
                                                                                                 b >>
-                                                                                                    2
+                                                                                                2
                                                                                             ] |
                                                                                                 0) +
                                                                                                 ((s *
                                                                                                     28) |
                                                                                                     0)) >>
-                                                                                                2
+                                                                                            2
                                                                                         ] |
                                                                                             0) !=
                                                                                         0
                                                                                     ) {
                                                                                         c0(
                                                                                             c[
-                                                                                                ((c[
-                                                                                                    b >>
-                                                                                                        2
-                                                                                                ] |
-                                                                                                    0) +
-                                                                                                    ((s *
-                                                                                                        28) |
-                                                                                                        0)) >>
-                                                                                                    2
+                                                                                            ((c[
+                                                                                                b >>
+                                                                                                2
                                                                                             ] |
-                                                                                                0
+                                                                                                0) +
+                                                                                                ((s *
+                                                                                                    28) |
+                                                                                                    0)) >>
+                                                                                            2
+                                                                                            ] |
+                                                                                            0
                                                                                         );
                                                                                     }
                                                                                     j =
                                                                                         bi(
                                                                                             ((c1(
                                                                                                 c[
-                                                                                                    (f +
-                                                                                                        4) >>
-                                                                                                        2
+                                                                                                (f +
+                                                                                                    4) >>
+                                                                                                2
                                                                                                 ] |
-                                                                                                    0
+                                                                                                0
                                                                                             ) |
                                                                                                 0) +
                                                                                                 1) |
-                                                                                                0
+                                                                                            0
                                                                                         ) |
                                                                                         0;
                                                                                     c[
                                                                                         ((c[
                                                                                             b >>
-                                                                                                2
+                                                                                            2
                                                                                         ] |
                                                                                             0) +
                                                                                             ((s *
                                                                                                 28) |
                                                                                                 0)) >>
-                                                                                            2
+                                                                                        2
                                                                                     ] = j;
                                                                                     t =
                                                                                         c[
-                                                                                            (f +
-                                                                                                4) >>
-                                                                                                2
+                                                                                        (f +
+                                                                                            4) >>
+                                                                                        2
                                                                                         ] |
                                                                                         0;
                                                                                     c2(
                                                                                         j |
-                                                                                            0,
+                                                                                        0,
                                                                                         t |
-                                                                                            0
+                                                                                        0
                                                                                     ) |
                                                                                         0;
                                                                                     c[
                                                                                         ((c[
                                                                                             b >>
-                                                                                                2
+                                                                                            2
                                                                                         ] |
                                                                                             0) +
                                                                                             ((s *
                                                                                                 28) |
                                                                                                 0) +
                                                                                             24) >>
-                                                                                            2
+                                                                                        2
                                                                                     ] = -1;
                                                                                     c[
                                                                                         ((c[
                                                                                             b >>
-                                                                                                2
+                                                                                            2
                                                                                         ] |
                                                                                             0) +
                                                                                             ((s *
                                                                                                 28) |
                                                                                                 0) +
                                                                                             20) >>
-                                                                                            2
+                                                                                        2
                                                                                     ] = -1;
                                                                                     c[
                                                                                         ((c[
                                                                                             b >>
-                                                                                                2
+                                                                                            2
                                                                                         ] |
                                                                                             0) +
                                                                                             ((s *
                                                                                                 28) |
                                                                                                 0) +
                                                                                             16) >>
-                                                                                            2
+                                                                                        2
                                                                                     ] = -1;
                                                                                     c[
                                                                                         ((c[
                                                                                             b >>
-                                                                                                2
+                                                                                            2
                                                                                         ] |
                                                                                             0) +
                                                                                             ((s *
                                                                                                 28) |
                                                                                                 0) +
                                                                                             12) >>
-                                                                                            2
+                                                                                        2
                                                                                     ] = -1;
                                                                                     c[
                                                                                         ((c[
                                                                                             b >>
-                                                                                                2
+                                                                                            2
                                                                                         ] |
                                                                                             0) +
                                                                                             ((s *
                                                                                                 28) |
                                                                                                 0) +
                                                                                             8) >>
-                                                                                            2
+                                                                                        2
                                                                                     ] = -1;
                                                                                     c[
                                                                                         ((c[
                                                                                             b >>
-                                                                                                2
+                                                                                            2
                                                                                         ] |
                                                                                             0) +
                                                                                             ((s *
                                                                                                 28) |
                                                                                                 0) +
                                                                                             4) >>
-                                                                                            2
+                                                                                        2
                                                                                     ] = -1;
                                                                                     u = 2;
                                                                                     while (
@@ -13025,12 +13042,12 @@ class LibTiMidity {
                                                                                         t =
                                                                                             aH(
                                                                                                 c[
-                                                                                                    (f +
-                                                                                                        (u <<
-                                                                                                            2)) >>
-                                                                                                        2
+                                                                                                (f +
+                                                                                                    (u <<
+                                                                                                        2)) >>
+                                                                                                2
                                                                                                 ] |
-                                                                                                    0,
+                                                                                                0,
                                                                                                 61
                                                                                             ) |
                                                                                             0;
@@ -13054,12 +13071,12 @@ class LibTiMidity {
                                                                                         if (
                                                                                             (aV(
                                                                                                 c[
-                                                                                                    (f +
-                                                                                                        (u <<
-                                                                                                            2)) >>
-                                                                                                        2
+                                                                                                (f +
+                                                                                                    (u <<
+                                                                                                        2)) >>
+                                                                                                2
                                                                                                 ] |
-                                                                                                    0,
+                                                                                                0,
                                                                                                 5272
                                                                                             ) |
                                                                                                 0) !=
@@ -13068,12 +13085,12 @@ class LibTiMidity {
                                                                                             if (
                                                                                                 (aV(
                                                                                                     c[
-                                                                                                        (f +
-                                                                                                            (u <<
-                                                                                                                2)) >>
-                                                                                                            2
+                                                                                                    (f +
+                                                                                                        (u <<
+                                                                                                            2)) >>
+                                                                                                    2
                                                                                                     ] |
-                                                                                                        0,
+                                                                                                    0,
                                                                                                     5208
                                                                                                 ) |
                                                                                                     0) !=
@@ -13082,12 +13099,12 @@ class LibTiMidity {
                                                                                                 if (
                                                                                                     (aV(
                                                                                                         c[
-                                                                                                            (f +
-                                                                                                                (u <<
-                                                                                                                    2)) >>
-                                                                                                                2
+                                                                                                        (f +
+                                                                                                            (u <<
+                                                                                                                2)) >>
+                                                                                                        2
                                                                                                         ] |
-                                                                                                            0,
+                                                                                                        0,
                                                                                                         5152
                                                                                                     ) |
                                                                                                         0) !=
@@ -13096,12 +13113,12 @@ class LibTiMidity {
                                                                                                     if (
                                                                                                         (aV(
                                                                                                             c[
-                                                                                                                (f +
-                                                                                                                    (u <<
-                                                                                                                        2)) >>
-                                                                                                                    2
+                                                                                                            (f +
+                                                                                                                (u <<
+                                                                                                                    2)) >>
+                                                                                                            2
                                                                                                             ] |
-                                                                                                                0,
+                                                                                                            0,
                                                                                                             5008
                                                                                                         ) |
                                                                                                             0) !=
@@ -13110,12 +13127,12 @@ class LibTiMidity {
                                                                                                         if (
                                                                                                             (aV(
                                                                                                                 c[
-                                                                                                                    (f +
-                                                                                                                        (u <<
-                                                                                                                            2)) >>
-                                                                                                                        2
+                                                                                                                (f +
+                                                                                                                    (u <<
+                                                                                                                        2)) >>
+                                                                                                                2
                                                                                                                 ] |
-                                                                                                                    0,
+                                                                                                                0,
                                                                                                                 4944
                                                                                                             ) |
                                                                                                                 0) !=
@@ -13127,7 +13144,7 @@ class LibTiMidity {
                                                                                                         if (
                                                                                                             (aV(
                                                                                                                 j |
-                                                                                                                    0,
+                                                                                                                0,
                                                                                                                 5e3
                                                                                                             ) |
                                                                                                                 0) !=
@@ -13136,7 +13153,7 @@ class LibTiMidity {
                                                                                                             if (
                                                                                                                 (aV(
                                                                                                                     j |
-                                                                                                                        0,
+                                                                                                                    0,
                                                                                                                     4992
                                                                                                                 ) |
                                                                                                                     0) !=
@@ -13145,7 +13162,7 @@ class LibTiMidity {
                                                                                                                 if (
                                                                                                                     (aV(
                                                                                                                         j |
-                                                                                                                            0,
+                                                                                                                        0,
                                                                                                                         4936
                                                                                                                     ) |
                                                                                                                         0) !=
@@ -13157,48 +13174,48 @@ class LibTiMidity {
                                                                                                                 c[
                                                                                                                     ((c[
                                                                                                                         b >>
-                                                                                                                            2
+                                                                                                                        2
                                                                                                                     ] |
                                                                                                                         0) +
                                                                                                                         ((s *
                                                                                                                             28) |
                                                                                                                             0) +
                                                                                                                         24) >>
-                                                                                                                        2
+                                                                                                                    2
                                                                                                                 ] = 1;
                                                                                                             } else {
                                                                                                                 c[
                                                                                                                     ((c[
                                                                                                                         b >>
-                                                                                                                            2
+                                                                                                                        2
                                                                                                                     ] |
                                                                                                                         0) +
                                                                                                                         ((s *
                                                                                                                             28) |
                                                                                                                             0) +
                                                                                                                         16) >>
-                                                                                                                        2
+                                                                                                                    2
                                                                                                                 ] = 1;
                                                                                                             }
                                                                                                         } else {
                                                                                                             c[
                                                                                                                 ((c[
                                                                                                                     b >>
-                                                                                                                        2
+                                                                                                                    2
                                                                                                                 ] |
                                                                                                                     0) +
                                                                                                                     ((s *
                                                                                                                         28) |
                                                                                                                         0) +
                                                                                                                     20) >>
-                                                                                                                    2
+                                                                                                                2
                                                                                                             ] = 1;
                                                                                                         }
                                                                                                     } else {
                                                                                                         if (
                                                                                                             (aV(
                                                                                                                 j |
-                                                                                                                    0,
+                                                                                                                0,
                                                                                                                 5e3
                                                                                                             ) |
                                                                                                                 0) !=
@@ -13207,7 +13224,7 @@ class LibTiMidity {
                                                                                                             if (
                                                                                                                 (aV(
                                                                                                                     j |
-                                                                                                                        0,
+                                                                                                                    0,
                                                                                                                     4992
                                                                                                                 ) |
                                                                                                                     0) !=
@@ -13219,27 +13236,27 @@ class LibTiMidity {
                                                                                                             c[
                                                                                                                 ((c[
                                                                                                                     b >>
-                                                                                                                        2
+                                                                                                                    2
                                                                                                                 ] |
                                                                                                                     0) +
                                                                                                                     ((s *
                                                                                                                         28) |
                                                                                                                         0) +
                                                                                                                     16) >>
-                                                                                                                    2
+                                                                                                                2
                                                                                                             ] = 0;
                                                                                                         } else {
                                                                                                             c[
                                                                                                                 ((c[
                                                                                                                     b >>
-                                                                                                                        2
+                                                                                                                    2
                                                                                                                 ] |
                                                                                                                     0) +
                                                                                                                     ((s *
                                                                                                                         28) |
                                                                                                                         0) +
                                                                                                                     20) >>
-                                                                                                                    2
+                                                                                                                2
                                                                                                             ] = 0;
                                                                                                         }
                                                                                                     }
@@ -13247,7 +13264,7 @@ class LibTiMidity {
                                                                                                     if (
                                                                                                         (aV(
                                                                                                             j |
-                                                                                                                0,
+                                                                                                            0,
                                                                                                             5144
                                                                                                         ) |
                                                                                                             0) !=
@@ -13256,7 +13273,7 @@ class LibTiMidity {
                                                                                                         if (
                                                                                                             (aV(
                                                                                                                 j |
-                                                                                                                    0,
+                                                                                                                0,
                                                                                                                 5112
                                                                                                             ) |
                                                                                                                 0) !=
@@ -13265,7 +13282,7 @@ class LibTiMidity {
                                                                                                             if (
                                                                                                                 (aV(
                                                                                                                     j |
-                                                                                                                        0,
+                                                                                                                    0,
                                                                                                                     5104
                                                                                                                 ) |
                                                                                                                     0) !=
@@ -13274,7 +13291,7 @@ class LibTiMidity {
                                                                                                                 v =
                                                                                                                     ((((((aL(
                                                                                                                         j |
-                                                                                                                            0
+                                                                                                                        0
                                                                                                                     ) |
                                                                                                                         0) +
                                                                                                                         100) |
@@ -13351,21 +13368,21 @@ class LibTiMidity {
                                                                                                     c[
                                                                                                         ((c[
                                                                                                             b >>
-                                                                                                                2
+                                                                                                            2
                                                                                                         ] |
                                                                                                             0) +
                                                                                                             ((s *
                                                                                                                 28) |
                                                                                                                 0) +
                                                                                                             12) >>
-                                                                                                            2
+                                                                                                        2
                                                                                                     ] = v;
                                                                                                 }
                                                                                             } else {
                                                                                                 v =
                                                                                                     aL(
                                                                                                         j |
-                                                                                                            0
+                                                                                                        0
                                                                                                     ) |
                                                                                                     0;
                                                                                                 if (
@@ -13407,21 +13424,21 @@ class LibTiMidity {
                                                                                                 c[
                                                                                                     ((c[
                                                                                                         b >>
-                                                                                                            2
+                                                                                                        2
                                                                                                     ] |
                                                                                                         0) +
                                                                                                         ((s *
                                                                                                             28) |
                                                                                                             0) +
                                                                                                         4) >>
-                                                                                                        2
+                                                                                                    2
                                                                                                 ] = v;
                                                                                             }
                                                                                         } else {
                                                                                             v =
                                                                                                 aL(
                                                                                                     j |
-                                                                                                        0
+                                                                                                    0
                                                                                                 ) |
                                                                                                 0;
                                                                                             if (
@@ -13463,14 +13480,14 @@ class LibTiMidity {
                                                                                             c[
                                                                                                 ((c[
                                                                                                     b >>
-                                                                                                        2
+                                                                                                    2
                                                                                                 ] |
                                                                                                     0) +
                                                                                                     ((s *
                                                                                                         28) |
                                                                                                         0) +
                                                                                                     8) >>
-                                                                                                    2
+                                                                                                2
                                                                                             ] = v;
                                                                                         }
                                                                                         u =
@@ -13490,11 +13507,11 @@ class LibTiMidity {
                                                                                     s =
                                                                                         aL(
                                                                                             c[
-                                                                                                (f +
-                                                                                                    4) >>
-                                                                                                    2
+                                                                                            (f +
+                                                                                                4) >>
+                                                                                            2
                                                                                             ] |
-                                                                                                0
+                                                                                            0
                                                                                         ) |
                                                                                         0;
                                                                                     if (
@@ -13518,7 +13535,7 @@ class LibTiMidity {
                                                                                             (6704 +
                                                                                                 (s <<
                                                                                                     2)) >>
-                                                                                                2
+                                                                                            2
                                                                                         ] |
                                                                                             0) ==
                                                                                         0
@@ -13527,7 +13544,7 @@ class LibTiMidity {
                                                                                             (6704 +
                                                                                                 (s <<
                                                                                                     2)) >>
-                                                                                                2
+                                                                                            2
                                                                                         ] =
                                                                                             bi(
                                                                                                 516
@@ -13535,12 +13552,12 @@ class LibTiMidity {
                                                                                             0;
                                                                                         c5(
                                                                                             c[
-                                                                                                (6704 +
-                                                                                                    (s <<
-                                                                                                        2)) >>
-                                                                                                    2
+                                                                                            (6704 +
+                                                                                                (s <<
+                                                                                                    2)) >>
+                                                                                            2
                                                                                             ] |
-                                                                                                0,
+                                                                                            0,
                                                                                             0,
                                                                                             516
                                                                                         );
@@ -13551,34 +13568,34 @@ class LibTiMidity {
                                                                                             0;
                                                                                         c[
                                                                                             c[
-                                                                                                (6704 +
-                                                                                                    (s <<
-                                                                                                        2)) >>
-                                                                                                    2
+                                                                                            (6704 +
+                                                                                                (s <<
+                                                                                                    2)) >>
+                                                                                            2
                                                                                             ] >>
-                                                                                                2
+                                                                                            2
                                                                                         ] = t;
                                                                                         c5(
                                                                                             c[
-                                                                                                c[
-                                                                                                    (6704 +
-                                                                                                        (s <<
-                                                                                                            2)) >>
-                                                                                                        2
-                                                                                                ] >>
-                                                                                                    2
+                                                                                            c[
+                                                                                            (6704 +
+                                                                                                (s <<
+                                                                                                    2)) >>
+                                                                                            2
+                                                                                            ] >>
+                                                                                            2
                                                                                             ] |
-                                                                                                0,
+                                                                                            0,
                                                                                             0,
                                                                                             3584
                                                                                         );
                                                                                     }
                                                                                     b =
                                                                                         c[
-                                                                                            (6704 +
-                                                                                                (s <<
-                                                                                                    2)) >>
-                                                                                                2
+                                                                                        (6704 +
+                                                                                            (s <<
+                                                                                                2)) >>
+                                                                                        2
                                                                                         ] |
                                                                                         0;
                                                                                 }
@@ -13594,11 +13611,11 @@ class LibTiMidity {
                                                                                 s =
                                                                                     aL(
                                                                                         c[
-                                                                                            (f +
-                                                                                                4) >>
-                                                                                                2
+                                                                                        (f +
+                                                                                            4) >>
+                                                                                        2
                                                                                         ] |
-                                                                                            0
+                                                                                        0
                                                                                     ) |
                                                                                     0;
                                                                                 if (
@@ -13622,7 +13639,7 @@ class LibTiMidity {
                                                                                         (7216 +
                                                                                             (s <<
                                                                                                 2)) >>
-                                                                                            2
+                                                                                        2
                                                                                     ] |
                                                                                         0) ==
                                                                                     0
@@ -13631,7 +13648,7 @@ class LibTiMidity {
                                                                                         (7216 +
                                                                                             (s <<
                                                                                                 2)) >>
-                                                                                            2
+                                                                                        2
                                                                                     ] =
                                                                                         bi(
                                                                                             516
@@ -13639,12 +13656,12 @@ class LibTiMidity {
                                                                                         0;
                                                                                     c5(
                                                                                         c[
-                                                                                            (7216 +
-                                                                                                (s <<
-                                                                                                    2)) >>
-                                                                                                2
+                                                                                        (7216 +
+                                                                                            (s <<
+                                                                                                2)) >>
+                                                                                        2
                                                                                         ] |
-                                                                                            0,
+                                                                                        0,
                                                                                         0,
                                                                                         516
                                                                                     );
@@ -13655,34 +13672,34 @@ class LibTiMidity {
                                                                                         0;
                                                                                     c[
                                                                                         c[
-                                                                                            (7216 +
-                                                                                                (s <<
-                                                                                                    2)) >>
-                                                                                                2
+                                                                                        (7216 +
+                                                                                            (s <<
+                                                                                                2)) >>
+                                                                                        2
                                                                                         ] >>
-                                                                                            2
+                                                                                        2
                                                                                     ] = t;
                                                                                     c5(
                                                                                         c[
-                                                                                            c[
-                                                                                                (7216 +
-                                                                                                    (s <<
-                                                                                                        2)) >>
-                                                                                                    2
-                                                                                            ] >>
-                                                                                                2
+                                                                                        c[
+                                                                                        (7216 +
+                                                                                            (s <<
+                                                                                                2)) >>
+                                                                                        2
+                                                                                        ] >>
+                                                                                        2
                                                                                         ] |
-                                                                                            0,
+                                                                                        0,
                                                                                         0,
                                                                                         3584
                                                                                     );
                                                                                 }
                                                                                 b =
                                                                                     c[
-                                                                                        (7216 +
-                                                                                            (s <<
-                                                                                                2)) >>
-                                                                                            2
+                                                                                    (7216 +
+                                                                                        (s <<
+                                                                                            2)) >>
+                                                                                    2
                                                                                     ] |
                                                                                     0;
                                                                             }
@@ -13697,15 +13714,15 @@ class LibTiMidity {
                                                                             }
                                                                             t =
                                                                                 c[
-                                                                                    (f +
-                                                                                        4) >>
-                                                                                        2
+                                                                                (f +
+                                                                                    4) >>
+                                                                                2
                                                                                 ] |
                                                                                 0;
                                                                             c7(
                                                                                 7728,
                                                                                 t |
-                                                                                    0,
+                                                                                0,
                                                                                 255
                                                                             ) |
                                                                                 0;
@@ -13738,12 +13755,12 @@ class LibTiMidity {
                                                                                 1;
                                                                             cU(
                                                                                 c[
-                                                                                    (f +
-                                                                                        (s <<
-                                                                                            2)) >>
-                                                                                        2
+                                                                                (f +
+                                                                                    (s <<
+                                                                                        2)) >>
+                                                                                2
                                                                                 ] |
-                                                                                    0
+                                                                                0
                                                                             ) |
                                                                                 0;
                                                                             c[1660] =
@@ -13777,12 +13794,12 @@ class LibTiMidity {
                                                                         }
                                                                         bj(
                                                                             c[
-                                                                                (f +
-                                                                                    (s <<
-                                                                                        2)) >>
-                                                                                    2
+                                                                            (f +
+                                                                                (s <<
+                                                                                    2)) >>
+                                                                            2
                                                                             ] |
-                                                                                0
+                                                                            0
                                                                         );
                                                                         s =
                                                                             (s +
@@ -13798,18 +13815,18 @@ class LibTiMidity {
                                                                     t | 0,
                                                                     5960,
                                                                     ((k = i),
-                                                                    (i =
-                                                                        (i +
-                                                                            1) |
-                                                                        0),
-                                                                    (i =
-                                                                        (i +
-                                                                            7) &
-                                                                        -8),
-                                                                    (c[
-                                                                        k >> 2
-                                                                    ] = 0),
-                                                                    k) | 0
+                                                                        (i =
+                                                                            (i +
+                                                                                1) |
+                                                                            0),
+                                                                        (i =
+                                                                            (i +
+                                                                                7) &
+                                                                            -8),
+                                                                        (c[
+                                                                            k >> 2
+                                                                        ] = 0),
+                                                                        k) | 0
                                                                 ) | 0;
                                                                 i = k;
                                                             }
@@ -13819,14 +13836,14 @@ class LibTiMidity {
                                                                 t | 0,
                                                                 6016,
                                                                 ((k = i),
-                                                                (i =
-                                                                    (i + 1) |
-                                                                    0),
-                                                                (i =
-                                                                    (i + 7) &
-                                                                    -8),
-                                                                (c[k >> 2] = 0),
-                                                                k) | 0
+                                                                    (i =
+                                                                        (i + 1) |
+                                                                        0),
+                                                                    (i =
+                                                                        (i + 7) &
+                                                                        -8),
+                                                                    (c[k >> 2] = 0),
+                                                                    k) | 0
                                                             ) | 0;
                                                             i = k;
                                                         }
@@ -13842,9 +13859,9 @@ class LibTiMidity {
                                                         t | 0,
                                                         6088,
                                                         ((k = i),
-                                                        (i = (i + 8) | 0),
-                                                        (c[k >> 2] = w),
-                                                        k) | 0
+                                                            (i = (i + 8) | 0),
+                                                            (c[k >> 2] = w),
+                                                            k) | 0
                                                     ) | 0;
                                                     i = k;
                                                 }
@@ -13854,10 +13871,10 @@ class LibTiMidity {
                                                     w | 0,
                                                     6192,
                                                     ((k = i),
-                                                    (i = (i + 1) | 0),
-                                                    (i = (i + 7) & -8),
-                                                    (c[k >> 2] = 0),
-                                                    k) | 0
+                                                        (i = (i + 1) | 0),
+                                                        (i = (i + 7) & -8),
+                                                        (c[k >> 2] = 0),
+                                                        k) | 0
                                                 ) | 0;
                                                 i = k;
                                             }
@@ -13867,10 +13884,10 @@ class LibTiMidity {
                                                 w | 0,
                                                 6296,
                                                 ((k = i),
-                                                (i = (i + 1) | 0),
-                                                (i = (i + 7) & -8),
-                                                (c[k >> 2] = 0),
-                                                k) | 0
+                                                    (i = (i + 1) | 0),
+                                                    (i = (i + 7) & -8),
+                                                    (c[k >> 2] = 0),
+                                                    k) | 0
                                             ) | 0;
                                             i = k;
                                         }
@@ -13886,9 +13903,9 @@ class LibTiMidity {
                                         w | 0,
                                         6352,
                                         ((k = i),
-                                        (i = (i + 8) | 0),
-                                        (c[k >> 2] = t),
-                                        k) | 0
+                                            (i = (i + 8) | 0),
+                                            (c[k >> 2] = t),
+                                            k) | 0
                                     ) | 0;
                                     i = k;
                                 }
@@ -13898,10 +13915,10 @@ class LibTiMidity {
                                     t | 0,
                                     6432,
                                     ((k = i),
-                                    (i = (i + 1) | 0),
-                                    (i = (i + 7) & -8),
-                                    (c[k >> 2] = 0),
-                                    k) | 0
+                                        (i = (i + 1) | 0),
+                                        (i = (i + 7) & -8),
+                                        (c[k >> 2] = 0),
+                                        k) | 0
                                 ) | 0;
                                 i = k;
                             }
@@ -13921,10 +13938,10 @@ class LibTiMidity {
                         s | 0,
                         5912,
                         ((k = i),
-                        (i = (i + 16) | 0),
-                        (c[k >> 2] = b),
-                        (c[(k + 8) >> 2] = v),
-                        k) | 0
+                            (i = (i + 16) | 0),
+                            (c[k >> 2] = b),
+                            (c[(k + 8) >> 2] = v),
+                            k) | 0
                     ) | 0;
                     i = k;
                     l = -2;
@@ -13936,10 +13953,10 @@ class LibTiMidity {
                         c[m >> 2] | 0,
                         5520,
                         ((k = i),
-                        (i = (i + 16) | 0),
-                        (c[k >> 2] = g),
-                        (c[(k + 8) >> 2] = h),
-                        k) | 0
+                            (i = (i + 16) | 0),
+                            (c[k >> 2] = g),
+                            (c[(k + 8) >> 2] = h),
+                            k) | 0
                     ) | 0;
                     i = k;
                     l = -2;
@@ -13951,10 +13968,10 @@ class LibTiMidity {
                         c[m >> 2] | 0,
                         5480,
                         ((k = i),
-                        (i = (i + 16) | 0),
-                        (c[k >> 2] = g),
-                        (c[(k + 8) >> 2] = h),
-                        k) | 0
+                            (i = (i + 16) | 0),
+                            (c[k >> 2] = g),
+                            (c[(k + 8) >> 2] = h),
+                            k) | 0
                     ) | 0;
                     i = k;
                     l = -2;
@@ -13966,10 +13983,10 @@ class LibTiMidity {
                         c[m >> 2] | 0,
                         5432,
                         ((k = i),
-                        (i = (i + 16) | 0),
-                        (c[k >> 2] = g),
-                        (c[(k + 8) >> 2] = h),
-                        k) | 0
+                            (i = (i + 16) | 0),
+                            (c[k >> 2] = g),
+                            (c[(k + 8) >> 2] = h),
+                            k) | 0
                     ) | 0;
                     i = k;
                     l = -2;
@@ -13981,10 +13998,10 @@ class LibTiMidity {
                         c[m >> 2] | 0,
                         5320,
                         ((k = i),
-                        (i = (i + 16) | 0),
-                        (c[k >> 2] = g),
-                        (c[(k + 8) >> 2] = h),
-                        k) | 0
+                            (i = (i + 16) | 0),
+                            (c[k >> 2] = g),
+                            (c[(k + 8) >> 2] = h),
+                            k) | 0
                     ) | 0;
                     i = k;
                     l = -2;
@@ -13996,10 +14013,10 @@ class LibTiMidity {
                         c[m >> 2] | 0,
                         5728,
                         ((k = i),
-                        (i = (i + 16) | 0),
-                        (c[k >> 2] = g),
-                        (c[(k + 8) >> 2] = h),
-                        k) | 0
+                            (i = (i + 16) | 0),
+                            (c[k >> 2] = g),
+                            (c[(k + 8) >> 2] = h),
+                            k) | 0
                     ) | 0;
                     i = k;
                     l = -2;
@@ -14011,10 +14028,10 @@ class LibTiMidity {
                         c[m >> 2] | 0,
                         5840,
                         ((k = i),
-                        (i = (i + 16) | 0),
-                        (c[k >> 2] = g),
-                        (c[(k + 8) >> 2] = h),
-                        k) | 0
+                            (i = (i + 16) | 0),
+                            (c[k >> 2] = g),
+                            (c[(k + 8) >> 2] = h),
+                            k) | 0
                     ) | 0;
                     i = k;
                     l = -2;
@@ -14026,10 +14043,10 @@ class LibTiMidity {
                         c[m >> 2] | 0,
                         5576,
                         ((k = i),
-                        (i = (i + 16) | 0),
-                        (c[k >> 2] = g),
-                        (c[(k + 8) >> 2] = h),
-                        k) | 0
+                            (i = (i + 16) | 0),
+                            (c[k >> 2] = g),
+                            (c[(k + 8) >> 2] = h),
+                            k) | 0
                     ) | 0;
                     i = k;
                     l = -2;
@@ -14041,11 +14058,11 @@ class LibTiMidity {
                         c[m >> 2] | 0,
                         5216,
                         ((k = i),
-                        (i = (i + 24) | 0),
-                        (c[k >> 2] = g),
-                        (c[(k + 8) >> 2] = h),
-                        (c[(k + 16) >> 2] = 800),
-                        k) | 0
+                            (i = (i + 24) | 0),
+                            (c[k >> 2] = g),
+                            (c[(k + 8) >> 2] = h),
+                            (c[(k + 16) >> 2] = 800),
+                            k) | 0
                     ) | 0;
                     i = k;
                     l = -2;
@@ -14057,10 +14074,10 @@ class LibTiMidity {
                         c[m >> 2] | 0,
                         5160,
                         ((k = i),
-                        (i = (i + 16) | 0),
-                        (c[k >> 2] = g),
-                        (c[(k + 8) >> 2] = h),
-                        k) | 0
+                            (i = (i + 16) | 0),
+                            (c[k >> 2] = g),
+                            (c[(k + 8) >> 2] = h),
+                            k) | 0
                     ) | 0;
                     i = k;
                     l = -2;
@@ -14072,10 +14089,10 @@ class LibTiMidity {
                         c[m >> 2] | 0,
                         4952,
                         ((k = i),
-                        (i = (i + 16) | 0),
-                        (c[k >> 2] = g),
-                        (c[(k + 8) >> 2] = h),
-                        k) | 0
+                            (i = (i + 16) | 0),
+                            (c[k >> 2] = g),
+                            (c[(k + 8) >> 2] = h),
+                            k) | 0
                     ) | 0;
                     i = k;
                     l = -2;
@@ -14087,10 +14104,10 @@ class LibTiMidity {
                         c[m >> 2] | 0,
                         4888,
                         ((k = i),
-                        (i = (i + 16) | 0),
-                        (c[k >> 2] = g),
-                        (c[(k + 8) >> 2] = h),
-                        k) | 0
+                            (i = (i + 16) | 0),
+                            (c[k >> 2] = g),
+                            (c[(k + 8) >> 2] = h),
+                            k) | 0
                     ) | 0;
                     i = k;
                     l = -2;
@@ -14103,11 +14120,11 @@ class LibTiMidity {
                         c[m >> 2] | 0,
                         5280,
                         ((k = i),
-                        (i = (i + 24) | 0),
-                        (c[k >> 2] = g),
-                        (c[(k + 8) >> 2] = h),
-                        (c[(k + 16) >> 2] = v),
-                        k) | 0
+                            (i = (i + 24) | 0),
+                            (c[k >> 2] = g),
+                            (c[(k + 8) >> 2] = h),
+                            (c[(k + 16) >> 2] = v),
+                            k) | 0
                     ) | 0;
                     i = k;
                     l = -2;
@@ -14119,10 +14136,10 @@ class LibTiMidity {
                         c[m >> 2] | 0,
                         5624,
                         ((k = i),
-                        (i = (i + 16) | 0),
-                        (c[k >> 2] = g),
-                        (c[(k + 8) >> 2] = h),
-                        k) | 0
+                            (i = (i + 16) | 0),
+                            (c[k >> 2] = g),
+                            (c[(k + 8) >> 2] = h),
+                            k) | 0
                     ) | 0;
                     i = k;
                     l = -2;
@@ -14134,10 +14151,10 @@ class LibTiMidity {
                         c[m >> 2] | 0,
                         5680,
                         ((k = i),
-                        (i = (i + 16) | 0),
-                        (c[k >> 2] = g),
-                        (c[(k + 8) >> 2] = h),
-                        k) | 0
+                            (i = (i + 16) | 0),
+                            (c[k >> 2] = g),
+                            (c[(k + 8) >> 2] = h),
+                            k) | 0
                     ) | 0;
                     i = k;
                     l = -2;
@@ -14149,10 +14166,10 @@ class LibTiMidity {
                         c[m >> 2] | 0,
                         5016,
                         ((k = i),
-                        (i = (i + 16) | 0),
-                        (c[k >> 2] = g),
-                        (c[(k + 8) >> 2] = h),
-                        k) | 0
+                            (i = (i + 16) | 0),
+                            (c[k >> 2] = g),
+                            (c[(k + 8) >> 2] = h),
+                            k) | 0
                     ) | 0;
                     i = k;
                     l = -2;
@@ -14165,11 +14182,11 @@ class LibTiMidity {
                         c[m >> 2] | 0,
                         5280,
                         ((k = i),
-                        (i = (i + 24) | 0),
-                        (c[k >> 2] = g),
-                        (c[(k + 8) >> 2] = h),
-                        (c[(k + 16) >> 2] = v),
-                        k) | 0
+                            (i = (i + 24) | 0),
+                            (c[k >> 2] = g),
+                            (c[(k + 8) >> 2] = h),
+                            (c[(k + 16) >> 2] = v),
+                            k) | 0
                     ) | 0;
                     i = k;
                     l = -2;
@@ -14196,6 +14213,7 @@ class LibTiMidity {
                 b[3348] = g;
                 return 6688;
             }
+            //do_song_load
             function cW(f, g, h) {
                 f = f | 0;
                 g = g | 0;
@@ -14268,10 +14286,10 @@ class LibTiMidity {
                         c[m >> 2] | 0,
                         6144,
                         ((g = i),
-                        (i = (i + 1) | 0),
-                        (i = (i + 7) & -8),
-                        (c[g >> 2] = 0),
-                        g) | 0
+                            (i = (i + 1) | 0),
+                            (i = (i + 7) & -8),
+                            (c[g >> 2] = 0),
+                            g) | 0
                     ) | 0;
                     i = g;
                     c[(h + 1060) >> 2] = 6;
@@ -14691,11 +14709,11 @@ class LibTiMidity {
                         r = (d >>> 1) & 1;
                         g =
                             c[
-                                (8288 +
-                                    (((h | l | k | p | r) +
-                                        (d >>> (r >>> 0))) <<
-                                        2)) >>
-                                    2
+                            (8288 +
+                                (((h | l | k | p | r) +
+                                    (d >>> (r >>> 0))) <<
+                                    2)) >>
+                            2
                             ] | 0;
                         r = g;
                         d = g;
@@ -15017,11 +15035,11 @@ class LibTiMidity {
                             p = (m >>> 1) & 1;
                             I =
                                 c[
-                                    (8288 +
-                                        (((i | r | e | q | p) +
-                                            (m >>> (p >>> 0))) <<
-                                            2)) >>
-                                        2
+                                (8288 +
+                                    (((i | r | e | q | p) +
+                                        (m >>> (p >>> 0))) <<
+                                        2)) >>
+                                2
                                 ] | 0;
                         } else {
                             I = E;
@@ -15754,19 +15772,19 @@ class LibTiMidity {
                                                         if (X >>> 0 < 256) {
                                                             U =
                                                                 c[
-                                                                    (ab +
-                                                                        ((al |
-                                                                            8) +
-                                                                            aa)) >>
-                                                                        2
+                                                                (ab +
+                                                                    ((al |
+                                                                        8) +
+                                                                        aa)) >>
+                                                                2
                                                                 ] | 0;
                                                             Q =
                                                                 c[
-                                                                    (ab +
-                                                                        (aa +
-                                                                            12 +
-                                                                            al)) >>
-                                                                        2
+                                                                (ab +
+                                                                    (aa +
+                                                                        12 +
+                                                                        al)) >>
+                                                                2
                                                                 ] | 0;
                                                             R =
                                                                 (8024 +
@@ -15780,10 +15798,10 @@ class LibTiMidity {
                                                                 ) {
                                                                     if (
                                                                         U >>>
-                                                                            0 <
+                                                                        0 <
                                                                         (c[2e3] |
                                                                             0) >>>
-                                                                            0
+                                                                        0
                                                                     ) {
                                                                         aq();
                                                                         return 0;
@@ -15792,7 +15810,7 @@ class LibTiMidity {
                                                                         (c[
                                                                             (U +
                                                                                 12) >>
-                                                                                2
+                                                                            2
                                                                         ] |
                                                                             0) ==
                                                                         (Z | 0)
@@ -15824,10 +15842,10 @@ class LibTiMidity {
                                                                 } else {
                                                                     if (
                                                                         Q >>>
-                                                                            0 <
+                                                                        0 <
                                                                         (c[2e3] |
                                                                             0) >>>
-                                                                            0
+                                                                        0
                                                                     ) {
                                                                         aq();
                                                                         return 0;
@@ -15839,7 +15857,7 @@ class LibTiMidity {
                                                                     if (
                                                                         (c[
                                                                             m >>
-                                                                                2
+                                                                            2
                                                                         ] |
                                                                             0) ==
                                                                         (Z | 0)
@@ -15859,19 +15877,19 @@ class LibTiMidity {
                                                             R = S;
                                                             m =
                                                                 c[
-                                                                    (ab +
-                                                                        ((al |
-                                                                            24) +
-                                                                            aa)) >>
-                                                                        2
+                                                                (ab +
+                                                                    ((al |
+                                                                        24) +
+                                                                        aa)) >>
+                                                                2
                                                                 ] | 0;
                                                             P =
                                                                 c[
-                                                                    (ab +
-                                                                        (aa +
-                                                                            12 +
-                                                                            al)) >>
-                                                                        2
+                                                                (ab +
+                                                                    (aa +
+                                                                        12 +
+                                                                        al)) >>
+                                                                2
                                                                 ] | 0;
                                                             do {
                                                                 if (
@@ -15886,8 +15904,8 @@ class LibTiMidity {
                                                                         0;
                                                                     L =
                                                                         c[
-                                                                            g >>
-                                                                                2
+                                                                        g >>
+                                                                        2
                                                                         ] | 0;
                                                                     if (
                                                                         (L |
@@ -15901,8 +15919,8 @@ class LibTiMidity {
                                                                             0;
                                                                         O =
                                                                             c[
-                                                                                e >>
-                                                                                    2
+                                                                            e >>
+                                                                            2
                                                                             ] |
                                                                             0;
                                                                         if (
@@ -15927,8 +15945,8 @@ class LibTiMidity {
                                                                             0;
                                                                         L =
                                                                             c[
-                                                                                g >>
-                                                                                    2
+                                                                            g >>
+                                                                            2
                                                                             ] |
                                                                             0;
                                                                         if (
@@ -15946,8 +15964,8 @@ class LibTiMidity {
                                                                             0;
                                                                         L =
                                                                             c[
-                                                                                g >>
-                                                                                    2
+                                                                            g >>
+                                                                            2
                                                                             ] |
                                                                             0;
                                                                         if (
@@ -15963,17 +15981,17 @@ class LibTiMidity {
                                                                     }
                                                                     if (
                                                                         ar >>>
-                                                                            0 <
+                                                                        0 <
                                                                         (c[2e3] |
                                                                             0) >>>
-                                                                            0
+                                                                        0
                                                                     ) {
                                                                         aq();
                                                                         return 0;
                                                                     } else {
                                                                         c[
                                                                             ar >>
-                                                                                2
+                                                                            2
                                                                         ] = 0;
                                                                         ao = ap;
                                                                         break;
@@ -15981,18 +15999,18 @@ class LibTiMidity {
                                                                 } else {
                                                                     g =
                                                                         c[
-                                                                            (ab +
-                                                                                ((al |
-                                                                                    8) +
-                                                                                    aa)) >>
-                                                                                2
+                                                                        (ab +
+                                                                            ((al |
+                                                                                8) +
+                                                                                aa)) >>
+                                                                        2
                                                                         ] | 0;
                                                                     if (
                                                                         g >>>
-                                                                            0 <
+                                                                        0 <
                                                                         (c[2e3] |
                                                                             0) >>>
-                                                                            0
+                                                                        0
                                                                     ) {
                                                                         aq();
                                                                         return 0;
@@ -16004,7 +16022,7 @@ class LibTiMidity {
                                                                     if (
                                                                         (c[
                                                                             L >>
-                                                                                2
+                                                                            2
                                                                         ] |
                                                                             0) !=
                                                                         (R | 0)
@@ -16019,18 +16037,18 @@ class LibTiMidity {
                                                                     if (
                                                                         (c[
                                                                             e >>
-                                                                                2
+                                                                            2
                                                                         ] |
                                                                             0) ==
                                                                         (R | 0)
                                                                     ) {
                                                                         c[
                                                                             L >>
-                                                                                2
+                                                                            2
                                                                         ] = P;
                                                                         c[
                                                                             e >>
-                                                                                2
+                                                                            2
                                                                         ] = g;
                                                                         ao = P;
                                                                         break;
@@ -16077,18 +16095,18 @@ class LibTiMidity {
                                                                         ~(
                                                                             1 <<
                                                                             c[
-                                                                                P >>
-                                                                                    2
+                                                                            P >>
+                                                                            2
                                                                             ]
                                                                         );
                                                                     break L2571;
                                                                 } else {
                                                                     if (
                                                                         m >>>
-                                                                            0 <
+                                                                        0 <
                                                                         (c[2e3] |
                                                                             0) >>>
-                                                                            0
+                                                                        0
                                                                     ) {
                                                                         aq();
                                                                         return 0;
@@ -16100,20 +16118,20 @@ class LibTiMidity {
                                                                     if (
                                                                         (c[
                                                                             Q >>
-                                                                                2
+                                                                            2
                                                                         ] |
                                                                             0) ==
                                                                         (R | 0)
                                                                     ) {
                                                                         c[
                                                                             Q >>
-                                                                                2
+                                                                            2
                                                                         ] = ao;
                                                                     } else {
                                                                         c[
                                                                             (m +
                                                                                 20) >>
-                                                                                2
+                                                                            2
                                                                         ] = ao;
                                                                     }
                                                                     if (
@@ -16128,7 +16146,7 @@ class LibTiMidity {
                                                             if (
                                                                 ao >>> 0 <
                                                                 (c[2e3] | 0) >>>
-                                                                    0
+                                                                0
                                                             ) {
                                                                 aq();
                                                                 return 0;
@@ -16139,10 +16157,10 @@ class LibTiMidity {
                                                             R = al | 16;
                                                             P =
                                                                 c[
-                                                                    (ab +
-                                                                        (R +
-                                                                            aa)) >>
-                                                                        2
+                                                                (ab +
+                                                                    (R +
+                                                                        aa)) >>
+                                                                2
                                                                 ] | 0;
                                                             do {
                                                                 if (
@@ -16151,10 +16169,10 @@ class LibTiMidity {
                                                                 ) {
                                                                     if (
                                                                         P >>>
-                                                                            0 <
+                                                                        0 <
                                                                         (c[2e3] |
                                                                             0) >>>
-                                                                            0
+                                                                        0
                                                                     ) {
                                                                         aq();
                                                                         return 0;
@@ -16162,12 +16180,12 @@ class LibTiMidity {
                                                                         c[
                                                                             (ao +
                                                                                 16) >>
-                                                                                2
+                                                                            2
                                                                         ] = P;
                                                                         c[
                                                                             (P +
                                                                                 24) >>
-                                                                                2
+                                                                            2
                                                                         ] = ao;
                                                                         break;
                                                                     }
@@ -16175,10 +16193,10 @@ class LibTiMidity {
                                                             } while (0);
                                                             P =
                                                                 c[
-                                                                    (ab +
-                                                                        (J +
-                                                                            R)) >>
-                                                                        2
+                                                                (ab +
+                                                                    (J +
+                                                                        R)) >>
+                                                                2
                                                                 ] | 0;
                                                             if ((P | 0) == 0) {
                                                                 break;
@@ -16186,18 +16204,18 @@ class LibTiMidity {
                                                             if (
                                                                 P >>> 0 <
                                                                 (c[2e3] | 0) >>>
-                                                                    0
+                                                                0
                                                             ) {
                                                                 aq();
                                                                 return 0;
                                                             } else {
                                                                 c[
                                                                     (ao + 20) >>
-                                                                        2
+                                                                    2
                                                                 ] = P;
                                                                 c[
                                                                     (P + 24) >>
-                                                                        2
+                                                                    2
                                                                 ] = ao;
                                                                 break;
                                                             }
@@ -16243,7 +16261,7 @@ class LibTiMidity {
                                                             if (
                                                                 U >>> 0 >=
                                                                 (c[2e3] | 0) >>>
-                                                                    0
+                                                                0
                                                             ) {
                                                                 au = U;
                                                                 av = J;
@@ -17422,6 +17440,7 @@ class LibTiMidity {
                 _mid_istream_open_file: cN,
                 _mid_song_read_wave: b6,
                 _mid_song_get_total_time: _mid_song_get_total_time,
+                _mid_song_seek: _mid_song_seek,
                 _mid_exit: cZ,
                 _mid_song_note_on: b0,
                 _strncpy: c7,
@@ -17552,6 +17571,7 @@ class LibTiMidity {
         Module['_mid_init'] = asm['_mid_init'];
         Module['_mid_song_load'] = asm['_mid_song_load'];
         Module['_mid_song_get_total_time'] = asm['_mid_song_get_total_time']; //Total Play Time 2021 03 NormalUniversity
+        Module['_mid_song_seek'] = asm['_mid_song_seek']; //Seek Music 2021 03 NormalUniversity
         Module['_mid_song_start'] = asm['_mid_song_start'];
         Module['_mid_song_get_num_missing_instruments'] =
             asm['_mid_song_get_num_missing_instruments'];
@@ -17568,13 +17588,13 @@ class LibTiMidity {
         Module['dynCall_v'] = asm['dynCall_v'];
         Module['dynCall_iii'] = asm['dynCall_iii'];
 
-        Runtime.stackAlloc = function(size) {
+        Runtime.stackAlloc = function (size) {
             return asm['stackAlloc'](size);
         };
-        Runtime.stackSave = function() {
+        Runtime.stackSave = function () {
             return asm['stackSave']();
         };
-        Runtime.stackRestore = function(top) {
+        Runtime.stackRestore = function (top) {
             asm['stackRestore'](top);
         };
 
@@ -17676,8 +17696,8 @@ class LibTiMidity {
             }
             if (Module['setStatus']) {
                 Module['setStatus']('Running...');
-                setTimeout(function() {
-                    setTimeout(function() {
+                setTimeout(function () {
+                    setTimeout(function () {
                         Module['setStatus']('');
                     }, 1);
                     if (!ABORT) doRun();
@@ -17698,7 +17718,7 @@ class LibTiMidity {
          * @param {boolean} [throwError = true] Throw an error if file/folder creation failed.
          * @instance
          */
-        Module.init = function(throwError = true) {
+        Module.init = function (throwError = true) {
             // creates folders for instrument patches
             Module.createPath('/', LIBTIMIDITY_PATCH_DIRECTORY, throwError);
             Module.createPath(
