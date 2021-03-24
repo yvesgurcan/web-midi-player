@@ -17349,6 +17349,7 @@ class LibTiMidity {
             function _mid_song_seek(song, ms) {
                 song = song | 0;
                 ms = ms / 1000;
+                b5(song, ms);
                 console.log(ms);
                 return;
             }
