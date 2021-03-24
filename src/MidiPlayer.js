@@ -71,6 +71,7 @@ not.
             this.patchUrl = patchUrl;
             this.volume = volume;
             this.startTime = 0;
+            this.totalTime = 0;
 
             LibTiMidity.init(isFirstInstance);
 
@@ -623,5 +624,39 @@ not.
         this.eventLogger = eventLogger;
         this.logging = logging;
         this.eventHandler.setLogger({ eventLogger, logging });
+    }
+    /**
+     * Get Total Play Time.
+     * @example
+     *  let midiPlayer = new MidiPlayer({ logging: false, patchUrl: 'lib/pat/' });
+     *  let totalTime = midiPlayer.getDuration();
+     *  midiPlayer.seek({mSecond: $milliSeconds});
+     */
+    getDuration() {
+        return this.totalTime;
+    }
+    /**
+     * Seek Position.
+     * @param {any} [mSecond] milli seconds to be seek
+     * @example
+     *  let midiPlayer = new MidiPlayer({ logging: false, patchUrl: 'lib/pat/' });
+     *  midiPlayer.play({url: $url})
+     *  midiPlayer.seek({mSecond: $milliSeconds});
+     */
+    async seek({ milliSecond}) {
+        if (this.totalTime>0) {
+            let _mSecond = this.sampleRate * milliSecond;
+            try {
+                LibTiMidity.call('mid_song_seek', 'void', ['number', 'number'], [this.song, _mSecond]);
+                this.startTime = this.context.currentTime-mSecond/1000;
+            } catch (error) {
+                this.eventHandler.emitError({
+                    message: 'Could not seek playback.',
+                    error
+                });
+                return;
+            }    
+            return;
+        }
     }
 }
