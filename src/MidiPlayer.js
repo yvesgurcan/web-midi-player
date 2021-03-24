@@ -625,12 +625,14 @@ not.
         this.logging = logging;
         this.eventHandler.setLogger({ eventLogger, logging });
     }
-    /*
-     * get total duration time
-     * 2021 03 NormalUniversity
+    /**
+     * Get Total Play Time.
+     * @example
+     *  let midiPlayer = new MidiPlayer({ logging: false, patchUrl: 'lib/pat/' });
+     *  let totalTime = midiPlayer.getDuration();
+     *  midiPlayer.seek({mSecond: $milliSeconds});
      */
     getDuration() {
-
         return this.totalTime;
     }
     /**
@@ -641,11 +643,11 @@ not.
      *  midiPlayer.play({url: $url})
      *  midiPlayer.seek({mSecond: $milliSeconds});
      */
-    async seek({ mSecond}) {
+    async seek({ milliSecond}) {
         if (this.totalTime>0) {
-            let _mSecond = this.sampleRate * mSecond;
-            LibTiMidity.call('mid_song_seek', 'void', ['number', 'number'], [this.song, _mSecond]);
+            let _mSecond = this.sampleRate * milliSecond;
             try {
+                LibTiMidity.call('mid_song_seek', 'void', ['number', 'number'], [this.song, _mSecond]);
                 this.startTime = this.context.currentTime-mSecond/1000;
             } catch (error) {
                 this.eventHandler.emitError({
